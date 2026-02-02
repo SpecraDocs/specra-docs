@@ -7,6 +7,7 @@ import {
   getCachedVersions,
   getCachedAllDocs,
   getCachedDocBySlug,
+  getI18nConfig,
   getConfig,
 } from "specra/lib"
 import {
@@ -74,7 +75,7 @@ export async function generateStaticParams() {
   const params = []
 
   for (const version of versions) {
-    const docs = await getCachedAllDocs(version)
+    const docs = await getCachedAllDocs(version, 'all')
     for (const doc of docs) {
       params.push({
         version,
@@ -90,7 +91,13 @@ export default async function DocPage({ params }: PageProps) {
   const { version, slug: slugArray } = await params
   const slug = slugArray.join("/")
 
-  const allDocs = await getCachedAllDocs(version)
+  const i18nConfig = getI18nConfig()
+  let locale: string | undefined
+  if (i18nConfig && i18nConfig.locales.includes(slugArray[0])) {
+    locale = slugArray[0]
+  }
+
+  const allDocs = await getCachedAllDocs(version, locale)
   const versions = getCachedVersions()
   const config = getConfig()
   const isCategory = isCategoryPage(slug, allDocs)
@@ -103,7 +110,7 @@ export default async function DocPage({ params }: PageProps) {
     return (
       <>
         <DocLayoutWrapper
-        key={'doc-layout'}
+          key={'doc-layout'}
           header={<Header currentVersion={version} versions={versions} config={config} />}
           docs={allDocs}
           version={version}
@@ -180,18 +187,18 @@ export default async function DocPage({ params }: PageProps) {
             />
           ) : (
             <>
-            <SearchHighlight />
-            <DocLayout
-              key="doc-layout"
-              meta={doc.meta}
-              content={doc.content}
-              previousDoc={previous ? { title: previous.meta.title, slug: previous.slug } : undefined}
-              nextDoc={next ? { title: next.meta.title, slug: next.slug } : undefined}
-              version={version}
-              slug={slug}
-              config={config}
-              mdxComponents={mdxComponents}
-            />
+              <SearchHighlight />
+              <DocLayout
+                key="doc-layout"
+                meta={doc.meta}
+                content={doc.content}
+                previousDoc={previous ? { title: previous.meta.title, slug: previous.slug } : undefined}
+                nextDoc={next ? { title: next.meta.title, slug: next.slug } : undefined}
+                version={version}
+                slug={slug}
+                config={config}
+                mdxComponents={mdxComponents}
+              />
             </>
           )}
         </DocLayoutWrapper>

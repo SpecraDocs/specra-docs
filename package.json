@@ -18,7 +18,7 @@
     "next": "^16.1.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "specra": "file:../specra-sdk/specra-0.1.10.tgz"
+    "specra": "file:../specra-sdk/specra-0.1.13.tgz"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.9",
