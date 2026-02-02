@@ -115,7 +115,22 @@
     "showAuthors": false,
     "showTags": true,
     "versioning": true,
-    "i18n": false
+    "i18n": {
+      "defaultLocale": "en",
+      "locales": [
+        "en",
+        "de",
+        "es",
+        "fr"
+      ],
+      "localeNames": {
+        "en": "English",
+        "de": "Deutsch",
+        "es": "Español",
+        "fr": "Français"
+      },
+      "prefixDefault": false
+    }
   },
   "env": {
     "API_BASE_URL": "https://api.example.com",
