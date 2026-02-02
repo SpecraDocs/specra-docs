@@ -21,8 +21,8 @@ importers:
         specifier: ^19.2.3
         version: 19.2.4(react@19.2.4)
       specra:
-        specifier: ^0.1.10
-        version: 0.1.10(@types/react-dom@19.2.3(@types/react@19.2.10))(@types/react@19.2.10)(next@16.1.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: 0.1.11
+        version: 0.1.11(@types/react-dom@19.2.3(@types/react@19.2.10))(@types/react@19.2.10)(next@16.1.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4.1.9
@@ -2254,8 +2254,8 @@ packages:
   space-separated-tokens@2.0.2:
     resolution: {integrity: sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==}
 
-  specra@0.1.10:
-    resolution: {integrity: sha512-SpMWAtDVCgTk+cDcGrR86fsrALW0EVyqPoyIUz1o2gGokPL2WmWqh3yx4pIZoWq09q/U5hD7XeTtdFzckUIQeA==}
+  specra@0.1.11:
+    resolution: {integrity: sha512-jwvcdExbs1TblTsrQFEUOyEgtnM8AJ+cgeG8bIDkC7WqwmR6hE3M4aOiqvnoVN2awWs3Y7z/nYSZAed2euDJZQ==}
     peerDependencies:
       next: ^14.0.0 || ^15.0.0 || ^16.0.0
       react: ^18.0.0 || ^19.0.0
@@ -5090,7 +5090,7 @@ snapshots:
 
   space-separated-tokens@2.0.2: {}
 
-  specra@0.1.10(@types/react-dom@19.2.3(@types/react@19.2.10))(@types/react@19.2.10)(next@16.1.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  specra@0.1.11(@types/react-dom@19.2.3(@types/react@19.2.10))(@types/react@19.2.10)(next@16.1.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       '@hookform/resolvers': 3.10.0(react-hook-form@7.71.1(react@19.2.4))
       '@radix-ui/react-accordion': 1.2.12(@types/react-dom@19.2.3(@types/react@19.2.10))(@types/react@19.2.10)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
