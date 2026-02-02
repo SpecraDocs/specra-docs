@@ -1,0 +1,109 @@
+---
+title: Über Specra
+sidebar_position: 1
+icon: info
+tab_group: guides
+---
+
+# Was ist Specra?
+
+Specra ist ein modernes Dokumentations-Framework, das das Schreiben und Veröffentlichen technischer Dokumentation tatsächlich angenehm macht. Aufgebaut auf Next.js, MDX und Tailwind CSS, bietet es Ihnen das polierte Aussehen und Gefühl von Premium-Dokumentationsplattformen wie Mintlify, aber Sie hosten es selbst.
+
+Wenn Sie jemals mit klobigen Dokumentationstools gekämpft oder viel zu viel für gehostete Lösungen bezahlt haben, ist Specra hier, um das zu ändern. Schreiben Sie Ihre Dokumente in Markdown, fügen Sie interaktive Komponenten hinzu, wenn Sie sie benötigen, und stellen Sie sie überall bereit, wo Sie möchten.
+
+## Warum wir Specra gebaut haben
+
+Dokumentation sollte nicht schwer sein. Sie sollten sich darauf konzentrieren können, großartige Inhalte zu schreiben, und nicht mit Konfigurationsdateien ringen oder gegen Ihre Werkzeuge kämpfen müssen. Hier ist, was wir glauben:
+
+**Inhalt kommt zuerst.** Legen Sie Ihre MDX-Dateien in einen Ordner, und Specra erledigt den Rest. Kein manuelles Routing, keine Navigationseinrichtung, keine Kopfschmerzen bei der Build-Konfiguration.
+
+**Entwicklererfahrung zählt.** Hot Reload bedeutet, dass Sie Änderungen sofort sehen. TypeScript hält Sie sicher. Die Komponentenbibliothek ist da, wenn Sie sie brauchen, und unsichtbar, wenn nicht.
+
+**Leistung ist nicht verhandelbar.** Vorgerenderte Seiten, Edge-Caching, optimierte Bilder. Ihre Dokumente laden schnell, immer.
+
+**Flexibilität vor Lock-in.** Bereitstellung auf Vercel, GitHub Pages, Netlify oder überall dort, wo Node.js läuft oder statische Dateien bereitgestellt werden. Sie besitzen Ihre Inhalte und Ihre Infrastruktur.
+
+## Hauptfunktionen
+
+<CardGrid cols={2}>
+  <Card icon="zap" title="Blitzschnell" description="Generierung statischer Seiten mit Edge-Caching. Ihre Dokumente laden in Millisekunden, nicht Sekunden." />
+  <Card icon="search" title="Leistungsstarke Suche" description="MeiliSearch-Integration bietet Ihnen eine tippo-tolerante, sofortige Suche, die tatsächlich funktioniert." />
+  <Card icon="git-branch" title="Versionsverwaltung" description="Liefern Sie mehrere Dokumentversionen nebeneinander aus. Perfekt für APIs und Bibliotheken mit Breaking Changes." />
+  <Card icon="palette" title="Schönes Theming" description="Dark Mode sofort einsatzbereit. Passen Sie Farben, Schriftarten und Stile an Ihre Marke an." />
+  <Card icon="code" title="MDX-Komponenten" description="Verwenden Sie Markdown für Inhalte, React-Komponenten für Interaktivität. Das Beste aus beiden Welten." />
+  <Card icon="layout" title="Smarte Navigation" description="Automatisch generierte Seitenleiste aus Ihrer Dateistruktur. Einklappbare Abschnitte, Brotkrümel, Inhaltsverzeichnis." />
+</CardGrid>
+
+## Der Stack
+
+Wir haben Specra auf bewährten, modernen Technologien aufgebaut:
+
+- **Next.js 15+** mit dem App Router für optimale Leistung und Entwicklererfahrung
+- **MDX**, damit Sie Markdown mit React-Komponenten mischen können
+- **Tailwind CSS** für Styling, das sowohl leistungsstark als auch wartbar ist
+- **MeiliSearch** für eine Suche, die schnell ist und Tippfehler verzeiht
+- **TypeScript**, weil Typsicherheit Zeit und Nerven spart
+
+## Was Sie bekommen
+
+Wenn Sie Specra verwenden, erhalten Sie ein komplettes Dokumentationssystem:
+
+**Reiche Inhaltskomponenten**
+Callouts, Tabs, Codeblöcke mit Syntax-Hervorhebung, Karten, Akkordeons, Schritte, Diagramme mit Mermaid, mathematische Gleichungen mit KaTeX und mehr.
+
+**Automatische Navigation**
+Ihre Ordnerstruktur wird zu Ihrer Seitenleiste. Fügen Sie eine `_category_.json`-Datei hinzu, um Abschnitte anzupassen. Das war's.
+
+**Smarte Funktionen**
+Lesezeitschätzungen, Zeitstempel der letzten Aktualisierung, Tag-Unterstützung, Brotkrümel, responsives Inhaltsverzeichnis mit Scroll-Tracking.
+
+**API-Dokumentation**
+Generieren Sie schöne API-Referenzen aus OpenAPI-Spezifikationen, Postman-Sammlungen oder Specras eigenem Format. Interaktiver Playground enthalten.
+
+**Multi-Version-Support**
+Pflegen Sie Dokumente für v1, v2, v3 gleichzeitig. Der Versionswechsler lässt Benutzer sofort zwischen ihnen springen.
+
+**Suche, die funktioniert**
+Volltextsuche mit Tastaturkürzeln (⌘K oder Ctrl+K). Funktioniert offline mit lokaler Suche oder skaliert mit MeiliSearch.
+
+**Theme-System**
+Beachtet Systemeinstellungen, unterstützt manuellen Dunkel/Hell-Umschalter, anpassbar über CSS-Variablen.
+
+**Produktionsbereit**
+SEO-Optimierung, Barrierefreiheit integriert, Sicherheits-Header, Leistungsüberwachung, CI/CD-Beispiele.
+
+## Wie es funktioniert
+
+Specra folgt einer einfachen Philosophie: Sie schreiben, wir erledigen den Rest.
+
+<Steps>
+  <Step title="Schreiben in MDX">
+    Erstellen Sie `.mdx`-Dateien in Ihrem `docs/`-Ordner. Verwenden Sie Frontmatter für Metadaten. Schreiben Sie Markdown für Inhalte. Mischen Sie bei Bedarf React-Komponenten ein.
+  </Step>
+
+  <Step title="Auto-Generierung">
+    Specra scannt Ihre Dateien, generiert die Navigation, extrahiert Überschriften für das Inhaltsverzeichnis und richtet das Routing automatisch ein.
+  </Step>
+
+  <Step title="Sofortige Vorschau">
+    Starten Sie den Entwicklungsserver und sehen Sie Änderungen live, während Sie tippen. Hot Reload hält Sie im Flow.
+  </Step>
+
+  <Step title="Überall bereitstellen">
+    Build für Node.js-Hosting (Vercel, Railway) oder Export als statische Dateien (GitHub Pages, Netlify, Cloudflare Pages). Eine Codebasis, mehrere Bereitstellungsziele.
+  </Step>
+</Steps>
+
+## Wer sollte Specra verwenden?
+
+Specra ist perfekt für:
+
+- **Open-Source-Maintainer**, die professionelle Dokumente ohne Hosting-Gebühren benötigen
+- **Startups**, die großartige Dokumentation ohne Enterprise-Preise wollen
+- **API-Entwickler**, die versionierte Dokumente und interaktive API-Referenzen benötigen
+- **Technische Redakteure**, die Markdown gegenüber WYSIWYG-Editoren bevorzugen
+- **Teams**, die wollen, dass Dokumente im selben Repo wie ihr Code leben
+
+## Bereit zu starten?
+
+Springen Sie in den [Erste Schritte](/docs/v1.0.0/getting-started) Leitfaden und haben Sie Ihre erste Dokumentationsseite in unter 5 Minuten am Laufen.

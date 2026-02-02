@@ -1,0 +1,175 @@
+---
+title: Mermaid
+description: Erstellen Sie Diagramme und Flussdiagramme mit Mermaid-Syntax
+sidebar_position: 13
+---
+
+Die Mermaid-Komponente rendert Diagramme aus Text mithilfe der Mermaid.js-Bibliothek.
+
+## Verwendung
+
+```mdx
+<Mermaid
+  chart={`
+    graph TD
+      A[Start] --> B{Entscheidung}
+      B -->|Ja| C[Aktion 1]
+      B -->|Nein| D[Aktion 2]
+  `}
+  caption="Entscheidungsflussdiagramm"
+/>
+```
+
+## Live-Beispiele
+
+### Flussdiagramm
+
+<Tabs defaultValue="Vorschau">
+  <Tab label="Vorschau">
+    <Mermaid
+      chart={`
+        graph TD
+          A[Dokumentation] --> B{Komponente wählen}
+          B -->|Interaktiv| C[Akkordeon]
+          B -->|Layout| D[Spalten]
+          B -->|Visuell| E[Mermaid]
+          C --> F[Tolle Docs!]
+          D --> F
+          E --> F
+      `}
+      caption="Komponentenauswahl-Flussdiagramm"
+    />
+  </Tab>
+
+  <Tab label="Code">
+```mdx
+<Mermaid
+  chart={`
+    graph TD
+      A[Dokumentation] --> B{Komponente wählen}
+      B -->|Interaktiv| C[Akkordeon]
+      B -->|Layout| D[Spalten]
+      B -->|Visuell| E[Mermaid]
+      C --> F[Tolle Docs!]
+      D --> F
+      E --> F
+  `}
+  caption="Komponentenauswahl-Flussdiagramm"
+/>
+```
+  </Tab>
+</Tabs>
+
+### Sequenzdiagramm
+
+<Tabs defaultValue="Vorschau">
+  <Tab label="Vorschau">
+    <Mermaid
+      chart={`
+        sequenceDiagram
+          participant User
+          participant Browser
+          participant Server
+          User->>Browser: Klick Button
+          Browser->>Server: API-Anfrage
+          Server-->>Browser: Antwort
+          Browser-->>User: UI aktualisieren
+      `}
+      caption="API-Anfrage-Sequenz"
+    />
+  </Tab>
+
+  <Tab label="Code">
+```mdx
+<Mermaid
+  chart={`
+    sequenceDiagram
+      participant User
+      participant Browser
+      participant Server
+      User->>Browser: Klick Button
+      Browser->>Server: API-Anfrage
+      Server-->>Browser: Antwort
+      Browser-->>User: UI aktualisieren
+  `}
+  caption="API-Anfrage-Sequenz"
+/>
+```
+  </Tab>
+</Tabs>
+
+### Klassendiagramm
+
+<Tabs defaultValue="Vorschau">
+  <Tab label="Vorschau">
+    <Mermaid
+      chart={`
+        classDiagram
+          class Document {
+            +string titel
+            +string inhalt
+            +Date erstelltAm
+            +render()
+          }
+          class MDXDocument {
+            +Object frontmatter
+            +compile()
+          }
+          Document <|-- MDXDocument
+      `}
+      caption="Dokument-Klassenhierarchie"
+    />
+  </Tab>
+
+  <Tab label="Code">
+```mdx
+<Mermaid
+  chart={`
+    classDiagram
+      class Document {
+        +string titel
+        +string inhalt
+        +Date erstelltAm
+        +render()
+      }
+      class MDXDocument {
+        +Object frontmatter
+        +compile()
+      }
+      Document <|-- MDXDocument
+  `}
+  caption="Dokument-Klassenhierarchie"
+/>
+```
+  </Tab>
+</Tabs>
+
+## Props
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `chart` | `string` | erforderlich | Mermaid-Diagramm-Definition |
+| `caption` | `string` | - | Bildunterschrift unter dem Diagramm |
+
+## Diagrammtypen
+
+Mermaid unterstützt viele Diagrammtypen:
+
+- **Flussdiagramme** - `graph TD` oder `graph LR`
+- **Sequenzdiagramme** - `sequenceDiagram`
+- **Klassendiagramme** - `classDiagram`
+- **Zustandsdiagramme** - `stateDiagram-v2`
+- **Entity Relationship** - `erDiagram`
+- **Gantt-Diagramme** - `gantt`
+- **Tortendiagramme** - `pie`
+
+## Theme-Support
+
+<Callout type="info">
+Mermaid-Diagramme passen sich automatisch an helle und dunkle Themes an.
+</Callout>
+
+## Ressourcen
+
+- [Mermaid Dokumentation](https://mermaid.js.org/intro/)
+- [Live Editor](https://mermaid.live/)

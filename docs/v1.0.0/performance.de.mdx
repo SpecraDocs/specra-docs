@@ -1,0 +1,178 @@
+---
+title: Leistung & Entwicklung
+description: Verstehen Sie die Leistungsoptimierungen und Entwicklungsfunktionen, die in das Dokumentationssystem integriert sind
+order: 7
+icon: zap
+---
+
+## Caching-System
+
+### In-Memory Caching
+
+Das System verwendet eine intelligente Caching-Schicht für teure Dateisystemoperationen:
+
+- **Versionslisten-Caching**: Gecached für 5 Sekunden in Dev, 60 Sekunden in Produktion
+- **Dokumentlisten-Caching**: Pro-Version-Caching mit automatischer Invalidierung
+- **Einzel-Dokument-Caching**: Geschlüsselt nach Version und Slug
+
+Der Cache wird automatisch invalidiert, wenn sich MDX- oder Konfigurationsdateien im Entwicklungsmodus ändern.
+
+### Cache-Statistiken
+
+Im Entwicklungsmodus werden Cache-Operationen in der Konsole protokolliert:
+
+```
+✅ [Cache] hit: getAllDocs:v1.0.0
+❌ [Cache] miss: getDocBySlug:v1.0.0:configuration
+⏱️  getDocBySlug(configuration): 45.23ms
+```
+
+## Hot Reload
+
+### Echtzeit-Updates
+
+Das System überwacht Ihr `docs/`-Verzeichnis auf Änderungen und aktualisiert die Seite automatisch, wenn Sie speichern:
+
+- Überwacht `.mdx`-Dateien auf Inhaltsänderungen
+- Überwacht `_category_.json`-Dateien auf Navigations-Updates
+- Verwendet Server-Sent Events (SSE) für effiziente Kommunikation
+- Nur im Entwicklungsmodus aktiv
+
+### Wie es funktioniert
+
+1. Datei-Watcher überwacht das `docs/`-Verzeichnis rekursiv
+2. Wenn sich eine Datei ändert, sendet die API ein Ereignis an den Browser
+3. Der Browser löst eine weiche Aktualisierung aus, um den Inhalt neu zu laden
+4. Cache wird für betroffene Dateien invalidiert
+
+## Statische Generierung
+
+### Optimierter Build-Prozess
+
+Der Build-Prozess verwendet zwischengespeicherte Daten, um `generateStaticParams` zu beschleunigen:
+
+```typescript
+export async function generateStaticParams() {
+  const versions = getCachedVersions()  // Gecached
+  const params = []
+
+  for (const version of versions) {
+    const docs = await getCachedAllDocs(version)  // Gecached
+    for (const doc of docs) {
+      params.push({
+        version,
+        slug: doc.slug.split("/").filter(Boolean),
+      })
+    }
+  }
+
+  return params
+}
+```
+
+### Leistungstipps
+
+Für große Dokumentationsseiten (1000+ Dateien):
+
+1. **Ordnerorganisation verwenden**: Organisieren Sie Dokumente in logische Ordner, um die Cache-Lokalität zu verbessern
+2. **Entwurfsmodus aktivieren**: Markieren Sie unvollständige Dokumente mit `draft: true`, um sie von Produktions-Builds auszuschließen
+3. **Bilder optimieren**: Verwenden Sie Next.js Image-Optimierung für Screenshots und Diagramme
+4. **Build-Zeiten überwachen**: Beobachten Sie die Leistungsprotokolle während der Entwicklung
+
+## Entwicklungsmodus-Funktionen
+
+### Leistungsprotokollierung
+
+Wenn Sie `npm run dev` ausführen, sehen Sie detaillierte Leistungsmetriken:
+
+```
+⏱️  getAllDocs(v1.0.0): 234.56ms
+⏱️  getDocBySlug(getting-started): 12.34ms
+💾 Memory Usage: { rss: '156MB', heapTotal: '89MB', heapUsed: '67MB' }
+```
+
+### Debug-Dienstprogramme
+
+Das System enthält hilfreiche Debugging-Tools (nur Dev-Modus):
+
+- **PerfTimer**: Dauer von Operationen messen
+- **logCacheOperation**: Cache-Treffer/Fehlschläge verfolgen
+- **logMemoryUsage**: Speichernutzung überwachen
+- **debugLog**: Komplexe Objekte schön drucken
+
+## Produktionsoptimierungen
+
+### Statische Seitenerstellung (SSG)
+
+Alle Dokumentationsseiten werden zur Build-Zeit vorgerendert:
+
+- Null Server-Side Rendering Overhead
+- Sofortige Seitenladezeiten
+- Exzellente SEO-Leistung
+- CDN-freundliche statische Assets
+
+### Bundle-Optimierung
+
+- Server-Komponenten standardmäßig (minimales JavaScript)
+- Client-Komponenten nur wo nötig (Tabs, Theme-Switcher)
+- Automatisches Code-Splitting pro Route
+- Tree-Shaking von ungenutzten Abhängigkeiten
+
+## Leistung überwachen
+
+### Build-Analyse
+
+Überwachen Sie Ihre Build-Ausgabe auf Leistungserkenntnisse:
+
+```bash
+npm run build
+```
+
+Achten Sie auf:
+- Generierungszeit statischer Seiten
+- Anzahl generierter Seiten
+- Warnungen zur Bundle-Größe
+
+### Entwicklungsmetriken
+
+Beobachten Sie während der Entwicklung die Konsole auf:
+- Cache-Treffer/Fehlschlag-Verhältnisse (sollten sich mit der Zeit verbessern)
+- Dateioparationszeiten (langsame Operationen identifizieren)
+- Speichernutzungsmuster (Speicherlecks erkennen)
+
+## Best Practices
+
+1. **Dateien organisiert halten**: Logische Ordnerstruktur verbessert Caching
+2. **Frontmatter weise nutzen**: Nur notwendige Metadaten hinzufügen
+3. **Inhalte optimieren**: Große Dateien (>1MB) sollten aufgeteilt werden
+4. **Cache überwachen**: Hohe Fehlraten weisen auf Caching-Probleme hin
+5. **Saubere Builds**: Gelegentlich `.next/` für frische Builds löschen
+
+## Fehlerbehebung
+
+### Langsame Build-Zeiten
+
+Wenn Builds langsam sind:
+
+1. Prüfen Sie auf extrem große MDX-Dateien (>5MB)
+2. Reduzieren Sie die Anzahl der gleichzeitig generierten Seiten
+3. Cache leeren: `.next/` und `node_modules/.cache/` löschen
+4. Abhängigkeiten auf neueste Versionen aktualisieren
+
+### Hot Reload funktioniert nicht
+
+Wenn Änderungen nicht reflektiert werden:
+
+1. Prüfen Sie, ob Sie im Entwicklungsmodus sind (`npm run dev`)
+2. Suchen Sie nach Fehlern in der Browser-Konsole
+3. Überprüfen Sie, ob der `/api/mdx-watch` Endpunkt antwortet
+4. Hard Refresh des Browsers (Cmd+Shift+R oder Ctrl+Shift+R)
+
+### Speicherprobleme
+
+Bei hoher Speichernutzung:
+
+1. Prüfen Sie auf Zirkelbezüge in der Dokumentation
+2. Überwachen Sie die Cache-Größe mit `getCacheStats()`
+3. Reduzieren Sie `CACHE_TTL` in `lib/mdx-cache.ts`
+4. Leeren Sie Caches manuell mit `clearAllCaches()`

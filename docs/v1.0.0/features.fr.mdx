@@ -1,0 +1,197 @@
+---
+title: Fonctionnalités
+description: Explorez toutes les fonctionnalités de la plateforme de documentation Specra
+sidebar_position: 4
+icon: scroll-text
+---
+
+## Fonctionnalités de contenu
+
+### Prise en charge de MDX
+
+Rédigez la documentation en MDX—Markdown avec des composants React intégrés.
+
+```mdx
+# Bonjour le monde
+
+Ceci est du **Markdown** avec un <Badge variant="success">composant React</Badge> !
+```
+
+<Callout type="tip">
+MDX vous permet de créer une documentation interactive et dynamique qui va au-delà du texte statique.
+</Callout>
+
+### Coloration syntaxique
+
+Les blocs de code bénéficient automatiquement de la coloration syntaxique avec numéros de ligne :
+
+```typescript
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+function greetUser(user: User): string {
+  return `Hello, ${user.name}!`;
+}
+```
+
+Les langages pris en charge incluent JavaScript, TypeScript, Python, Bash, JSON, CSS et bien d'autres.
+
+### Équations mathématiques
+
+Rendez des équations mathématiques en utilisant KaTeX :
+
+En ligne : <Math>{"E = mc^2"}</Math>
+
+Bloc :
+<Math block>
+  {"\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}"}
+</Math>
+
+### Diagrammes Mermaid
+
+Créez des diagrammes à partir de texte en utilisant Mermaid :
+
+<Mermaid
+  chart={`
+    graph LR
+      A[Écrire MDX] --> B[Construire]
+      B --> C[Déployer]
+      C --> D[Les utilisateurs lisent]
+  `}
+  caption="Flux de documentation"
+/>
+
+## Fonctionnalités de navigation
+
+### Barre latérale automatique
+
+La barre latérale est générée automatiquement à partir de votre structure de dossiers. Utilisez `_category_.json` pour personnaliser :
+
+```json
+{
+  "label": "Guides",
+  "position": 2,
+  "collapsible": true,
+  "collapsed": false
+}
+```
+
+### Table des matières
+
+Une table des matières flottante est générée automatiquement à partir de vos titres. Elle met en évidence la section actuelle lorsque vous faites défiler.
+
+### Fil d'Ariane
+
+La navigation par fil d'Ariane aide les utilisateurs à comprendre leur emplacement dans la hiérarchie de la documentation.
+
+### Sélecteur de version
+
+Prise en charge de plusieurs versions de documentation avec commutation facile :
+
+- `/docs/v1.0.0/getting-started`
+- `/docs/v2.0.0/getting-started`
+- `/docs/next/getting-started` (non publié)
+
+## Recherche
+
+### Recherche en texte intégral
+
+Propulsé par Meilisearch pour des résultats de recherche instantanés et tolérants aux fautes de frappe.
+
+- **Raccourci clavier** : Appuyez sur `⌘K` ou `Ctrl+K` pour ouvrir la recherche
+- **Tolérance aux fautes de frappe** : Trouve des résultats même avec des fautes d'orthographe
+- **Résultats surlignés** : Voyez où votre requête correspond
+
+### Indexation de recherche
+
+La documentation est automatiquement indexée au moment de la construction pour une recherche rapide.
+
+## Thème et style
+
+### Mode sombre
+
+Mode sombre automatique qui respecte les préférences du système :
+
+- Mode clair
+- Mode sombre
+- Préférence système (auto)
+
+Basculez avec le bouton dans l'en-tête.
+
+### Design personnalisable
+
+Tout le style est basé sur des variables CSS et Tailwind, ce qui facilite la personnalisation :
+
+```css
+:root {
+  --primary: oklch(0.55 0.22 264.376);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+}
+```
+
+## Composants
+
+### Bibliothèque de composants riche
+
+Composants intégrés pour les modèles de documentation courants :
+
+<CardGrid cols={3}>
+  <Card icon="message-square" title="Callouts" description="Alertes d'info, avertissement, conseil, erreur" />
+  <Card icon="layers" title="Onglets" description="Sections de contenu par onglets" />
+  <Card icon="list" title="Étapes" description="Guides étape par étape" />
+  <Card icon="chevrons-up-down" title="Accordéon" description="Contenu pliable" />
+  <Card icon="grid" title="Cartes" description="Cartes de fonctionnalités avec icônes" />
+  <Card icon="code" title="Blocs de code" description="Code avec coloration syntaxique" />
+</CardGrid>
+
+Voir la section [Composants](/docs/v1.0.0/components) pour la documentation sur chaque composant.
+
+## Expérience développeur
+
+### Rechargement à chaud
+
+Les modifications apportées aux fichiers MDX sont instantanément reflétées sans rafraîchissement complet de la page.
+
+### Validation Frontmatter
+
+Les champs Frontmatter sont validés au moment de la construction pour détecter les erreurs tôt.
+
+### Optimisation SEO
+
+Balises méta automatiques, images OpenGraph et données structurées à partir du frontmatter :
+
+- Balises de titre et de description
+- Cartes OpenGraph et Twitter
+- URL canoniques
+- Génération de plan de site
+
+### Temps de lecture
+
+Calcul automatique et affichage du temps de lecture estimé pour chaque page.
+
+## Fonctionnalités de production
+
+### Génération statique
+
+Toutes les pages sont pré-rendues au moment de la construction pour une performance maximale :
+
+- Zéro JavaScript requis pour le contenu
+- Compatible avec la mise en cache en périphérie
+- Temps rapide jusqu'au premier octet (TTFB)
+
+### Performance
+
+- Score Lighthouse : 90+ (bureau)
+- Images chargées paresseusement avec Next.js Image
+- Découpage de code pour les composants
+
+### Accessibilité
+
+- Navigation au clavier
+- Prise en charge des lecteurs d'écran
+- Prise en charge du contraste élevé
+- Gestion du focus

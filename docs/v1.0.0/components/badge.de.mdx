@@ -1,0 +1,65 @@
+---
+title: Abzeichen (Badge)
+description: Zeigen Sie Statusindikatoren und Labels mit gestylten Abzeichen an
+sidebar_position: 2
+---
+
+Abzeichen (Badges) sind kleine Statusindikatoren, die wichtige Informationen, Kategorien oder Status hervorheben.
+
+## Verwendung
+
+```mdx
+<Badge>Standard</Badge>
+<Badge variant="success">Erfolg</Badge>
+<Badge variant="warning">Warnung</Badge>
+<Badge variant="error">Fehler</Badge>
+<Badge variant="info">Info</Badge>
+```
+
+## Live-Beispiel
+
+<Badge>Standard</Badge> <Badge variant="success">Erfolg</Badge> <Badge variant="warning">Warnung</Badge> <Badge variant="error">Fehler</Badge> <Badge variant="info">Info</Badge>
+
+## Varianten
+
+### Standard
+<Badge>Standard Abzeichen</Badge>
+
+Wird für neutrale Informationen oder allgemeine Labels verwendet.
+
+### Erfolg
+<Badge variant="success">Abgeschlossen</Badge>
+
+Zeigt erfolgreiche Operationen, aktiven Status oder positive Ergebnisse an.
+
+### Warnung
+<Badge variant="warning">Ausstehend</Badge>
+
+Hebt Elemente hervor, die Aufmerksamkeit erfordern oder sich in einem Übergangszustand befinden.
+
+### Fehler
+<Badge variant="error">Fehlgeschlagen</Badge>
+
+Zeigt Fehler, kritische Probleme oder negativen Status an.
+
+### Info
+<Badge variant="info">Neu</Badge>
+
+Bietet informativen Kontext oder hebt neue Funktionen hervor.
+
+## Props
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `children` | `ReactNode` | erforderlich | Abzeichen-Textinhalt |
+| `variant` | `"default" \| "success" \| "warning" \| "error" \| "info"` | `"default"` | Farbvariante |
+
+## Häufige Muster
+
+Verwenden Sie Abzeichen inline mit Text, um den Status anzuzeigen:
+
+```mdx
+Diese Funktion ist <Badge variant="success">Stabil</Badge> und bereit für die Produktion.
+```
+
+Diese Funktion ist <Badge variant="success">Stabil</Badge> und bereit für die Produktion.

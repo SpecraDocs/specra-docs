@@ -1,0 +1,197 @@
+---
+title: Características
+description: Explore todas las características de la plataforma de documentación Specra
+sidebar_position: 4
+icon: scroll-text
+---
+
+## Características de contenido
+
+### Soporte MDX
+
+Escriba documentación en MDX: Markdown con componentes React integrados.
+
+```mdx
+# Hola Mundo
+
+¡Esto es **Markdown** con un <Badge variant="success">componente React</Badge>!
+```
+
+<Callout type="tip">
+MDX le permite crear documentación interactiva y dinámica que va más allá del texto estático.
+</Callout>
+
+### Resaltado de sintaxis
+
+Los bloques de código obtienen automáticamente resaltado de sintaxis con números de línea:
+
+```typescript
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+function greetUser(user: User): string {
+  return `Hello, ${user.name}!`;
+}
+```
+
+Los lenguajes admitidos incluyen JavaScript, TypeScript, Python, Bash, JSON, CSS y muchos más.
+
+### Ecuaciones matemáticas
+
+Renderice ecuaciones matemáticas usando KaTeX:
+
+En línea: <Math>{"E = mc^2"}</Math>
+
+Bloque:
+<Math block>
+  {"\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}"}
+</Math>
+
+### Diagramas Mermaid
+
+Cree diagramas a partir de texto usando Mermaid:
+
+<Mermaid
+  chart={`
+    graph LR
+      A[Escribir MDX] --> B[Construir]
+      B --> C[Desplegar]
+      C --> D[Usuarios leen Docs]
+  `}
+  caption="Flujo de trabajo de documentación"
+/>
+
+## Características de navegación
+
+### Barra lateral automática
+
+La barra lateral se genera automáticamente a partir de su estructura de carpetas. Use `_category_.json` para personalizar:
+
+```json
+{
+  "label": "Guías",
+  "position": 2,
+  "collapsible": true,
+  "collapsed": false
+}
+```
+
+### Tabla de contenidos
+
+Se genera automáticamente una tabla de contenidos flotante a partir de sus encabezados. Resalta la sección actual a medida que se desplaza.
+
+### Migas de pan
+
+La navegación por migas de pan ayuda a los usuarios a comprender su ubicación en la jerarquía de documentación.
+
+### Selector de versiones
+
+Soporte para múltiples versiones de documentación con cambio fácil:
+
+- `/docs/v1.0.0/getting-started`
+- `/docs/v2.0.0/getting-started`
+- `/docs/next/getting-started` (no publicado)
+
+## Búsqueda
+
+### Búsqueda de texto completo
+
+Impulsado por Meilisearch para resultados de búsqueda instantáneos y tolerantes a errores tipográficos.
+
+- **Atajo de teclado**: Presione `⌘K` o `Ctrl+K` para abrir la búsqueda
+- **Tolerancia a errores tipográficos**: Encuentra resultados incluso con errores ortográficos
+- **Resultados resaltados**: Vea dónde coincide su consulta
+
+### Indexación de búsqueda
+
+La documentación se indexa automáticamente en tiempo de compilación para una búsqueda rápida.
+
+## Tema y estilo
+
+### Modo oscuro
+
+Modo oscuro automático que respeta las preferencias del sistema:
+
+- Modo claro
+- Modo oscuro
+- Preferencia del sistema (auto)
+
+Cambie con el botón en el encabezado.
+
+### Diseño personalizable
+
+Todo el estilo se basa en variables CSS y Tailwind, lo que facilita la personalización:
+
+```css
+:root {
+  --primary: oklch(0.55 0.22 264.376);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+}
+```
+
+## Componentes
+
+### Biblioteca rica de componentes
+
+Componentes integrados para patrones de documentación comunes:
+
+<CardGrid cols={3}>
+  <Card icon="message-square" title="Callouts" description="Alertas de información, advertencia, consejo, error" />
+  <Card icon="layers" title="Pestañas" description="Secciones de contenido con pestañas" />
+  <Card icon="list" title="Pasos" description="Guías paso a paso" />
+  <Card icon="chevrons-up-down" title="Acordeón" description="Contenido plegable" />
+  <Card icon="grid" title="Tarjetas" description="Tarjetas de características con iconos" />
+  <Card icon="code" title="Bloques de código" description="Código con resaltado de sintaxis" />
+</CardGrid>
+
+Vea la sección [Componentes](/docs/v1.0.0/components) para documentación sobre cada componente.
+
+## Experiencia del desarrollador
+
+### Recarga en caliente
+
+Los cambios en los archivos MDX se reflejan instantáneamente sin una actualización completa de la página.
+
+### Validación de Frontmatter
+
+Los campos de Frontmatter se validan en tiempo de compilación para detectar errores temprano.
+
+### Optimización SEO
+
+Etiquetas meta automáticas, imágenes OpenGraph y datos estructurados de frontmatter:
+
+- Etiquetas de título y descripción
+- Tarjetas OpenGraph y Twitter
+- URLs canónicas
+- Generación de mapa del sitio
+
+### Tiempo de lectura
+
+Cálculo automático y visualización del tiempo de lectura estimado para cada página.
+
+## Características de producción
+
+### Generación estática
+
+Todas las páginas se pre-renderizan en tiempo de compilación para un rendimiento máximo:
+
+- Cero JavaScript requerido para contenido
+- Compatible con almacenamiento en caché en el borde
+- Rápido tiempo hasta el primer byte (TTFB)
+
+### Rendimiento
+
+- Puntuación Lighthouse: 90+ (escritorio)
+- Imágenes cargadas de forma diferida con Next.js Image
+- División de código para componentes
+
+### Accesibilidad
+
+- Navegación por teclado
+- Soporte para lectores de pantalla
+- Soporte de alto contraste
+- Gestión de foco

@@ -1,0 +1,319 @@
+---
+title: Descripción General de la Configuración
+description: Guía completa para configurar su sitio de documentación Specra
+sidebar_position: 1
+icon: settings
+tab_group: guides
+---
+
+# Descripción General de la Configuración
+
+Specra utiliza un único archivo de configuración, `specra.config.json`, ubicado en la raíz de su proyecto. Este archivo controla todo, desde los metadatos del sitio hasta la navegación, los temas y la configuración de implementación.
+
+## Inicio Rápido
+
+Aquí hay una configuración mínima para comenzar:
+
+```json
+{
+  "site": {
+    "title": "Mi Documentación",
+    "description": "Documentación para mi proyecto",
+    "url": "https://docs.ejemplo.com"
+  }
+}
+```
+
+¡Eso es todo! Specra completa los valores predeterminados sensatos para todo lo demás.
+
+## Estructura de Configuración
+
+El archivo de configuración está organizado en secciones lógicas:
+
+<CardGrid cols={2}>
+  <Card
+    icon="globe"
+    title="Configuración del Sitio"
+    description="Metadatos básicos del sitio, marca y URL"
+    href="/docs/v1.0.0/configuration/site-config"
+  />
+  <Card
+    icon="layout"
+    title="Navegación"
+    description="Barra lateral, migas de pan, tabla de contenido y grupos de pestañas"
+    href="/docs/v1.0.0/configuration/navigation"
+  />
+  <Card
+    icon="rocket"
+    title="Implementación"
+    description="Configuraciones de implementación específicas de la plataforma"
+    href="/docs/v1.0.0/configuration/deployment-config"
+  />
+  <Card
+    icon="sliders"
+    title="Opciones Avanzadas"
+    description="Análisis, búsqueda, características y variables de entorno"
+    href="/docs/v1.0.0/configuration/advanced"
+  />
+</CardGrid>
+
+## Ejemplo Completo
+
+Aquí hay una configuración completa que muestra todas las opciones disponibles:
+
+```json
+{
+  "$schema": "./node_modules/specra/config/specra.config.schema.json",
+  "site": {
+    "title": "Mis Docs",
+    "description": "Documentación completa",
+    "url": "https://docs.ejemplo.com",
+    "baseUrl": "/",
+    "language": "es",
+    "organizationName": "Mi Empresa",
+    "projectName": "mi-proyecto",
+    "activeVersion": "v1.0.0",
+    "logo": "/logo.svg",
+    "favicon": "/favicon.ico",
+    "hideTitle": false,
+    "hideLogo": false
+  },
+  "theme": {
+    "defaultMode": "system",
+    "respectPrefersColorScheme": true,
+    "primaryColor": "#3b82f6",
+    "customCss": "/custom.css"
+  },
+  "navigation": {
+    "showSidebar": true,
+    "collapsibleSidebar": true,
+    "showBreadcrumbs": true,
+    "showTableOfContents": true,
+    "tocPosition": "right",
+    "tocMaxDepth": 3,
+    "tabGroups": [
+      {
+        "id": "guides",
+        "label": "Guías",
+        "icon": "book-open"
+      },
+      {
+        "id": "api",
+        "label": "Referencia API",
+        "icon": "zap"
+      }
+    ]
+  },
+  "social": {
+    "github": "https://github.com/username/repo",
+    "twitter": "https://twitter.com/username",
+    "discord": "https://discord.gg/invite",
+    "linkedin": "https://linkedin.com/company/name",
+    "youtube": "https://youtube.com/@channel",
+    "custom": [
+      {
+        "label": "Sitio web",
+        "url": "https://example.com",
+        "icon": "globe"
+      }
+    ]
+  },
+  "search": {
+    "enabled": true,
+    "placeholder": "Buscar documentación...",
+    "provider": "meilisearch",
+    "meilisearch": {
+      "host": "https://search.example.com",
+      "apiKey": "search-key",
+      "indexName": "docs"
+    }
+  },
+  "analytics": {
+    "googleAnalytics": "G-XXXXXXXXXX",
+    "googleTagManager": "GTM-XXXXXXX",
+    "plausible": "docs.example.com"
+  },
+  "footer": {
+    "copyright": "© 2024 Mi Empresa. Todos los derechos reservados.",
+    "customContent": "<p>HTML personalizado aquí</p>",
+    "links": [
+      {
+        "title": "Producto",
+        "items": [
+          { "label": "Características", "href": "/features" },
+          { "label": "Precios", "href": "/pricing" }
+        ]
+      }
+    ]
+  },
+  "banner": {
+    "enabled": true,
+    "message": "📢 ¡La versión 2.0 llegará pronto!",
+    "type": "info",
+    "dismissible": true
+  },
+  "features": {
+    "editUrl": "https://github.com/username/repo/edit/main/docs",
+    "showLastUpdated": true,
+    "showReadingTime": true,
+    "showAuthors": false,
+    "showTags": true,
+    "versioning": true,
+    "i18n": false
+  },
+  "env": {
+    "API_BASE_URL": "https://api.example.com",
+    "API_VERSION": "v1",
+    "CDN_URL": "https://cdn.example.com"
+  },
+  "deployment": {
+    "target": "vercel",
+    "basePath": "",
+    "customDomain": false
+  }
+}
+```
+
+## Soporte TypeScript
+
+Para proyectos TypeScript, puede usar archivos de configuración `.ts` o `.mts`:
+
+```typescript
+// specra.config.ts
+import type { SpecraConfig } from 'specra'
+
+const config: SpecraConfig = {
+  site: {
+    title: 'Mi Documentación',
+    description: 'Construido con Specra',
+  },
+  // ... resto de la config
+}
+
+export default config
+```
+
+## Autocompletado IDE
+
+El archivo de configuración incluye una propiedad `$schema` que habilita el autocompletado en VS Code y otros editores:
+
+```json
+{
+  "$schema": "./node_modules/specra/config/specra.config.schema.json",
+  "site": {
+    // ¡El autocompletado funciona aquí!
+  }
+}
+```
+
+Cuando escribe, su editor sugerirá las opciones disponibles y mostrará descripciones.
+
+## Variables de Entorno
+
+Puede usar variables de entorno en su configuración:
+
+```json
+{
+  "search": {
+    "meilisearch": {
+      "host": "${MEILISEARCH_HOST}",
+      "apiKey": "${MEILISEARCH_API_KEY}"
+    }
+  }
+}
+```
+
+Luego establézcalas:
+
+```bash
+# .env.local
+MEILISEARCH_HOST=https://search.example.com
+MEILISEARCH_API_KEY=your-key
+```
+
+<Callout type="warning">
+Nunca confirme claves API confidenciales en el control de versiones. Use variables de entorno en su lugar.
+</Callout>
+
+## Validación de Configuración
+
+Specra valida su configuración al inicio y muestra errores útiles si algo está mal:
+
+```
+❌ Error de configuración en specra.config.json:
+   - site.url debe ser una URL válida
+   - navigation.tocMaxDepth debe estar entre 1 y 6
+```
+
+Corrija los errores y reinicie su servidor de desarrollo.
+
+## Valores Predeterminados
+
+Si omite campos opcionales, Specra usa estos valores predeterminados:
+
+| Campo | Valor Predeterminado |
+|-------|----------------------|
+| `site.baseUrl` | `"/"` |
+| `site.language` | `"en"` |
+| `theme.defaultMode` | `"system"` |
+| `theme.respectPrefersColorScheme` | `true` |
+| `navigation.showSidebar` | `true` |
+| `navigation.collapsibleSidebar` | `true` |
+| `navigation.showBreadcrumbs` | `true` |
+| `navigation.showTableOfContents` | `true` |
+| `navigation.tocPosition` | `"right"` |
+| `navigation.tocMaxDepth` | `3` |
+| `search.enabled` | `false` |
+| `features.showLastUpdated` | `true` |
+| `features.showReadingTime` | `true` |
+| `features.versioning` | `true` |
+| `deployment.target` | `"vercel"` |
+
+## Múltiples Entornos
+
+Cree configuraciones específicas del entorno:
+
+```txt
+├── specra.config.json          # Config base
+├── specra.config.development.json
+├── specra.config.staging.json
+└── specra.config.production.json
+```
+
+Cargue la correcta según `NODE_ENV`:
+
+```javascript
+// Cargar config según el entorno
+const config = require(`./specra.config.${process.env.NODE_ENV}.json`)
+```
+
+## Próximos Pasos
+
+Sumérjase en secciones de configuración específicas:
+
+<CardGrid cols={2}>
+  <Card
+    icon="globe"
+    title="Configuración del Sitio"
+    description="Configurar metadatos del sitio y marca"
+    href="/docs/v1.0.0/configuration/site-config"
+  />
+  <Card
+    icon="layout"
+    title="Navegación"
+    description="Configurar navegación y grupos de pestañas"
+    href="/docs/v1.0.0/configuration/navigation"
+  />
+  <Card
+    icon="rocket"
+    title="Implementación"
+    description="Configurar ajustes de implementación"
+    href="/docs/v1.0.0/configuration/deployment-config"
+  />
+  <Card
+    icon="sliders"
+    title="Avanzado"
+    description="Análisis, búsqueda y más"
+    href="/docs/v1.0.0/configuration/advanced"
+  />
+</CardGrid>

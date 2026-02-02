@@ -1,0 +1,312 @@
+---
+title: Callout
+description: Resalte información importante con cuadros de llamada estilizados
+sidebar_position: 4
+icon: alert-circle
+tab_group: components
+---
+
+# Callout
+
+Los callouts llaman la atención sobre información importante en su documentación. Vienen en diferentes estilos para transmitir diferentes tipos de mensajes, desde consejos útiles hasta advertencias críticas.
+
+## Uso básico
+
+<Tabs defaultValue="Preview">
+  <Tab label="Vista previa">
+<Callout type="info">
+  Esta es información útil para el lector.
+</Callout>
+  </Tab>
+  <Tab label="Código">
+```mdx
+<Callout type="info">
+  Esta es información útil para el lector.
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+## Tipos de Callout
+
+Specra incluye siete tipos de callout, cada uno con un estilo distinto:
+
+### Info
+
+<Tabs defaultValue="Preview">
+  <Tab label="Vista previa">
+<Callout type="info">
+  Proporciona contexto adicional o información útil que mejora la comprensión.
+</Callout>
+  </Tab>
+  <Tab label="Código">
+```mdx
+<Callout type="info">
+  Proporciona contexto adicional o información útil.
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+### Nota (Note)
+
+<Tabs defaultValue="Preview">
+  <Tab label="Vista previa">
+<Callout type="note">
+  Resalta detalles importantes que el lector debe conocer.
+</Callout>
+  </Tab>
+  <Tab label="Código">
+```mdx
+<Callout type="note">
+  Resalta detalles importantes que el lector debe conocer.
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+### Consejo (Tip)
+
+<Tabs defaultValue="Preview">
+  <Tab label="Vista previa">
+<Callout type="tip">
+  Ofrece sugerencias para un mejor uso o mejores prácticas.
+</Callout>
+  </Tab>
+  <Tab label="Código">
+```mdx
+<Callout type="tip">
+  Ofrece sugerencias para un mejor uso o mejores prácticas.
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+### Advertencia (Warning)
+
+<Tabs defaultValue="Preview">
+  <Tab label="Vista previa">
+<Callout type="warning">
+  Alerta a los usuarios sobre posibles problemas o cambios importantes.
+</Callout>
+  </Tab>
+  <Tab label="Código">
+```mdx
+<Callout type="warning">
+  Alerta a los usuarios sobre posibles problemas o cambios importantes.
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+### Éxito (Success)
+
+<Tabs defaultValue="Preview">
+  <Tab label="Vista previa">
+<Callout type="success">
+  Confirma resultados positivos o acciones completadas con éxito.
+</Callout>
+  </Tab>
+  <Tab label="Código">
+```mdx
+<Callout type="success">
+  Confirma resultados positivos o acciones completadas con éxito.
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+### Error
+
+<Tabs defaultValue="Preview">
+  <Tab label="Vista previa">
+<Callout type="error">
+  Resalta problemas críticos o cosas que los usuarios deben evitar.
+</Callout>
+  </Tab>
+  <Tab label="Código">
+```mdx
+<Callout type="error">
+  Resalta problemas críticos o cosas que los usuarios deben evitar.
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+### Peligro (Danger)
+
+<Tabs defaultValue="Preview">
+  <Tab label="Vista previa">
+<Callout type="danger">
+  Advierte sobre acciones potencialmente destructivas o irreversibles.
+</Callout>
+  </Tab>
+  <Tab label="Código">
+```mdx
+<Callout type="danger">
+  Advierte sobre acciones potencialmente destructivas o irreversibles.
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+## Props
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `type` | `string` | `"info"` | Estilo de callout: `info`, `note`, `tip`, `warning`, `success`, `error`, o `danger` |
+| `children` | `ReactNode` | Requerido | El contenido dentro del callout |
+
+## Ejemplos avanzados
+
+### Contenido de varias líneas
+
+Los callouts pueden contener cualquier contenido MDX, incluido texto formateado, listas y código:
+
+<Tabs defaultValue="Preview">
+  <Tab label="Vista previa">
+<Callout type="warning">
+  **Consideraciones importantes antes de implementar:**
+
+  - Respalde su base de datos
+  - Pruebe primero en el entorno de staging
+  - Notifique a su equipo sobre el tiempo de inactividad
+
+  Ejecute `npm run db:backup` para crear una copia de seguridad.
+</Callout>
+  </Tab>
+  <Tab label="Código">
+```mdx
+<Callout type="warning">
+  **Consideraciones importantes antes de implementar:**
+
+  - Respalde su base de datos
+  - Pruebe primero en el entorno de staging
+  - Notifique a su equipo sobre el tiempo de inactividad
+
+  Ejecute `npm run db:backup` para crear una copia de seguridad.
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+### Componentes anidados
+
+Puede anidar otros componentes dentro de los callouts:
+
+<Tabs defaultValue="Preview">
+  <Tab label="Vista previa">
+<Callout type="info">
+  **Consejo profesional:** Use bloques de código para mostrar ejemplos
+
+  <Tabs defaultValue="js">
+    <Tab label="JavaScript">
+      console.log("¡Hola!")
+    </Tab>
+    <Tab label="Python">
+      print("¡Hola!")
+    </Tab>
+  </Tabs>
+</Callout>
+  </Tab>
+  <Tab label="Código">
+```mdx
+<Callout type="info">
+  **Consejo profesional:** Use bloques de código para mostrar ejemplos
+
+  <Tabs defaultValue="js">
+    <Tab label="JavaScript">
+      console.log("¡Hola!")
+    </Tab>
+    <Tab label="Python">
+      print("¡Hola!")
+    </Tab>
+  </Tabs>
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+## Alertas estilo GitHub
+
+¿Prefiere la sintaxis Markdown? Specra también admite la sintaxis de alerta estilo GitHub usando blockquotes:
+
+<Tabs defaultValue="Preview">
+  <Tab label="Vista previa">
+> [!NOTE]
+> Esta es una nota usando sintaxis estilo GitHub.
+
+> [!TIP]
+> Este es un consejo usando sintaxis de blockquote.
+
+> [!WARNING]
+> Esta es una alerta de advertencia.
+  </Tab>
+  <Tab label="Código">
+```markdown
+> [!NOTE]
+> Esta es una nota usando sintaxis estilo GitHub.
+
+> [!TIP]
+> Este es un consejo usando sintaxis de blockquote.
+
+> [!WARNING]
+> Esta es una alerta de advertencia.
+```
+  </Tab>
+</Tabs>
+
+**Tipos de alerta admitidos:**
+- `[!NOTE]` - Igual que type="note"
+- `[!TIP]` - Igual que type="tip"
+- `[!IMPORTANT]` - Igual que type="warning"
+- `[!WARNING]` - Igual que type="warning"
+- `[!CAUTION]` - Igual que type="danger"
+
+## Cuándo usar cada tipo
+
+**Info** - Contexto adicional que mejora la comprensión
+- "También puede lograr esto usando la CLI"
+- "Esta característica está disponible en v2.0 y posteriores"
+
+**Note** - Información importante que no debe omitirse
+- "Esta configuración afecta a todos los usuarios de su organización"
+- "Los cambios surten efecto después del reinicio del servidor"
+
+**Tip** - Mejores prácticas y sugerencias útiles
+- "Para un mejor rendimiento, habilite el almacenamiento en caché"
+- "Use TypeScript para un mejor autocompletado"
+
+**Warning** - Problemas potenciales o cambios importantes
+- "Esto modificará el esquema de su base de datos"
+- "Obsoleto en v3.0, use newMethod() en su lugar"
+
+**Success** - Confirmaciones positivas
+- "¡Configuración completa! Su sitio está listo"
+- "Todas las pruebas pasaron con éxito"
+
+**Error** - Problemas críticos a evitar
+- "No exponga su clave API en el código del cliente"
+- "Esta operación no se puede deshacer"
+
+**Danger** - Acciones destructivas o irreversibles
+- "Esto eliminará permanentemente todos los datos"
+- "Continuar revocará todos los tokens de acceso"
+
+## Accesibilidad
+
+Los callouts son semánticos y accesibles:
+
+- Utiliza roles ARIA apropiados
+- Amigable para lectores de pantalla
+- Navegable por teclado
+- Cumple con contraste de color (WCAG AA)
+- Los iconos son decorativos con texto alternativo adecuado
+
+## Componentes relacionados
+
+<CardGrid cols={3}>
+  <Card icon="square" title="Card" href="/docs/v1.0.0/components/card" />
+  <Card icon="message-square" title="Badge" href="/docs/v1.0.0/components/badge" />
+  <Card icon="layers" title="Acordeón" href="/docs/v1.0.0/components/accordion" />
+</CardGrid>

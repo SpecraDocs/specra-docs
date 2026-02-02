@@ -1,0 +1,89 @@
+---
+title: Karte (Card)
+description: Zeigen Sie Inhalte in gestalteten Kartencontainern mit optionalen Links an
+sidebar_position: 5
+---
+
+Karten erstellen visuell abgegrenzte Inhaltsblöcke, perfekt für Feature-Listen, Navigationslinks oder hervorgehobene Inhalte.
+
+## Verwendung
+
+```mdx
+<Card 
+  title="Erste Schritte" 
+  description="Lernen Sie die Grundlagen unserer Plattform"
+  href="/docs/v1.0.0/getting-started"
+/>
+```
+
+## Live-Beispiele
+
+### Einfache Karte
+
+<Card 
+  title="Dokumentation" 
+  description="Lesen Sie die vollständige Dokumentation für detaillierte Anleitungen und API-Referenzen."
+/>
+
+### Verlinkte Karte
+
+<Card 
+  title="Erste Schritte" 
+  description="Beginnen Sie Ihre Reise mit unserem Schnellstart-Leitfaden"
+  href="/docs/v1.0.0/getting-started"
+/>
+
+### Karte mit Icon
+
+<Card 
+  icon="book-open"
+  title="Anleitungen" 
+  description="Schritt-für-Schritt-Tutorials und Best Practices"
+/>
+
+### Externer Link
+
+<Card 
+  title="GitHub Repository" 
+  description="Quellcode ansehen und mitwirken"
+  href="https://github.com"
+  external
+/>
+
+## Karten-Raster
+
+Verwenden Sie `CardGrid`, um mehrere Karten in einem responsiven Rasterlayout anzuzeigen:
+
+```mdx
+<CardGrid cols={2}>
+  <Card title="Karte 1" description="Erste Karte" />
+  <Card title="Karte 2" description="Zweite Karte" />
+</CardGrid>
+```
+
+<CardGrid cols={2}>
+  <Card icon="rocket" title="Schnellstart" description="Starten Sie in 5 Minuten" href="/docs/v1.0.0/getting-started/quickstart" />
+  <Card icon="book" title="Anleitungen" description="Ausführliche Tutorials und Walkthroughs" href="/docs/v1.0.0/guides" />
+  <Card icon="code" title="API Referenz" description="Vollständige API-Dokumentation" />
+  <Card icon="github" title="GitHub" description="Am Projekt mitwirken" href="https://github.com" external />
+</CardGrid>
+
+## Props
+
+### Card
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `title` | `string` | erforderlich | Kartentitel |
+| `description` | `string` | - | Kartenbeschreibungstext |
+| `href` | `string` | - | Link-URL (macht Karte anklickbar) |
+| `icon` | `string \| ReactNode` | - | Lucide-Icon-Name oder eigenes Icon |
+| `external` | `boolean` | `false` | Öffnet Link in neuem Tab |
+| `children` | `ReactNode` | - | Eigener Inhalt |
+
+### CardGrid
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `children` | `ReactNode` | erforderlich | Kartenkomponenten |
+| `cols` | `1 \| 2 \| 3` | `2` | Anzahl der Spalten |

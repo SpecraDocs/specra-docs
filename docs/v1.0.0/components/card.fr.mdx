@@ -1,0 +1,89 @@
+---
+title: Carte (Card)
+description: Affichez du contenu dans des conteneurs de cartes stylisés avec des liens optionnels
+sidebar_position: 5
+---
+
+Les cartes créent des blocs de contenu visuellement distincts, parfaits pour les listes de fonctionnalités, les liens de navigation ou le contenu mis en évidence.
+
+## Utilisation
+
+```mdx
+<Card 
+  title="Démarrage" 
+  description="Apprenez les bases de notre plateforme"
+  href="/docs/v1.0.0/getting-started"
+/>
+```
+
+## Exemples en direct
+
+### Carte simple
+
+<Card 
+  title="Documentation" 
+  description="Lisez la documentation complète pour des guides détaillés et des références API."
+/>
+
+### Carte liée
+
+<Card 
+  title="Démarrage" 
+  description="Commencez votre voyage avec notre guide de démarrage rapide"
+  href="/docs/v1.0.0/getting-started"
+/>
+
+### Carte avec icône
+
+<Card 
+  icon="book-open"
+  title="Guides" 
+  description="Tutoriels étape par étape et meilleures pratiques"
+/>
+
+### Lien externe
+
+<Card 
+  title="Dépôt GitHub" 
+  description="Voir le code source et contribuer"
+  href="https://github.com"
+  external
+/>
+
+## Grille de cartes
+
+Utilisez `CardGrid` pour afficher plusieurs cartes dans une disposition en grille responsive :
+
+```mdx
+<CardGrid cols={2}>
+  <Card title="Carte 1" description="Première carte" />
+  <Card title="Carte 2" description="Deuxième carte" />
+</CardGrid>
+```
+
+<CardGrid cols={2}>
+  <Card icon="rocket" title="Démarrage rapide" description="Lancez-vous en 5 minutes" href="/docs/v1.0.0/getting-started/quickstart" />
+  <Card icon="book" title="Guides" description="Tutoriels approfondis et procédures pas à pas" href="/docs/v1.0.0/guides" />
+  <Card icon="code" title="Référence API" description="Documentation API complète" />
+  <Card icon="github" title="GitHub" description="Contribuer au projet" href="https://github.com" external />
+</CardGrid>
+
+## Props
+
+### Card
+
+| Prop | Type | Défaut | Description |
+|------|------|--------|-------------|
+| `title` | `string` | requis | Titre de la carte |
+| `description` | `string` | - | Texte de description de la carte |
+| `href` | `string` | - | URL du lien (rend la carte cliquable) |
+| `icon` | `string \| ReactNode` | - | Nom de l'icône Lucide ou icône personnalisée |
+| `external` | `boolean` | `false` | Ouvre le lien dans un nouvel onglet |
+| `children` | `ReactNode` | - | Contenu personnalisé |
+
+### CardGrid
+
+| Prop | Type | Défaut | Description |
+|------|------|--------|-------------|
+| `children` | `ReactNode` | requis | Composants de carte |
+| `cols` | `1 \| 2 \| 3` | `2` | Nombre de colonnes |

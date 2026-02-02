@@ -1,0 +1,103 @@
+---
+title: Bloque de código
+description: Muestre código con resaltado de sintaxis, números de línea y funcionalidad de copia
+sidebar_position: 6
+---
+
+Los bloques de código muestran código con resaltado de sintaxis, números de línea, un botón de copia y encabezados de nombre de archivo opcionales.
+
+## Uso
+
+Los bloques de código se crean automáticamente al usar bloques de código cercados con un especificador de lenguaje:
+
+````mdx
+```javascript
+const greeting = "¡Hola, mundo!";
+console.log(greeting);
+```
+````
+
+## Ejemplos en vivo
+
+### JavaScript
+
+```javascript
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+console.log(fibonacci(10)); // 55
+```
+
+### TypeScript
+
+```typescript
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+function greetUser(user: User): string {
+  return `¡Hola, ${user.name}!`;
+}
+```
+
+### Python
+
+```python
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+```
+
+### Bash
+
+```bash
+# Instalar dependencias
+npm install
+
+# Iniciar servidor de desarrollo
+npm run dev
+```
+
+### JSON
+
+```json
+{
+  "name": "my-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "react": "^19.0.0",
+    "next": "^16.0.0"
+  }
+}
+```
+
+## Características
+
+<Callout type="info">
+Los bloques de código incluyen resaltado de sintaxis automático para muchos lenguajes, incluidos JavaScript, TypeScript, Python, Bash, JSON, CSS y más.
+</Callout>
+
+- **Resaltado de sintaxis** - Detección y resaltado automático de lenguaje
+- **Números de línea** - Referencia fácil para líneas específicas
+- **Botón Copiar** - Copia de código con un clic
+- **Encabezado de nombre de archivo** - Visualización opcional del nombre del archivo
+
+## Lenguajes admitidos
+
+Los lenguajes comunes incluyen:
+- `javascript`, `typescript`, `jsx`, `tsx`
+- `python`, `ruby`, `go`, `rust`
+- `bash`, `shell`, `powershell`
+- `html`, `css`, `scss`
+- `json`, `yaml`, `toml`
+- `sql`, `graphql`
+- `markdown`, `mdx`

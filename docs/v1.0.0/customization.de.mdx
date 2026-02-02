@@ -1,0 +1,247 @@
+---
+title: Theming & Anpassung
+description: Passen Sie Farben, Schriftarten, Layouts und Stile an Ihre Marke an
+sidebar_position: 5
+icon: palette
+tab_group: guides
+---
+
+# Theming & Anpassung
+
+Machen Sie Specra zu Ihrem eigenen. Dieser Leitfaden deckt alles ab, von einfachen Farbänderungen bis hin zu komplett benutzerdefiniertem Styling.
+
+## Schnelle Anpassung
+
+Der schnellste Weg, Ihre Dokumente anzupassen, ist über die `specra.config.json`.
+
+### Markenfarben
+
+Setzen Sie Ihre Primärfarbe passend zu Ihrer Marke:
+
+```json
+{
+  "theme": {
+    "primaryColor": "#3b82f6"
+  }
+}
+```
+
+Specra generiert automatisch alle Farbvariationen (Hover-Zustände, Fokusringe usw.) aus diesem einzigen Wert.
+
+### Dark Mode Einstellungen
+
+Steuern Sie, wie der Dark Mode funktioniert:
+
+```json
+{
+  "theme": {
+    "defaultMode": "system",
+    "respectPrefersColorScheme": true
+  }
+}
+```
+
+**Optionen für `defaultMode`:**
+- `"system"` - Bevorzugung des Betriebssystems respektieren (empfohlen)
+- `"light"` - Immer im hellen Modus starten
+- `"dark"` - Immer im dunklen Modus starten
+
+Setzen Sie `respectPrefersColorScheme` auf `false`, um OS-Einstellungen zu ignorieren und nur Ihren Standard zu verwenden.
+
+### Logos
+
+Fügen Sie Ihr Logo für helle und dunkle Modi hinzu:
+
+```json
+{
+  "site": {
+    "logo": {
+      "light": "/logo-light.svg",
+      "dark": "/logo-dark.svg"
+    }
+  }
+}
+```
+
+Oder verwenden Sie ein einzelnes Logo für beide:
+
+```json
+{
+  "site": {
+    "logo": "/logo.svg"
+  }
+}
+```
+
+Platzieren Sie Logo-Dateien im `public/`-Verzeichnis.
+
+## Benutzerdefiniertes CSS
+
+Für tiefergehende Anpassungen fügen Sie benutzerdefiniertes CSS hinzu.
+
+### Methode 1: Benutzerdefinierte CSS-Datei
+
+Erstellen Sie eine CSS-Datei und referenzieren Sie sie in der Konfiguration:
+
+**1. Erstellen Sie `/public/custom.css`:**
+
+```css
+:root {
+  --font-heading: 'Inter', system-ui, sans-serif;
+  --border-radius: 12px;
+}
+
+.doc-content h1 {
+  font-size: 3rem;
+  color: var(--color-primary);
+}
+
+.sidebar {
+  background: linear-gradient(to bottom, #f8f9fa, #ffffff);
+}
+```
+
+**2. Referenzieren Sie in der Konfiguration ist:**
+
+```json
+{
+  "theme": {
+    "customCss": "/custom.css"
+  }
+}
+```
+
+### Methode 2: Globale Stile
+
+Bearbeiten Sie `app/globals.css` direkt für mehr Kontrolle:
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Ihre benutzerdefinierten Eigenschaften */
+    --radius: 0.75rem;
+  }
+}
+
+@layer components {
+  /* Ihre benutzerdefinierten Komponentenstile */
+  .custom-card {
+    @apply rounded-lg border border-gray-200 p-4;
+  }
+}
+```
+
+## CSS-Variablen Referenz
+
+Specra verwendet CSS-Variablen für das Theming. Überschreiben Sie diese, um das Aussehen anzupassen:
+
+### Farben
+
+```css
+:root {
+  /* Primäre Markenfarbe */
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-light: #dbeafe;
+
+  /* Hintergrundfarben */
+  --color-bg: #ffffff;
+  --color-bg-secondary: #f9fafb;
+  --color-bg-tertiary: #f3f4f6;
+
+  /* Textfarben */
+  --color-text: #111827;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #9ca3af;
+
+  /* Rahmenfarben */
+  --color-border: #e5e7eb;
+  --color-border-hover: #d1d5db;
+
+  /* Codeblock-Farben */
+  --color-code-bg: #f3f4f6;
+  --color-code-text: #1f2937;
+}
+```
+
+### Typografie
+
+```css
+:root {
+  /* Schriftfamilien */
+  --font-sans: system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-heading: var(--font-sans);
+
+  /* Schriftgrößen */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+}
+```
+
+### Abstände
+
+```css
+:root {
+  /* Border Radius */
+  --radius-sm: 0.25rem;
+  --radius: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+}
+```
+
+## Benutzerdefinierte Schriftarten
+
+### Verwendung von Google Fonts
+
+**1. Schriftart zu Ihrem Layout hinzufügen:**
+
+```tsx
+// app/layout.tsx
+import { Inter, JetBrains_Mono } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'] })
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'] })
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" className={`${inter.className}`}>
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+**2. CSS-Variablen aktualisieren:**
+
+```css
+:root {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+```
+
+### Verwendung lokaler Schriftarten
+
+Platzieren Sie Schriftdateien in `public/fonts/` und laden Sie sie:
+
+```css
+@font-face {
+  font-family: 'CustomFont';
+  src: url('/fonts/custom-font.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-sans: 'CustomFont', system-ui, sans-serif;
+}
+```

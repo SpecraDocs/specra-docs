@@ -1,0 +1,92 @@
+---
+title: Tabs (Reiter)
+description: Organisieren Sie Inhalte in Registerkarten-Abschnitte
+sidebar_position: 15
+---
+
+Tabs organisieren Inhalte in umschaltbaren Panels, perfekt um Alternativen wie verschiedene Paketmanager oder Sprachbeispiele zu zeigen.
+
+## Verwendung
+
+```mdx
+<Tabs defaultValue="npm">
+  <Tab label="npm">
+    npm Inhalt hier
+  </Tab>
+
+  <Tab label="yarn">
+    yarn Inhalt hier
+  </Tab>
+
+  <Tab label="pnpm">
+    pnpm Inhalt hier
+  </Tab>
+</Tabs>
+```
+
+## Live-Beispiele
+
+### Paketmanager-Auswahl
+
+<Tabs defaultValue="npm">
+  <Tab label="npm">
+```bash
+npm install my-package
+```
+  </Tab>
+
+  <Tab label="yarn">
+```bash
+yarn add my-package
+```
+  </Tab>
+
+  <Tab label="pnpm">
+```bash
+pnpm add my-package
+```
+  </Tab>
+</Tabs>
+
+### Code-Beispiele
+
+<Tabs defaultValue="JavaScript">
+  <Tab label="JavaScript">
+```javascript
+function greet(name) {
+  return `Hallo, ${name}!`;
+}
+```
+  </Tab>
+
+  <Tab label="TypeScript">
+```typescript
+function greet(name: string): string {
+  return `Hallo, ${name}!`;
+}
+```
+  </Tab>
+
+  <Tab label="Python">
+```python
+def greet(name):
+    return f"Hallo, {name}!"
+```
+  </Tab>
+</Tabs>
+
+## Props
+
+### Tabs
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `children` | `ReactNode` | erforderlich | Tab-Komponenten |
+| `defaultValue` | `string` | - | Label des initial ausgewählten Tabs (standardmäßig erster Tab) |
+
+### Tab
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `label` | `string` | erforderlich | Tab-Button-Label |
+| `children` | `ReactNode` | erforderlich | Inhalt, der angezeigt wird, wenn Tab aktiv ist |

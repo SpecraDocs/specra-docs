@@ -1,0 +1,70 @@
+---
+title: Exemple de format Postman
+description: Docs API générés automatiquement à partir de la collection Postman v2.1
+icon: box
+sidebar_position: 5
+---
+
+Cette page montre la génération automatique de documentation API à partir d'une **collection Postman v2.1**.
+
+Exportez votre collection Postman et déposez-la - la documentation est générée automatiquement !
+
+<Callout type="success" title="Fonctionne avec Postman !">
+Exportez simplement votre collection depuis Postman (v2.0 ou v2.1) et référencez-la ici. Aucune conversion nécessaire !
+</Callout>
+
+---
+
+<ApiReference spec="/api-specs/postman-example.json" />
+
+---
+
+## À propos de cet exemple
+
+Cet exemple montre comment l'analyseur gère :
+
+- ✅ Détection du format **Collection Postman v2.x**
+- ✅ **Organisation des dossiers** (éléments imbriqués aplatis)
+- ✅ **Variables d'environnement** (interpolation `{{baseUrl}}`)
+- ✅ **Paramètres de chemin** (syntaxe `:id` préservée)
+- ✅ **Paramètres de requête** avec descriptions
+- ✅ **Corps de requête** (raw, form-data, urlencoded)
+- ✅ **Exemples de réponse** à partir de réponses enregistrées
+- ✅ **Authentification** (Bearer, API Key, Basic)
+
+## Comment utiliser votre collection Postman
+
+### Étape 1 : Exporter depuis Postman
+
+1. Ouvrez votre collection dans Postman
+2. Cliquez sur le menu à **trois points** (•••)
+3. Sélectionnez **Exporter**
+4. Choisissez **Collection v2.1** (recommandé)
+5. Enregistrez le fichier JSON
+
+### Étape 2 : Ajouter à vos documents
+
+1. **Placez le fichier** dans `/public/api-specs/`
+2. **Référencez-le** dans votre MDX :
+
+```mdx
+<ApiReference spec="/api-specs/my-collection.json" parser="postman" />
+```
+
+Ou utilisez la détection automatique :
+
+```mdx
+<ApiReference spec="/api-specs/my-collection.json" />
+```
+
+### Étape 3 : Profitez !
+
+Votre collection Postman entière est maintenant magnifiquement documentée avec :
+- Playground interactif pour les tests
+- Extraction automatique des paramètres
+- Exemples de réponse
+- Informations d'authentification
+
+<Callout type="tip" title="Conseil de pro">
+Gardez votre collection Postman à jour et réexportez-la simplement pour mettre à jour votre documentation !
+</Callout>

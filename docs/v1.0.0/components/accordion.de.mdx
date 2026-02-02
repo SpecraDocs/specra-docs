@@ -1,0 +1,60 @@
+---
+title: Akkordeon
+description: Erstellen Sie einklappbare Inhaltsabschnitte mit den Komponenten Akkordeon und AkkordeonItem
+sidebar_position: 1
+---
+
+Die Akkordeon-Komponente erstellt einklappbare Inhaltsabschnitte, ideal für FAQs, erweiterbare Menüs oder die Organisation großer Mengen an Inhalten.
+
+## Verwendung
+
+```mdx
+<Accordion>
+  <AccordionItem title="Erste Frage" defaultOpen>
+    Dieser Inhalt ist standardmäßig sichtbar wegen `defaultOpen`.
+  </AccordionItem>
+  
+  <AccordionItem title="Zweite Frage">
+    Dieser Inhalt ist standardmäßig eingeklappt.
+  </AccordionItem>
+</Accordion>
+```
+
+## Live-Beispiel
+
+<Accordion>
+  <AccordionItem title="Was ist ein Akkordeon?" defaultOpen>
+    Ein Akkordeon ist ein UI-Muster, das es Benutzern ermöglicht, Inhaltsabschnitte zu erweitern und einzuklappen. Es ist nützlich, um Informationen in einem kompakten, scanbaren Format zu organisieren.
+  </AccordionItem>
+  
+  <AccordionItem title="Wann sollte ich Akkordeons verwenden?">
+    Verwenden Sie Akkordeons, wenn Sie mehrere Inhaltsabschnitte haben, die Benutzer durchsuchen möchten, ohne durch alles scrollen zu müssen. Häufige Anwendungsfälle sind FAQs, Funktionslisten und Konfigurationsoptionen.
+  </AccordionItem>
+  
+  <AccordionItem title="Kann ich mehrere Elemente geöffnet haben?">
+    Ja! Standardmäßig erlaubt das Akkordeon, dass mehrere Elemente gleichzeitig geöffnet sind. Jedes AkkordeonItem arbeitet unabhängig.
+  </AccordionItem>
+</Accordion>
+
+## Props
+
+### Accordion
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `children` | `ReactNode` | erforderlich | Zu rendernde AccordionItem-Komponenten |
+| `type` | `"single" \| "multiple"` | `"multiple"` | Ob ein oder mehrere Elemente geöffnet sein können |
+
+### AccordionItem
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `title` | `string` | erforderlich | Der anklickbare Header-Text |
+| `children` | `ReactNode` | erforderlich | Inhalt, der angezeigt wird, wenn erweitert |
+| `defaultOpen` | `boolean` | `false` | Ob das Element erweitert startet |
+
+## Tipps
+
+<Callout type="tip">
+Verwenden Sie die `defaultOpen` Prop beim ersten AccordionItem, um Benutzern eine Vorschau des Inhaltsformats zu geben.
+</Callout>

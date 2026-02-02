@@ -1,0 +1,87 @@
+---
+title: Columnas (Columns)
+description: Cree diseños de múltiples columnas receptivos para su contenido
+sidebar_position: 7
+---
+
+El componente Columnas crea diseños de cuadrícula receptivos para organizar contenido lado a lado.
+
+## Uso
+
+```mdx
+<Columns cols={{ sm: 1, md: 2, lg: 3 }}>
+  <Column>Contenido de la primera columna</Column>
+  <Column>Contenido de la segunda columna</Column>
+  <Column>Contenido de la tercera columna</Column>
+</Columns>
+```
+
+## Ejemplos en vivo
+
+### Dos columnas
+
+<Columns cols={{ sm: 1, md: 2 }}>
+  <Column>
+    ### Columna izquierda
+    Este contenido aparece en el lado izquierdo (o se apila en el móvil).
+  </Column>
+  <Column>
+    ### Columna derecha
+    Este contenido aparece en el lado derecho.
+  </Column>
+</Columns>
+
+### Tres columnas
+
+<Columns cols={{ sm: 1, md: 2, lg: 3 }}>
+  <Column>
+    <Card title="Característica 1" description="Descripción de la primera característica" />
+  </Column>
+  <Column>
+    <Card title="Característica 2" description="Descripción de la segunda característica" />
+  </Column>
+  <Column>
+    <Card title="Característica 3" description="Descripción de la tercera característica" />
+  </Column>
+</Columns>
+
+### Expansión de columna (Spanning)
+
+Use la propiedad `span` para hacer que las columnas ocupen más espacio:
+
+<Columns cols={{ sm: 1, md: 3 }}>
+  <Column span={2}>
+    ### Columna ancha
+    Esta columna abarca 2 de 3 columnas para contenido más destacado.
+  </Column>
+  <Column>
+    ### Estrecho
+    Ancho de columna única.
+  </Column>
+</Columns>
+
+## Props
+
+### Columns
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `children` | `ReactNode` | requerido | Componentes de columna |
+| `cols` | `object` | `{ sm: 1, md: 2, lg: 3 }` | Columnas en cada punto de interrupción |
+| `cols.sm` | `1-4` | `1` | Columnas en pantallas pequeñas |
+| `cols.md` | `1-4` | `2` | Columnas en pantallas medianas |
+| `cols.lg` | `1-4` | `3` | Columnas en pantallas grandes |
+| `cols.xl` | `1-4` | - | Columnas en pantallas extra grandes |
+
+### Column
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `children` | `ReactNode` | requerido | Contenido de columna |
+| `span` | `1 \| 2 \| 3 \| 4` | `1` | Número de columnas a abarcar |
+
+## Comportamiento receptivo
+
+<Callout type="tip">
+Las columnas se apilan automáticamente en dispositivos móviles. Los puntos de interrupción `sm`, `md`, `lg` y `xl` le permiten controlar cómo se redistribuye el contenido en diferentes tamaños de pantalla.
+</Callout>

@@ -1,0 +1,73 @@
+---
+title: Imagen (Image)
+description: Mostrar imágenes optimizadas con leyendas y funcionalidad de zoom
+sidebar_position: 10
+---
+
+El componente Imagen muestra imágenes optimizadas con leyendas opcionales y funcionalidad de zoom al hacer clic.
+
+## Uso
+
+```mdx
+<Image 
+  src="/images/screenshot.png" 
+  alt="Captura de pantalla de la aplicación"
+  caption="Descripción general del panel"
+/>
+```
+
+## Ejemplo en vivo
+
+<Image 
+  src="https://www.kindpng.com/picc/m/160-1609318_document-management-system-png-transparent-png.png" 
+  alt="Ilustración del sistema de documentación"
+  caption="Plataforma de documentación moderna"
+  width={600}
+  height={400}
+/>
+
+<Image 
+  src="/images/image.png" 
+  alt="Imagen de marcador de posición"
+  caption="Imagen de marcador de posición local"
+  width={600}
+  height={400}
+/>
+
+## Props
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `src` | `string` | requerido | URL de origen de la imagen |
+| `alt` | `string` | requerido | Texto alternativo accesible |
+| `caption` | `string` | - | Leyenda mostrada debajo de la imagen |
+| `width` | `number` | `1200` | Ancho de la imagen |
+| `height` | `number` | `675` | Altura de la imagen |
+| `zoom` | `boolean` | `true` | Habilitar clic para hacer zoom |
+
+## Características
+
+### Funcionalidad de zoom
+
+<Callout type="info">
+Haga clic en cualquier imagen para verla en una caja de luz de pantalla completa. Aparece un icono de zoom al pasar el ratón.
+</Callout>
+
+### Leyendas
+
+Agregue contexto a las imágenes con la propiedad `caption`. Las leyendas se estilizan en cursiva y se centran debajo de la imagen.
+
+### Optimización
+
+Las imágenes se optimizan automáticamente utilizando el componente Image de Next.js para:
+- Carga diferida
+- Tamaño receptivo
+- Formatos modernos (WebP)
+- Almacenamiento en caché
+
+## Mejores prácticas
+
+- Proporcione siempre texto `alt` descriptivo para accesibilidad
+- Use `width` y `height` apropiados para evitar cambios de diseño
+- Agregue `caption` para diagramas complejos o capturas de pantalla que necesiten explicación
+- Establezca `zoom={false}` para imágenes decorativas o pequeñas

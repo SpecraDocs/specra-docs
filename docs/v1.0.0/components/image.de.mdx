@@ -1,0 +1,73 @@
+---
+title: Image
+description: Anzeigen optimierter Bilder mit Bildunterschriften und Zoom-Funktionalität
+sidebar_position: 10
+---
+
+Die Image-Komponente zeigt optimierte Bilder mit optionalen Bildunterschriften und Klick-zum-Zoomen-Funktionalität an.
+
+## Verwendung
+
+```mdx
+<Image 
+  src="/images/screenshot.png" 
+  alt="Anwendungs-Screenshot"
+  caption="Dashboard-Übersicht"
+/>
+```
+
+## Live-Beispiel
+
+<Image 
+  src="https://www.kindpng.com/picc/m/160-1609318_document-management-system-png-transparent-png.png" 
+  alt="Dokumentationssystem Illustration"
+  caption="Moderne Dokumentationsplattform"
+  width={600}
+  height={400}
+/>
+
+<Image 
+  src="/images/image.png" 
+  alt="Platzhalterbild"
+  caption="Lokales Platzhalterbild"
+  width={600}
+  height={400}
+/>
+
+## Props
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `src` | `string` | erforderlich | Bildquellen-URL |
+| `alt` | `string` | erforderlich | Barrierefreier Alt-Text |
+| `caption` | `string` | - | Bildunterschrift unter dem Bild |
+| `width` | `number` | `1200` | Bildbreite |
+| `height` | `number` | `675` | Bildhöhe |
+| `zoom` | `boolean` | `true` | Klick-zum-Zoomen aktivieren |
+
+## Funktionen
+
+### Zoom-Funktionalität
+
+<Callout type="info">
+Klicken Sie auf ein Bild, um es in einer Vollbild-Lightbox anzuzeigen. Ein Zoom-Symbol erscheint beim Hovern.
+</Callout>
+
+### Bildunterschriften
+
+Fügen Sie Bildern mit der `caption` Prop Kontext hinzu. Bildunterschriften werden kursiv und zentriert unter dem Bild angezeigt.
+
+### Optimierung
+
+Bilder werden automatisch mit der Next.js Image-Komponente optimiert für:
+- Lazy Loading
+- Responsive Größe
+- Moderne Formate (WebP)
+- Caching
+
+## Best Practices
+
+- Geben Sie immer beschreibenden `alt`-Text für Barrierefreiheit an
+- Verwenden Sie geeignete `width` und `height`, um Layout-Verschiebungen zu vermeiden
+- Fügen Sie `caption` für komplexe Diagramme oder Screenshots hinzu, die Erklärung benötigen
+- Setzen Sie `zoom={false}` für dekorative oder kleine Bilder

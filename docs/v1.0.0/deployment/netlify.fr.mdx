@@ -1,0 +1,534 @@
+---
+title: Déployer sur Netlify
+description: Déployez votre documentation Specra sur Netlify pour un hébergement statique avec des fonctions edge
+sidebar_position: 4
+icon: globe
+tab_group: guides
+---
+
+# Déployer sur Netlify
+
+Netlify fournit un hébergement statique puissant avec des fonctionnalités telles que les restaurations instantanées, les tests fractionnés et les fonctions edge. C'est un excellent choix pour les sites de documentation.
+
+## Pourquoi Netlify ?
+
+- **Déploiement en un clic** - Connectez et déployez en quelques minutes
+- **Déploiement continu** - Déploiement automatique lors du push git
+- **Restaurations instantanées** - Restaurez les versions précédentes instantanément
+- **Fonctions Edge** - Exécutez du code en périphérie
+- **Formulaires & identité** - Gestion de formulaires et authentification intégrées
+- **Niveau gratuit** - Limites généreuses pour la documentation
+
+## Déploiement rapide
+
+<Steps>
+  <Step title="Configurer pour l'export statique">
+    Mettez à jour `specra.config.json` :
+
+```json
+{
+  "deployment": {
+    "target": "static",
+    "basePath": "",
+    "customDomain": false
+  }
+}
+```
+  </Step>
+
+  <Step title="Créer netlify.toml">
+    Ajoutez la configuration de build à la racine du projet :
+
+```toml
+[build]
+  command = "npm run build:export"
+  publish = "out"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+```
+
+Cela indique à Netlify comment construire et ce qu'il faut publier.
+  </Step>
+
+  <Step title="Déployer">
+    **Option 1 : Interface Web**
+    1. Allez sur [netlify.com](https://netlify.com)
+    2. Cliquez sur "Add new site" → "Import an existing project"
+    3. Connectez votre fournisseur Git
+    4. Sélectionnez votre dépôt
+    5. Cliquez sur "Deploy site"
+
+**Option 2 : CLI Netlify**
+```bash
+npm install -g netlify-cli
+netlify deploy --prod
+```
+  </Step>
+</Steps>
+
+<Callout type="success">
+Votre site est maintenant en ligne à une URL Netlify comme `random-name-123.netlify.app`
+</Callout>
+
+## Configuration
+
+### Paramètres de build
+
+Netlify détecte automatiquement les paramètres, mais vous pouvez les personnaliser :
+
+| Paramètre | Valeur |
+|-----------|--------|
+| Commande de build | `npm run build:export` |
+| Répertoire de publication | `out` |
+| Version de Node | 20 (définie dans `netlify.toml`) |
+
+### Variables d'environnement
+
+Ajoutez des variables d'environnement dans le tableau de bord Netlify :
+
+<Steps>
+  <Step title="Aller aux paramètres du site">
+    Cliquez sur votre site → Site settings → Environment variables
+  </Step>
+
+  <Step title="Ajouter des variables">
+```
+MEILISEARCH_HOST=https://search.example.com
+MEILISEARCH_API_KEY=votre-clé-de-recherche
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+```
+
+<Callout type="tip">
+Les variables commençant par `NEXT_PUBLIC_` sont exposées au navigateur. Gardez les clés sensibles sans ce préfixe.
+</Callout>
+  </Step>
+
+  <Step title="Redéployer">
+    Allez dans Deploys → Trigger deploy → Deploy site
+  </Step>
+</Steps>
+
+## Domaine personnalisé
+
+Ajoutez votre propre domaine à votre site Netlify :
+
+<Steps>
+  <Step title="Ajouter un domaine">
+    1. Allez dans Domain settings
+    2. Cliquez sur "Add custom domain"
+    3. Entrez votre domaine (par ex., `docs.example.com`)
+    4. Cliquez sur "Verify"
+  </Step>
+
+  <Step title="Configurer le DNS">
+    **Option 1 : Utiliser le DNS Netlify (Recommandé)**
+    - Faites pointer les serveurs de noms de votre domaine vers Netlify
+    - Netlify gère tous les enregistrements DNS
+    - Certificat SSL automatique
+
+**Option 2 : Utiliser un DNS externe**
+
+Pour sous-domaine :
+```
+Type: CNAME
+Nom: docs
+Valeur: votre-site.netlify.app
+```
+
+Pour domaine apex :
+```
+Type: A
+Nom: @
+Valeur: 75.2.60.5
+```
+  </Step>
+
+  <Step title="Activer HTTPS">
+    Netlify provisionne automatiquement un certificat SSL de Let's Encrypt.
+
+    Vérifiez Domain settings → HTTPS pour le statut.
+  </Step>
+</Steps>
+
+## Aperçus de déploiement
+
+Netlify crée des déploiements d'aperçu pour chaque pull request :
+
+**Ce que vous obtenez :**
+- URL unique pour chaque PR
+- Mises à jour automatiques lorsque vous poussez
+- Lien d'aperçu de déploiement dans les commentaires PR
+- Parfait pour examiner les changements
+
+### Configurer les aperçus de déploiement
+
+Contrôlez quand les aperçus sont créés :
+
+```toml
+[context.deploy-preview]
+  command = "npm run build:export"
+
+[context.branch-deploy]
+  command = "npm run build:export"
+```
+
+## Fonctionnalités avancées
+
+### Règles de redirection
+
+Ajoutez des redirections dans `netlify.toml` :
+
+```toml
+# Rediriger les anciennes URL
+[[redirects]]
+  from = "/old-page"
+  to = "/new-page"
+  status = 301
+
+# Fallback SPA
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Redirections basées sur le pays
+[[redirects]]
+  from = "/docs"
+  to = "/en/docs"
+  status = 302
+  conditions = {Country = ["US"]}
+```
+
+### En-têtes
+
+Ajoutez des en-têtes personnalisés :
+
+```toml
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    Content-Security-Policy = "default-src 'self'"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+```
+
+### Fonctions Edge
+
+Exécutez du code en périphérie pour une fonctionnalité dynamique :
+
+Créez `netlify/edge-functions/hello.ts` :
+
+```typescript
+export default async (request: Request) => {
+  return new Response("Bonjour depuis le bord !")
+}
+
+export const config = {
+  path: "/api/hello"
+}
+```
+
+### Tests fractionnés
+
+Testez différentes versions de vos docs :
+
+1. Allez dans Split testing
+2. Cliquez sur "Start a test"
+3. Sélectionnez les branches à comparer
+4. Définissez la répartition du trafic (par ex., 50/50)
+
+Idéal pour tester de nouvelles mises en page ou contenus de documentation.
+
+## Plugins de build
+
+Étendez votre build avec des plugins Netlify :
+
+```toml
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
+
+[[plugins]]
+  package = "netlify-plugin-checklinks"
+```
+
+Installer les plugins :
+
+```bash
+npm install -D @netlify/plugin-lighthouse netlify-plugin-checklinks
+```
+
+## Contextes de déploiement
+
+Différentes configurations pour différentes branches :
+
+```toml
+# Production (branche main)
+[context.production]
+  command = "npm run build:export"
+  [context.production.environment]
+    NODE_ENV = "production"
+
+# Branche de staging
+[context.staging]
+  command = "npm run build:export"
+  [context.staging.environment]
+    NODE_ENV = "staging"
+
+# Aperçus de déploiement (PRs)
+[context.deploy-preview]
+  command = "npm run build:export -- --debug"
+```
+
+## Optimisation des performances
+
+### Optimisation des actifs
+
+Netlify optimise automatiquement :
+- Compression d'image
+- Minification de bundle
+- Compression Brotli
+
+Activez ceci dans Build & deploy → Post processing.
+
+### Mise en cache
+
+Configurez les en-têtes de cache :
+
+```toml
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+```
+
+### Pré-rendu
+
+Pour un meilleur SEO, activez le pré-rendu :
+
+```toml
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+```
+
+## Formulaires
+
+Ajoutez des formulaires à votre documentation :
+
+```html
+<form name="contact" method="POST" data-netlify="true">
+  <input type="text" name="name" />
+  <input type="email" name="email" />
+  <textarea name="message"></textarea>
+  <button type="submit">Envoyer</button>
+</form>
+```
+
+Netlify gère automatiquement les soumissions de formulaires. Voir les réponses dans l'onglet Forms.
+
+## Analytique
+
+Activez Netlify Analytics pour des informations sur les visiteurs :
+
+1. Allez dans l'onglet Analytics
+2. Cliquez sur "Enable Analytics"
+3. Coûte 9 $/mois (optionnel)
+
+Affiche :
+- Vues de page
+- Pages principales
+- Sources de trafic
+- Données géographiques
+
+## Intégration CI/CD
+
+### GitHub Actions + Netlify
+
+Déployez depuis GitHub Actions pour plus de contrôle :
+
+```yaml
+name: Deploy to Netlify
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build:export
+
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v2
+        with:
+          publish-dir: './out'
+          production-deploy: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+```
+
+Obtenez votre jeton d'authentification et votre ID de site depuis le tableau de bord Netlify.
+
+## Dépannage
+
+### Échec du build
+
+**Vérifier les journaux de build :**
+- Allez dans Deploys
+- Cliquez sur le déploiement échoué
+- Voir le journal de déploiement
+
+**Problèmes courants :**
+- Incompatibilité de version Node (définir dans `netlify.toml`)
+- Dépendances manquantes (utilisez `npm ci` pas `npm install`)
+- Variables d'environnement non définies
+
+### Actifs 404
+
+Assurez-vous que `netlify.toml` a la redirection SPA :
+
+```toml
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+```
+
+### Les fonctions ne fonctionnent pas
+
+Vérifiez les journaux de fonction :
+1. Allez dans l'onglet Functions
+2. Cliquez sur votre fonction
+3. Voir les journaux
+
+Assurez-vous que le chemin de la fonction correspond à la configuration :
+
+```typescript
+export const config = {
+  path: "/api/hello"  // Doit correspondre à votre route
+}
+```
+
+### Problèmes SSL de domaine personnalisé
+
+- Attendez 24 heures pour la propagation DNS
+- Vérifiez les enregistrements DNS avec `dig` ou `nslookup`
+- Vérifiez le statut HTTPS dans Domain settings
+- Essayez de re-provisionner le certificat
+
+## Restaurations
+
+Restaurez instantanément à un déploiement précédent :
+
+1. Allez dans Deploys
+2. Trouvez la version fonctionnelle
+3. Cliquez sur "Publish deploy"
+
+Votre site revient immédiatement. Pas d'attente pour les builds.
+
+## Surveillance
+
+### Notifications de déploiement
+
+Soyez notifié lorsque les déploiements réussissent ou échouent :
+
+1. Allez dans Site settings → Build & deploy → Deploy notifications
+2. Ajoutez une notification (Email, Slack, webhook)
+3. Choisissez les événements (déploiement commencé, réussi, échoué)
+
+### Badge de statut
+
+Ajoutez un badge de statut de déploiement à votre README :
+
+```markdown
+[![Netlify Status](https://api.netlify.com/api/v1/badges/SITE_ID/deploy-status)](https://app.netlify.com/sites/SITE_NAME/deploys)
+```
+
+## Tarification
+
+Le niveau gratuit de Netlify comprend :
+- 300 minutes de build/mois
+- 100 Go de bande passante/mois
+- Sites illimités
+- Aperçus de déploiement
+- HTTPS
+- Formulaires (100 soumissions/mois)
+
+Passez à Pro (19 $/mois) pour :
+- Plus de bande passante et de minutes de build
+- Analytique
+- Collaboration d'équipe
+- Support prioritaire
+
+## Meilleures pratiques
+
+**Utiliser `netlify.toml`** - Contrôlez la version de votre configuration de build
+
+**Activer les aperçus de déploiement** - Examinez les changements avant de fusionner
+
+**Configurer les notifications** - Sachez immédiatement quand les déploiements échouent
+
+**Utiliser des variables d'environnement** - Gardez les secrets hors du code
+
+**Configurer les redirections** - Gérez correctement les changements d'URL
+
+**Surveiller l'analytique** - Comprenez comment les utilisateurs naviguent dans vos docs
+
+**Tester localement** - Exécutez `npm run build:export && npx serve out` d'abord
+
+## Prochaines étapes
+
+<CardGrid cols={2}>
+  <Card
+    icon="triangle"
+    title="Vercel"
+    description="Déployer sur Vercel à la place"
+    href="/docs/v1.0.0/deployment/vercel"
+  />
+  <Card
+    icon="github"
+    title="GitHub Pages"
+    description="Hébergement gratuit avec GitHub Pages"
+    href="/docs/v1.0.0/deployment/github-pages"
+  />
+  <Card
+    icon="arrow-left"
+    title="Aperçu du déploiement"
+    description="Voir toutes les options de déploiement"
+    href="/docs/v1.0.0/deployment/overview"
+  />
+  <Card
+    icon="zap"
+    title="Performance"
+    description="Optimiser votre documentation"
+    href="/docs/v1.0.0/performance"
+  />
+</CardGrid>

@@ -1,0 +1,109 @@
+---
+title: Acerca de Specra
+sidebar_position: 1
+icon: info
+tab_group: guides
+---
+
+# ¿Qué es Specra?
+
+Specra es un marco de documentación moderno que hace que escribir y publicar documentación técnica sea realmente agradable. Construido sobre Next.js, MDX y Tailwind CSS, le ofrece el aspecto y la sensación pulidos de las plataformas de documentación premium como Mintlify, pero usted mismo lo aloja.
+
+Si alguna vez ha luchado con herramientas de documentación torpes o ha pagado demasiado por soluciones alojadas, Specra está aquí para cambiar eso. Escriba sus documentos en Markdown, agregue componentes interactivos cuando los necesite y despliegue donde quiera.
+
+## Por qué construimos Specra
+
+La documentación no debería ser difícil. Debería poder concentrarse en escribir gran contenido, no luchar con archivos de configuración o pelear contra sus herramientas. Esto es lo que creemos:
+
+**El contenido es lo primero.** Suelte sus archivos MDX en una carpeta, y Specra se encarga del resto. Sin enrutamiento manual, sin configuración de navegación, sin dolores de cabeza de configuración de compilación.
+
+**La experiencia del desarrollador importa.** La recarga en caliente significa que ve los cambios al instante. TypeScript lo mantiene seguro. La biblioteca de componentes está ahí cuando la necesita, invisible cuando no.
+
+**El rendimiento no es negociable.** Páginas pre-renderizadas, almacenamiento en caché en el borde, imágenes optimizadas. Sus documentos cargan rápido, siempre.
+
+**Flexibilidad sobre bloqueo.** Despliegue en Vercel, GitHub Pages, Netlify, o en cualquier lugar que ejecute Node.js o sirva archivos estáticos. Usted es dueño de su contenido y su infraestructura.
+
+## Características clave
+
+<CardGrid cols={2}>
+  <Card icon="zap" title="Rápido como el rayo" description="Generación de sitios estáticos con almacenamiento en caché en el borde. Sus documentos cargan en milisegundos, no segundos." />
+  <Card icon="search" title="Búsqueda potente" description="La integración de MeiliSearch le ofrece una búsqueda instantánea y tolerante a errores tipográficos que realmente funciona." />
+  <Card icon="git-branch" title="Gestión de versiones" description="Envíe múltiples versiones de documentos una al lado de la otra. Perfecto para APIs y bibliotecas con cambios importantes." />
+  <Card icon="palette" title="Hermosos temas" description="Modo oscuro listo para usar. Personalice colores, fuentes y estilos para que coincidan con su marca." />
+  <Card icon="code" title="Componentes MDX" description="Use Markdown para contenido, componentes React para interactividad. Lo mejor de ambos mundos." />
+  <Card icon="layout" title="Navegación inteligente" description="Barra lateral generada automáticamente a partir de su estructura de archivos. Secciones plegables, migas de pan, tabla de contenidos." />
+</CardGrid>
+
+## La pila tecnológica
+
+Construimos Specra sobre tecnologías probadas y modernas:
+
+- **Next.js 15+** con App Router para un rendimiento y experiencia de desarrollador óptimos
+- **MDX** para que pueda mezclar Markdown con componentes React
+- **Tailwind CSS** para un estilo que es tanto potente como mantenible
+- **MeiliSearch** para una búsqueda que es rápida y tolerante a errores tipográficos
+- **TypeScript** porque la seguridad de tipos ahorra tiempo y cordura
+
+## Lo que obtiene
+
+Cuando usa Specra, obtiene un sistema de documentación completo:
+
+**Componentes de contenido ricos**
+Callouts, pestañas, bloques de código con resaltado de sintaxis, tarjetas, acordeones, pasos, diagramas con Mermaid, ecuaciones matemáticas con KaTeX, y más.
+
+**Navegación automática**
+Su estructura de carpetas se convierte en su barra lateral. Agregue un archivo `_category_.json` para personalizar secciones. Eso es todo.
+
+**Características inteligentes**
+Estimaciones de tiempo de lectura, marcas de tiempo de última actualización, soporte de etiquetas, migas de pan, tabla de contenidos receptiva con seguimiento de desplazamiento.
+
+**Documentación de API**
+Genere hermosas referencias de API a partir de especificaciones OpenAPI, colecciones Postman o el propio formato de Specra. Patio de juegos interactivo incluido.
+
+**Soporte multi-versión**
+Mantenga documentos para v1, v2, v3 simultáneamente. El selector de versiones permite a los usuarios saltar entre ellos al instante.
+
+**Búsqueda que funciona**
+Búsqueda de texto completo con atajos de teclado (⌘K o Ctrl+K). Funciona sin conexión con búsqueda local o escala con MeiliSearch.
+
+**Sistema de temas**
+Respeta las preferencias del sistema, admite alternancia manual oscuro/claro, personalizable a través de variables CSS.
+
+**Listo para producción**
+Optimización SEO, accesibilidad integrada, encabezados de seguridad, monitoreo de rendimiento, ejemplos de CI/CD.
+
+## Cómo funciona
+
+Specra sigue una filosofía simple: usted escribe, nosotros nos encargamos del resto.
+
+<Steps>
+  <Step title="Escribir en MDX">
+    Cree archivos `.mdx` en su carpeta `docs/`. Use frontmatter para metadatos. Escriba Markdown para contenido. Mezcle componentes React cuando sea necesario.
+  </Step>
+
+  <Step title="Generación automática">
+    Specra escanea sus archivos, genera navegación, extrae encabezados para la tabla de contenidos y configura el enrutamiento automáticamente.
+  </Step>
+
+  <Step title="Vista previa instantánea">
+    Ejecute el servidor de desarrollo y vea los cambios en vivo mientras escribe. La recarga en caliente lo mantiene en el flujo.
+  </Step>
+
+  <Step title="Desplegar en cualquier lugar">
+    Construya para alojamiento Node.js (Vercel, Railway) o exporte como archivos estáticos (GitHub Pages, Netlify, Cloudflare Pages). Una base de código, múltiples objetivos de despliegue.
+  </Step>
+</Steps>
+
+## ¿Quién debería usar Specra?
+
+Specra es perfecto para:
+
+- **Mantenedores de código abierto** que necesitan documentos profesionales sin las tarifas de alojamiento
+- **Startups** que quieren gran documentación sin precios empresariales
+- **Desarrolladores de API** que necesitan documentos versionados y referencias de API interactivas
+- **Escritores técnicos** que prefieren Markdown sobre editores WYSIWYG
+- **Equipos** que quieren que los documentos vivan en el mismo repositorio que su código
+
+## ¿Listo para empezar?
+
+Salte a la guía de [Primeros pasos](/docs/v1.0.0/getting-started) y tenga su primer sitio de documentación funcionando en menos de 5 minutos.

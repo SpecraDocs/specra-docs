@@ -1,0 +1,65 @@
+---
+title: Insignia (Badge)
+description: Muestre indicadores de estado y etiquetas con insignias estilizadas
+sidebar_position: 2
+---
+
+Las insignias son pequeños indicadores de estado que resaltan información importante, categorías o estados.
+
+## Uso
+
+```mdx
+<Badge>Predeterminado</Badge>
+<Badge variant="success">Éxito</Badge>
+<Badge variant="warning">Advertencia</Badge>
+<Badge variant="error">Error</Badge>
+<Badge variant="info">Info</Badge>
+```
+
+## Ejemplo en vivo
+
+<Badge>Predeterminado</Badge> <Badge variant="success">Éxito</Badge> <Badge variant="warning">Advertencia</Badge> <Badge variant="error">Error</Badge> <Badge variant="info">Info</Badge>
+
+## Variantes
+
+### Predeterminado
+<Badge>Insignia predeterminada</Badge>
+
+Se usa para información neutral o etiquetas generales.
+
+### Éxito
+<Badge variant="success">Completado</Badge>
+
+Indica operaciones exitosas, estado activo o resultados positivos.
+
+### Advertencia
+<Badge variant="warning">Pendiente</Badge>
+
+Resalta elementos que necesitan atención o están en un estado de transición.
+
+### Error
+<Badge variant="error">Fallido</Badge>
+
+Muestra errores, problemas críticos o estado negativo.
+
+### Info
+<Badge variant="info">Nuevo</Badge>
+
+Proporciona contexto informativo o resalta nuevas características.
+
+## Props
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `children` | `ReactNode` | requerido | Contenido de texto de la insignia |
+| `variant` | `"default" \| "success" \| "warning" \| "error" \| "info"` | `"default"` | Variante de color |
+
+## Patrones comunes
+
+Use insignias en línea con texto para indicar el estado:
+
+```mdx
+Esta característica es <Badge variant="success">Estable</Badge> y está lista para producción.
+```
+
+Esta característica es <Badge variant="success">Estable</Badge> y está lista para producción.

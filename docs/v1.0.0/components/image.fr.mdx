@@ -1,0 +1,73 @@
+---
+title: Image
+description: Afficher des images optimisées avec des légendes et une fonctionnalité de zoom
+sidebar_position: 10
+---
+
+Le composant Image affiche des images optimisées avec des légendes optionnelles et une fonctionnalité de zoom au clic.
+
+## Utilisation
+
+```mdx
+<Image 
+  src="/images/screenshot.png" 
+  alt="Capture d'écran de l'application"
+  caption="Aperçu du tableau de bord"
+/>
+```
+
+## Exemple en direct
+
+<Image 
+  src="https://www.kindpng.com/picc/m/160-1609318_document-management-system-png-transparent-png.png" 
+  alt="Illustration du système de documentation"
+  caption="Plateforme de documentation moderne"
+  width={600}
+  height={400}
+/>
+
+<Image 
+  src="/images/image.png" 
+  alt="Image de remplacement"
+  caption="Image de remplacement locale"
+  width={600}
+  height={400}
+/>
+
+## Props
+
+| Prop | Type | Défaut | Description |
+|------|------|--------|-------------|
+| `src` | `string` | requis | URL source de l'image |
+| `alt` | `string` | requis | Texte alternatif accessible |
+| `caption` | `string` | - | Légende affichée sous l'image |
+| `width` | `number` | `1200` | Largeur de l'image |
+| `height` | `number` | `675` | Hauteur de l'image |
+| `zoom` | `boolean` | `true` | Activer le zoom au clic |
+
+## Fonctionnalités
+
+### Fonctionnalité de zoom
+
+<Callout type="info">
+Cliquez sur n'importe quelle image pour la voir dans une lightbox plein écran. Une icône de zoom apparaît au survol.
+</Callout>
+
+### Légendes
+
+Ajoutez du contexte aux images avec la prop `caption`. Les légendes sont stylisées en italique et centrées sous l'image.
+
+### Optimisation
+
+Les images sont automatiquement optimisées à l'aide du composant Image de Next.js pour :
+- Chargement différé
+- Dimensionnement réactif
+- Formats modernes (WebP)
+- Mise en cache
+
+## Meilleures pratiques
+
+- Fournissez toujours un texte `alt` descriptif pour l'accessibilité
+- Utilisez `width` et `height` appropriés pour éviter les décalages de mise en page
+- Ajoutez `caption` pour les diagrammes complexes ou les captures d'écran qui nécessitent une explication
+- Définissez `zoom={false}` pour les images décoratives ou petites

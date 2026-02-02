@@ -1,0 +1,637 @@
+---
+title: Aperçu du déploiement
+description: Déployez votre documentation Specra en production sur n'importe quelle plateforme
+sidebar_position: 1
+icon: rocket
+tab_group: guides
+---
+
+# Aperçu du déploiement
+
+Specra est construit sur Next.js, ce qui signifie que vous pouvez le déployer presque partout. Ce guide couvre les options de déploiement les plus populaires et comment configurer Specra pour chacune.
+
+## Cibles de déploiement
+
+Specra prend en charge deux modes de déploiement :
+
+**Mode Autonome** (Hébergement Node.js)
+- Vercel, Railway, Render, Fly.io, AWS, Google Cloud
+- Fonctionnalités dynamiques côté serveur
+- Meilleures performances avec la mise en cache edge
+- Configuration par défaut
+
+**Export Statique** (Hébergement statique)
+- GitHub Pages, Netlify, Cloudflare Pages
+- HTML/CSS/JS pré-rendu
+- Aucun serveur requis
+- Idéal pour la documentation open source
+
+## Déploiement rapide
+
+### Vercel (Recommandé)
+
+L'option de déploiement la plus simple. Un clic et vous êtes en ligne :
+
+<Steps>
+  <Step title="Pousser sur GitHub">
+    Poussez votre projet vers un dépôt GitHub :
+
+```bash
+git init
+git add .
+git commit -m "Commit initial"
+git remote add origin https://github.com/username/repo.git
+git push -u origin main
+```
+  </Step>
+
+  <Step title="Déployer sur Vercel">
+    Visitez [vercel.com/new](https://vercel.com/new) et importez votre dépôt.
+
+    Vercel détecte automatiquement Next.js et utilise les bons paramètres :
+    - Commande de build : `npm run build`
+    - Répertoire de sortie : `.next`
+    - Commande d'installation : `npm install`
+  </Step>
+
+  <Step title="Terminé !">
+    Votre site se déploie en moins d'une minute. Vercel vous donne une URL comme `votre-projet.vercel.app`.
+
+    Chaque push git sur main déclenche automatiquement un nouveau déploiement.
+  </Step>
+</Steps>
+
+<Callout type="success">
+  Aucune configuration nécessaire ! Les paramètres par défaut de Specra fonctionnent parfaitement avec Vercel.
+</Callout>
+
+### GitHub Pages
+
+Parfait pour la documentation open source :
+
+<Steps>
+  <Step title="Configurer pour l'export statique">
+    Mettez à jour `specra.config.json` :
+
+```json
+{
+  "deployment": {
+    "target": "github-pages",
+    "basePath": "nom-votre-repo",
+    "customDomain": false
+  }
+}
+```
+
+Remplacez `nom-votre-repo` par le nom réel de votre dépôt.
+
+<Callout type="info">
+  Si vous utilisez un domaine personnalisé (comme `docs.votresite.com`), définissez `customDomain: true` et laissez `basePath` vide.
+</Callout>
+  </Step>
+
+  <Step title="Construire le site statique">
+```bash
+npm run build:export
+```
+
+Cela crée un répertoire `out/` avec votre site statique.
+  </Step>
+
+  <Step title="Déployer avec GitHub Actions">
+    Créez `.github/workflows/deploy.yml` :
+
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build:export
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+  </Step>
+
+  <Step title="Activer GitHub Pages">
+    1. Allez dans les paramètres de votre repo
+    2. Naviguez vers **Pages**
+    3. Source : **GitHub Actions**
+    4. Enregistrer
+
+    Vos docs seront en ligne à `https://username.github.io/nom-votre-repo`
+  </Step>
+</Steps>
+
+### Netlify
+
+Une autre excellente option d'hébergement statique :
+
+<Steps>
+  <Step title="Configurer">
+```json
+{
+  "deployment": {
+    "target": "static"
+  }
+}
+```
+  </Step>
+
+  <Step title="Créer netlify.toml">
+```toml
+[build]
+  command = "npm run build:export"
+  publish = "out"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+```
+  </Step>
+
+  <Step title="Déployer">
+    Connectez votre repo sur [netlify.com](https://netlify.com) ou utilisez la CLI :
+
+```bash
+npm install -g netlify-cli
+netlify deploy --prod
+```
+  </Step>
+</Steps>
+
+## Commandes de build
+
+Différentes plateformes nécessitent différentes commandes de build :
+
+| Plateforme | Commande de build | Répertoire de sortie |
+|------------|-------------------|----------------------|
+| Vercel, Railway | `npm run build` | `.next` |
+| GitHub Pages | `npm run build:export` | `out` |
+| Netlify, Cloudflare Pages | `npm run build:export` | `out` |
+| Docker, VPS | `npm run build` + `npm start` | `.next` |
+
+## Configuration par plateforme
+
+### Vercel
+
+```json
+{
+  "deployment": {
+    "target": "vercel"
+  }
+}
+```
+
+**Variables d'environnement** (optionnel) :
+- Aucune requise pour la configuration de base
+- Ajoutez les clés de recherche/analytique dans le tableau de bord Vercel
+
+### GitHub Pages (Pas de domaine personnalisé)
+
+```json
+{
+  "deployment": {
+    "target": "github-pages",
+    "basePath": "nom-repo"
+  }
+}
+```
+
+**Pourquoi basePath ?** GitHub Pages sert depuis `username.github.io/nom-repo`, donc toutes les ressources ont besoin du préfixe `/nom-repo`.
+
+### GitHub Pages (Avec domaine personnalisé)
+
+```json
+{
+  "deployment": {
+    "target": "custom-domain-static",
+    "customDomain": true
+  }
+}
+```
+
+Ajoutez un fichier `CNAME` à `public/` :
+
+```
+docs.votresite.com
+```
+
+### Netlify / Cloudflare Pages
+
+```json
+{
+  "deployment": {
+    "target": "static"
+  }
+}
+```
+
+Aucun basePath nécessaire - ils servent depuis la racine.
+
+## Pipelines CI/CD
+
+### GitHub Actions (Avancé)
+
+Exemple complet avec mise en cache et indexation MeiliSearch :
+
+```yaml
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Build site
+        run: npm run build:export
+        env:
+          NODE_ENV: production
+
+      - name: Index search content
+        if: github.ref == 'refs/heads/main'
+        run: npm run index:search
+        env:
+          MEILISEARCH_HOST: ${{ secrets.MEILISEARCH_HOST }}
+          MEILISEARCH_API_KEY: ${{ secrets.MEILISEARCH_MASTER_KEY }}
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+### GitLab CI/CD
+
+```yaml
+# .gitlab-ci.yml
+image: node:20
+
+cache:
+  paths:
+    - node_modules/
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  script:
+    - npm ci
+    - npm run build:export
+  artifacts:
+    paths:
+      - out/
+  only:
+    - main
+
+pages:
+  stage: deploy
+  dependencies:
+    - build
+  script:
+    - mkdir -p public
+    - cp -r out/* public/
+  artifacts:
+    paths:
+      - public
+  only:
+    - main
+```
+
+### Docker
+
+Créez un `Dockerfile` :
+
+```dockerfile
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build
+
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]
+```
+
+Construire et exécuter :
+
+```bash
+docker build -t my-docs .
+docker run -p 3000:3000 my-docs
+```
+
+## Variables d'environnement
+
+Définissez-les dans votre plateforme de déploiement :
+
+**Recherche (si utilisation de MeiliSearch) :**
+```bash
+MEILISEARCH_HOST=https://search.example.com
+MEILISEARCH_API_KEY=votre-clé-de-recherche
+```
+
+**Analytique (optionnel) :**
+```bash
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+NEXT_PUBLIC_PLAUSIBLE_DOMAIN=docs.example.com
+```
+
+**Variables d'environnement personnalisées :**
+Accédez-y dans vos docs via le frontmatter ou MDX :
+
+```json
+{
+  "env": {
+    "API_BASE_URL": "${API_URL}"
+  }
+}
+```
+
+## Domaines personnalisés
+
+### Vercel
+
+1. Allez dans les paramètres de votre projet
+2. Naviguez vers Domaines
+3. Ajoutez votre domaine personnalisé
+4. Mettez à jour les enregistrements DNS comme indiqué
+
+### GitHub Pages
+
+1. Ajoutez le fichier `CNAME` à `public/` :
+```
+docs.votresite.com
+```
+
+2. Mettez à jour `specra.config.json` :
+```json
+{
+  "deployment": {
+    "customDomain": true
+  }
+}
+```
+
+3. Configurez le DNS :
+```
+Type: CNAME
+Nom: docs
+Valeur: username.github.io
+```
+
+### Netlify
+
+1. Allez dans les paramètres de Domaine
+2. Ajoutez un domaine personnalisé
+3. Suivez les instructions DNS
+
+## Optimisation des performances
+
+### Activer la mise en cache
+
+Ajoutez des en-têtes de cache dans `next.config.mjs` :
+
+```javascript
+async headers() {
+  return [
+    {
+      source: '/docs/:path*',
+      headers: [
+        {
+          key: 'Cache-Control',
+          value: 'public, max-age=3600, must-revalidate',
+        },
+      ],
+    },
+  ]
+}
+```
+
+### Optimisation des images
+
+Utilisez le composant Image de Next.js :
+
+```mdx
+<Image
+  src="/images/diagram.png"
+  alt="Diagramme d'architecture"
+  width={800}
+  height={600}
+/>
+```
+
+### Analyse de bundle
+
+Vérifiez la taille du bundle :
+
+```bash
+npm install --save-dev @next/bundle-analyzer
+```
+
+```javascript
+// next.config.mjs
+import bundleAnalyzer from '@next/bundle-analyzer'
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+export default withBundleAnalyzer(nextConfig)
+```
+
+Exécutez avec :
+```bash
+ANALYZE=true npm run build
+```
+
+## Dépannage
+
+### 404 lors de l'actualisation de la page (Export Statique)
+
+Ajoutez des redirections/réécritures dans la configuration de la plateforme :
+
+**Netlify :**
+```toml
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+```
+
+**Vercel (vercel.json) :**
+```json
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
+```
+
+### Les ressources ne chargent pas (GitHub Pages)
+
+Vérifiez que votr `basePath` correspond exactement au nom de votre dépôt :
+
+```json
+{
+  "deployment": {
+    "basePath": "nom-repo-exact"
+  }
+}
+```
+
+### Échec du build
+
+Corrections courantes :
+
+1. Effacez les dossiers `.next` et `out` :
+```bash
+rm -rf .next out node_modules
+npm install
+npm run build
+```
+
+2. Vérifiez la version de Node.js :
+```bash
+node --version  # Devrait être 18+
+```
+
+3. Examinez les journaux de build pour des erreurs spécifiques
+
+## Guides spécifiques à la plateforme
+
+Plongez plus profondément dans le déploiement spécifique à la plateforme :
+
+<CardGrid cols={3}>
+  <Card
+    icon="triangle"
+    title="Vercel"
+    description="Déployer sans configuration"
+    href="/docs/v1.0.0/deployment/vercel"
+  />
+  <Card
+    icon="github"
+    title="GitHub Pages"
+    description="Hébergement gratuit pour l'open source"
+    href="/docs/v1.0.0/deployment/github-pages"
+  />
+  <Card
+    icon="globe"
+    title="Netlify"
+    description="Hébergement statique avec fonctions edge"
+    href="/docs/v1.0.0/deployment/netlify"
+  />
+</CardGrid>
+
+## Prochaines étapes
+
+<CardGrid cols={2}>
+  <Card
+    icon="settings"
+    title="Configuration"
+    description="Affiner vos paramètres de déploiement"
+    href="/docs/v1.0.0/configuration/deployment-config"
+  />
+  <Card
+    icon="zap"
+    title="Performance"
+    description="Optimiser vos docs pour la vitesse"
+    href="/docs/v1.0.0/performance"
+  />
+</CardGrid>

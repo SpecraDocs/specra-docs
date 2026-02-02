@@ -1,0 +1,70 @@
+---
+title: Postman-Format Beispiel
+description: Automatisch generierte API-Dokumente aus Postman Collection v2.1
+icon: box
+sidebar_position: 5
+---
+
+Diese Seite demonstriert die automatische Generierung von API-Dokumentation aus einer **Postman Collection v2.1**.
+
+Exportieren Sie Ihre Postman-Sammlung und fügen Sie sie ein – die Dokumentation wird automatisch generiert!
+
+<Callout type="success" title="Funktioniert mit Postman!">
+Exportieren Sie einfach Ihre Sammlung aus Postman (v2.0 oder v2.1) und referenzieren Sie sie hier. Keine Konvertierung erforderlich!
+</Callout>
+
+---
+
+<ApiReference spec="/api-specs/postman-example.json" />
+
+---
+
+## Über dieses Beispiel
+
+Dieses Beispiel zeigt, wie der Parser umgeht mit:
+
+- ✅ **Postman Collection v2.x** Format-Erkennung
+- ✅ **Ordnerorganisation** (verschachtelte Elemente abgeflacht)
+- ✅ **Umgebungsvariablen** (`{{baseUrl}}` Interpolation)
+- ✅ **Pfadparameter** (`:id` Syntax beibehalten)
+- ✅ **Query-Parameter** mit Beschreibungen
+- ✅ **Request-Bodys** (raw, form-data, urlencoded)
+- ✅ **Antwortbeispiele** aus gespeicherten Antworten
+- ✅ **Authentifizierung** (Bearer, API Key, Basic)
+
+## So verwenden Sie Ihre Postman-Sammlung
+
+### Schritt 1: Aus Postman exportieren
+
+1. Öffnen Sie Ihre Sammlung in Postman
+2. Klicken Sie auf das Menü mit den **drei Punkten** (•••)
+3. Wählen Sie **Export**
+4. Wählen Sie **Collection v2.1** (empfohlen)
+5. Speichern Sie die JSON-Datei
+
+### Schritt 2: Zu Ihren Dokumenten hinzufügen
+
+1. **Platzieren Sie die Datei** in `/public/api-specs/`
+2. **Referenzieren Sie sie** in Ihrem MDX:
+
+```mdx
+<ApiReference spec="/api-specs/my-collection.json" parser="postman" />
+```
+
+Oder verwenden Sie die automatische Erkennung:
+
+```mdx
+<ApiReference spec="/api-specs/my-collection.json" />
+```
+
+### Schritt 3: Viel Spaß!
+
+Ihre gesamte Postman-Sammlung ist jetzt wunderschön dokumentiert mit:
+- Interaktivem Playground zum Testen
+- Automatischer Parameterextraktion
+- Antwortbeispielen
+- Authentifizierungsinformationen
+
+<Callout type="tip" title="Profi-Tipp">
+Halten Sie Ihre Postman-Sammlung auf dem neuesten Stand und exportieren Sie sie einfach erneut, um Ihre Dokumentation zu aktualisieren!
+</Callout>

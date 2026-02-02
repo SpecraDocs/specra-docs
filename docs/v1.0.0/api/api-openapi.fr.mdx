@@ -1,0 +1,50 @@
+---
+title: Exemple de format OpenAPI
+description: Docs API générés automatiquement à partir d'une spécification OpenAPI 3.0
+icon: file-code
+sidebar_position: 4
+---
+
+Cette page montre la génération automatique de documentation API à partir d'une spécification **OpenAPI 3.0**.
+
+Le composant détecte automatiquement le format et l'analyse dans notre système de documentation.
+
+<Callout type="info" title="Auto-détection">
+Le composant `ApiReference` détecte automatiquement le format OpenAPI lorsque vous utilisez `parser="auto"` (par défaut).
+</Callout>
+
+---
+
+<ApiReference spec="/api-specs/openapi-example.json" />
+
+---
+
+## À propos de cet exemple
+
+Cet exemple montre comment l'analyseur gère :
+
+- ✅ Détection du **format OpenAPI 3.0**
+- ✅ Résolution des **références de schéma** (`$ref`)
+- ✅ **Paramètres de chemin** (`{id}` converti en `:id`)
+- ✅ **Schémas de requête/réponse** avec exemples
+- ✅ **Schémas de sécurité** (Jetons Bearer, clés API)
+- ✅ **Codes de réponse multiples** (succès et erreurs)
+
+## Utilisation de votre propre spécification OpenAPI
+
+Pour utiliser votre propre spécification OpenAPI :
+
+1. **Placez votre fichier de spécification** dans le répertoire `/public/api-specs/`
+2. **Référencez-le dans votre fichier MDX** :
+
+```mdx
+<ApiReference spec="/api-specs/your-api.json" parser="openapi" />
+```
+
+Ou laissez-le détecter automatiquement :
+
+```mdx
+<ApiReference spec="/api-specs/your-api.json" />
+```
+
+L'analyseur prend en charge les formats **OpenAPI 3.x** et **Swagger 2.0**.

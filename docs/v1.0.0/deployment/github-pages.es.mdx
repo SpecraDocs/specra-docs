@@ -1,0 +1,503 @@
+---
+title: Implementar en GitHub Pages
+description: Despliegue su documentación Specra en GitHub Pages para alojamiento estático gratuito
+sidebar_position: 3
+icon: github
+tab_group: guides
+---
+
+# Implementar en GitHub Pages
+
+GitHub Pages ofrece alojamiento gratuito para sitios estáticos, lo que lo hace perfecto para documentación de código abierto. Implemente directamente desde su repositorio con GitHub Actions.
+
+## ¿Por qué GitHub Pages?
+
+- **Alojamiento gratuito** - Sin costo para repositorios públicos
+- **Dominios personalizados** - Use su propio dominio
+- **HTTPS incluido** - Certificados SSL automáticos
+- **Basado en Git** - Implemente desde su repositorio
+- **Control de versiones** - Historial completo de sus documentos
+- **Confianza de la comunidad** - Plataforma familiar para desarrolladores
+
+## Requisitos Previos
+
+- Repositorio de GitHub (público o privado)
+- Proyecto de documentación Specra
+- Git instalado localmente
+
+## Configuración
+
+Primero, configure Specra para exportación estática.
+
+### Sin Dominio Personalizado
+
+Para URL como `username.github.io/nombre-repo`:
+
+```json
+{
+  "deployment": {
+    "target": "github-pages",
+    "basePath": "nombre-repo",
+    "customDomain": false
+  }
+}
+```
+
+<Callout type="warning" title="Importante">
+El `basePath` debe coincidir exactamente con el nombre de su repositorio. GitHub Pages sirve desde `username.github.io/nombre-repo`, por lo que todos los activos necesitan este prefijo.
+</Callout>
+
+### Con Dominio Personalizado
+
+Para dominios personalizados como `docs.ejemplo.com`:
+
+```json
+{
+  "deployment": {
+    "target": "custom-domain-static",
+    "basePath": "",
+    "customDomain": true
+  }
+}
+```
+
+También cree `public/CNAME` con su dominio:
+
+```txt
+docs.ejemplo.com
+```
+
+## Métodos de Implementación
+
+Elija su método de implementación preferido:
+
+### Método 1: GitHub Actions (Recomendado)
+
+Implementación automática en cada envío a main.
+
+<Steps>
+  <Step title="Crear Archivo de Flujo de Trabajo">
+    Cree `.github/workflows/deploy.yml`:
+
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build:export
+        env:
+          NODE_ENV: production
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+  </Step>
+
+  <Step title="Habilitar GitHub Pages">
+    1. Vaya a Configuración del repositorio → Pages
+    2. Fuente: **GitHub Actions**
+    3. Guardar
+
+    No es necesario seleccionar una rama: el flujo de trabajo maneja la implementación.
+  </Step>
+
+  <Step title="Enviar e Implementar">
+```bash
+git add .
+git commit -m "Add GitHub Pages deployment"
+git push
+```
+
+¡Su sitio se implementa automáticamente! Verifique la pestaña Actions para ver el progreso.
+  </Step>
+</Steps>
+
+### Método 2: Implementación Manual
+
+Implemente manualmente utilizando el paquete `gh-pages`.
+
+<Steps>
+  <Step title="Instalar gh-pages">
+```bash
+npm install --save-dev gh-pages
+```
+  </Step>
+
+  <Step title="Agregar Script de Implementación">
+    Actualice `package.json`:
+
+```json
+{
+  "scripts": {
+    "deploy": "npm run build:export && gh-pages -d out"
+  }
+}
+```
+  </Step>
+
+  <Step title="Implementar">
+```bash
+npm run deploy
+```
+
+Esto construye su sitio y envía la carpeta `out` a la rama `gh-pages`.
+  </Step>
+
+  <Step title="Habilitar GitHub Pages">
+    1. Vaya a Configuración → Pages
+    2. Fuente: Deploy from a branch
+    3. Rama: `gh-pages` / `/ (root)`
+    4. Guardar
+  </Step>
+</Steps>
+
+## Configuración de Dominio Personalizado
+
+Use su propio dominio con GitHub Pages:
+
+<Steps>
+  <Step title="Agregar Archivo CNAME">
+    Cree `public/CNAME`:
+
+```
+docs.ejemplo.com
+```
+
+Actualizar configuración:
+
+```json
+{
+  "deployment": {
+    "target": "custom-domain-static",
+    "customDomain": true,
+    "basePath": ""
+  }
+}
+```
+  </Step>
+
+  <Step title="Configurar DNS">
+    Agregue registros DNS en su proveedor de dominios:
+
+**Para subdominio (docs.ejemplo.com):**
+```
+Tipo: CNAME
+Nombre: docs
+Valor: username.github.io
+```
+
+**Para dominio ápice (ejemplo.com):**
+```
+Tipo: A
+Nombre: @
+Valor: 185.199.108.153
+Valor: 185.199.109.153
+Valor: 185.199.110.153
+Valor: 185.199.111.153
+```
+
+<Callout type="tip">
+Use un subdominio como `docs.ejemplo.com` - es más simple que la configuración de dominio ápice.
+</Callout>
+  </Step>
+
+  <Step title="Habilitar HTTPS">
+    Después de que se propague el DNS (puede tardar hasta 24 horas):
+
+1. Vaya a Configuración → Pages
+2. Marque "Enforce HTTPS"
+3. GitHub aprovisiona automáticamente un certificado SSL
+  </Step>
+</Steps>
+
+## GitHub Actions Avanzadas
+
+### Con Indexación de Búsqueda
+
+Indexe sus documentos en MeiliSearch durante la implementación:
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build:export
+
+      - name: Index search
+        run: npm run index:search
+        env:
+          MEILISEARCH_HOST: ${{ secrets.MEILISEARCH_HOST }}
+          MEILISEARCH_API_KEY: ${{ secrets.MEILISEARCH_MASTER_KEY }}
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+```
+
+Agregue secretos en Configuración → Secrets and variables → Actions.
+
+### Implementar en Etiqueta
+
+Solo implementar cuando cree una etiqueta de lanzamiento:
+
+```yaml
+on:
+  push:
+    tags:
+      - 'v*'
+```
+
+Cree y envíe una etiqueta para implementar:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+### Múltiples Entornos
+
+Implemente diferentes ramas en diferentes sitios de GitHub Pages:
+
+```yaml
+on:
+  push:
+    branches:
+      - main
+      - staging
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # ... pasos de construcción ...
+
+      - name: Deploy to production
+        if: github.ref == 'refs/heads/main'
+        uses: actions/deploy-pages@v4
+
+      - name: Deploy to staging
+        if: github.ref == 'refs/heads/staging'
+        # Implementar en un repositorio o rama diferente
+```
+
+## Solución de Problemas
+
+### Errores 404 en Rutas
+
+Las exportaciones estáticas no admiten el enrutamiento dinámico de la misma manera. Asegúrese de que todas las rutas estén pre-renderizadas.
+
+**Solución:** Agregue un 404.html que redirija al índice:
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="refresh" content="0;url=/" />
+  </head>
+  <body>
+    Redirigiendo...
+  </body>
+</html>
+```
+
+### Los Activos No Se Cargan
+
+Verifique su configuración `basePath`:
+
+```bash
+# Ver su sitio
+open https://username.github.io/nombre-repo
+
+# Comprobar si los activos se cargan desde
+https://username.github.io/nombre-repo/_next/...
+```
+
+Si los activos devuelven 404, verifique:
+- `basePath` en la configuración coincide exactamente con el nombre del repositorio
+- Está utilizando `npm run build:export` no `npm run build`
+
+### El Dominio Personalizado No Funciona
+
+**Verificar propagación DNS:**
+```bash
+dig docs.ejemplo.com
+# Debería mostrar CNAME a username.github.io
+```
+
+**Verificar archivo CNAME:**
+- Debe estar en la carpeta `public/`
+- Contiene solo su dominio, sin protocolo
+- Sin barra diagonal final
+
+**Problemas comunes:**
+- DNS aún no propagado (espere hasta 24 horas)
+- Archivo CNAME faltante o incorrecto
+- Error en la verificación del dominio en la configuración de GitHub
+
+### La Compilación Falla en Actions
+
+**Ver registros:**
+1. Vaya a la pestaña Actions
+2. Haga clic en el flujo de trabajo fallido
+3. Expanda el paso de compilación para ver errores
+
+**Correcciones comunes:**
+- Aumentar la versión de Node en el flujo de trabajo
+- Borrar caché de npm: `npm ci --cache .npm`
+- Verificar dependencias faltantes
+
+## Consejos de Rendimiento
+
+### Habilitar Almacenamiento en Caché
+
+Almacene en caché node_modules para compilaciones más rápidas:
+
+```yaml
+- name: Setup Node
+  uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'npm'
+```
+
+### Optimizar Imágenes
+
+Optimice previamente las imágenes antes de confirmar:
+
+```bash
+npm install -D imagemin-cli
+
+# Optimizar todas las imágenes
+npx imagemin public/images/* --out-dir=public/images
+```
+
+### Reducir Tamaño del Paquete
+
+Verifique qué hay en su paquete:
+
+```bash
+npm install -D @next/bundle-analyzer
+
+ANALYZE=true npm run build:export
+```
+
+## Límites
+
+GitHub Pages tiene algunos límites:
+
+- **Tamaño del repositorio:** 1GB recomendado
+- **Tamaño del sitio:** 1GB sitio publicado
+- **Ancho de banda:** 100GB/mes límite suave
+- **Compilaciones:** 10 por hora
+
+Estos límites son generosos para sitios de documentación.
+
+## Migración desde Otras Plataformas
+
+### Desde Vercel
+
+1. Actualice la sección `deployment` de `specra.config.json`
+2. Ejecute `npm run build:export` localmente para probar
+3. Configure el flujo de trabajo de GitHub Actions
+4. Envíe para activar la implementación
+
+### Desde Netlify
+
+El mismo proceso que Vercel. La salida estática funciona en ambas plataformas.
+
+## Mejores Prácticas
+
+**Usar GitHub Actions** - Implementación automática en cada envío
+
+**Versionar sus documentos** - Use etiquetas git para versiones de documentación
+
+**Probar localmente** - Ejecute `npm run build:export && npx serve out` antes de enviar
+
+**Monitorear compilaciones** - Configure notificaciones para implementaciones fallidas
+
+**Usar dominio personalizado** - Apariencia profesional y URL estables
+
+**Habilitar HTTPS** - Siempre aplicar HTTPS por seguridad
+
+## Próximos Pasos
+
+<CardGrid cols={2}>
+  <Card
+    icon="triangle"
+    title="Vercel"
+    description="Implementar en Vercel para funciones dinámicas"
+    href="/docs/v1.0.0/deployment/vercel"
+  />
+  <Card
+    icon="globe"
+    title="Netlify"
+    description="Plataforma de alojamiento estático alternativa"
+    href="/docs/v1.0.0/deployment/netlify"
+  />
+  <Card
+    icon="arrow-left"
+    title="Descripción General de Implementación"
+    description="Ver todas las opciones de implementación"
+    href="/docs/v1.0.0/deployment/overview"
+  />
+  <Card
+    icon="settings"
+    title="Configuración"
+    description="Configurar ajustes de implementación"
+    href="/docs/v1.0.0/configuration/overview"
+  />
+</CardGrid>

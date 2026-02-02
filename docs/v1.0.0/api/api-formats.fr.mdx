@@ -1,0 +1,257 @@
+---
+title: Formats d'API pris en charge
+description: En savoir plus sur les différents formats de spécification d'API pris en charge par Specra
+tab_group: api
+icon: layers
+sidebar_position: 2
+---
+
+Le système de documentation API de Specra prend en charge plusieurs formats standard de l'industrie, vous permettant d'utiliser vos spécifications d'API existantes sans conversion.
+
+## Aperçu rapide
+
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 not-prose my-6">
+  <div className="border border-border rounded-lg p-4">
+    <h3 className="text-lg font-semibold mb-2">Format Specra</h3>
+    <p className="text-sm text-muted-foreground mb-3">Format natif conçu pour la simplicité</p>
+    <div className="flex items-center gap-2 text-xs">
+      <span className="px-2 py-1 bg-green-500/10 text-green-600 dark:text-green-400 rounded">Simple</span>
+      <span className="px-2 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded">Lisible</span>
+    </div>
+  </div>
+
+  <div className="border border-border rounded-lg p-4">
+    <h3 className="text-lg font-semibold mb-2">OpenAPI 3.x</h3>
+    <p className="text-sm text-muted-foreground mb-3">Format API REST standard de l'industrie</p>
+    <div className="flex items-center gap-2 text-xs">
+      <span className="px-2 py-1 bg-purple-500/10 text-purple-600 dark:text-purple-400 rounded">Standard</span>
+      <span className="px-2 py-1 bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded">Puissant</span>
+    </div>
+  </div>
+
+  <div className="border border-border rounded-lg p-4">
+    <h3 className="text-lg font-semibold mb-2">Postman v2.x</h3>
+    <p className="text-sm text-muted-foreground mb-3">Exporter directement depuis Postman</p>
+    <div className="flex items-center gap-2 text-xs">
+      <span className="px-2 py-1 bg-pink-500/10 text-pink-600 dark:text-pink-400 rounded">Populaire</span>
+      <span className="px-2 py-1 bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 rounded">Facile</span>
+    </div>
+  </div>
+</div>
+
+## Comment ça marche
+
+Le système de documentation API utilise **l'auto-détection** par défaut. Référencez simplement votre fichier de spécification et le système détermine automatiquement le format :
+
+```mdx
+<ApiReference spec="/api-specs/my-api.json" />
+```
+
+Le parseur détectera si votre fichier est :
+- ✅ Format Specra (natif)
+- ✅ OpenAPI 3.x ou Swagger 2.0
+- ✅ Collection Postman v2.0 ou v2.1
+
+## Comparaison des formats
+
+| Fonctionnalité | Specra | OpenAPI | Postman |
+|--------------|--------|---------|---------|
+| **Facile à écrire** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
+| **Standard industriel** | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+| **Validation de schéma** | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ |
+| **Génération de code** | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
+| **Exemples** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| **Auto-génération** | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+
+## Choisir un format
+
+### Utilisez le format Specra quand :
+
+- 📝 Vous rédigez la documentation à partir de zéro
+- 🎯 Vous avez besoin d'un format simple et minimal
+- 🚀 Vous voulez commencer rapidement
+- 📖 Vous documentez < 20 points de terminaison
+
+**Exemple :**
+```json
+{
+  "title": "My API",
+  "baseUrl": "https://api.example.com",
+  "endpoints": [...]
+}
+```
+
+[Voir l'exemple Specra →](/docs/v1.0.0/api-test)
+
+---
+
+### Utilisez OpenAPI quand :
+
+- 🏢 Vous suivez les standards de l'entreprise
+- 🔧 Vous générez des spécifications à partir du code
+- 🔄 Vous partagez des spécifications entre outils
+- 📊 Vous avez besoin d'une validation de schéma détaillée
+- 🌐 Vous travaillez avec des passerelles API
+
+**Exemple :**
+```json
+{
+  "openapi": "3.0.0",
+  "info": {...},
+  "paths": {...}
+}
+```
+
+[Voir l'exemple OpenAPI →](/docs/v1.0.0/api-openapi)
+
+---
+
+### Utilisez Postman quand :
+
+- 🧪 Votre équipe utilise Postman pour les tests
+- 💾 Vous avez des collections Postman existantes
+- 🔁 Vous voulez garder la documentation synchronisée avec les tests
+- 📸 Vous avez besoin d'exemples de réponses sauvegardés
+- ⚡ Vous voulez un flux de travail d'exportation rapide
+
+**Exemple :**
+```json
+{
+  "info": {
+    "schema": "https://schema.getpostman.com/..."
+  },
+  "item": [...]
+}
+```
+
+[Voir l'exemple Postman →](/docs/v1.0.0/api-postman)
+
+## Exemples de workflow
+
+### Workflow 1 : Commencer simplement (Specra)
+
+Parfait pour les nouveaux projets ou les petites API :
+
+1. **Créez un fichier JSON Specra** dans `/public/api-specs/`
+2. **Ajoutez vos points de terminaison** avec des exemples
+3. **Référencez dans MDX** :
+   ```mdx
+   <ApiReference spec="/api-specs/my-api.json" />
+   ```
+4. **Terminé !** La documentation interactive est en ligne
+
+---
+
+### Workflow 2 : Utiliser OpenAPI existant (OpenAPI)
+
+Idéal si vous utilisez déjà OpenAPI :
+
+1. **Générez la spécification OpenAPI** à partir de votre code (par ex., FastAPI, Swagger, etc.)
+2. **Placez-la dans `/public/api-specs/`**
+3. **Référencez dans MDX** :
+   ```mdx
+   <ApiReference spec="/api-specs/openapi.json" />
+   ```
+4. **Gardez synchronisé** en régénérant lorsque le code change
+
+---
+
+### Workflow 3 : Exporter depuis Postman (Postman)
+
+Idéal pour les équipes utilisant Postman :
+
+1. **Développez et testez** votre API dans Postman
+2. **Ajoutez des exemples de réponses** dans Postman
+3. **Exportez la collection** (format v2.1)
+4. **Placez-la dans `/public/api-specs/`**
+5. **Référencez dans MDX** :
+   ```mdx
+   <ApiReference spec="/api-specs/collection.json" />
+   ```
+6. **Réexportez** lorsque vous mettez à jour votre collection
+
+## Approche mixte
+
+Vous pouvez utiliser plusieurs formats dans le même projet :
+
+```mdx
+<!-- OpenAPI généré automatiquement pour l'API principale -->
+<ApiReference spec="/api-specs/main-api-openapi.json" />
+
+<!-- Collection Postman pour l'API externe -->
+<ApiReference spec="/api-specs/third-party-postman.json" />
+
+<!-- Specra pour les outils internes -->
+<ApiReference spec="/api-specs/internal-tools-specra.json" />
+```
+
+## Utilisation avancée
+
+### Sélection explicite du parseur
+
+Bien que l'auto-détection fonctionne bien, vous pouvez spécifier explicitement le parseur :
+
+```mdx
+<ApiReference spec="/api-specs/my-api.json" parser="openapi" />
+<ApiReference spec="/api-specs/my-api.json" parser="postman" />
+<ApiReference spec="/api-specs/my-api.json" parser="specra" />
+```
+
+### Désactiver le Playground
+
+Désactivez le terrain de jeu interactif si vous n'en avez pas besoin :
+
+```mdx
+<ApiReference spec="/api-specs/my-api.json" showPlayground={false} />
+```
+
+### Versions multiples
+
+Documentez plusieurs versions d'API :
+
+```mdx
+## Version 2.0 (Actuel)
+
+<ApiReference spec="/api-specs/api-v2.json" />
+
+## Version 1.0 (Obsolète)
+
+<Callout type="warning">
+Cette version sera abandonnée le 1er juin 2024
+</Callout>
+
+<ApiReference spec="/api-specs/api-v1.json" showPlayground={false} />
+```
+
+## Fonctionnalités communes
+
+Quel que soit le format que vous choisissez, toutes les spécifications prennent en charge :
+
+✅ **Paramètres de chemin** - Segments d'URL dynamiques (`:id`, `{id}`)
+
+✅ **Paramètres de requête** - Chaînes de requête d'URL
+
+✅ **En-têtes de requête** - En-têtes personnalisés
+
+✅ **Corps de requête** - Payloads JSON
+
+✅ **Exemples de réponses** - Exemples de réponses
+
+✅ **Codes de réponse multiples** - 200, 404, 500, etc.
+
+✅ **Authentification** - Bearer, API Key, Basic
+
+✅ **Playground interactif** - Testez les API en direct
+
+## Prochaines étapes
+
+Prêt à documenter votre API ? Choisissez un format et lancez-vous :
+
+- [Voir l'exemple de format Specra →](/docs/v1.0.0/api-test)
+- [Voir l'exemple OpenAPI →](/docs/v1.0.0/api-openapi)
+- [Voir l'exemple Postman →](/docs/v1.0.0/api-postman)
+- [En savoir plus sur les composants manuels →](/docs/v1.0.0/api-example)
+
+<Callout type="tip" title="Besoin d'aide ?">
+Consultez [API_PARSERS.md](/API_PARSERS.md) pour une documentation technique détaillée sur le système de parseur.
+</Callout>

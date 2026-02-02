@@ -1,0 +1,498 @@
+---
+title: Configuración de Navegación
+description: Configure la barra lateral, las migas de pan, la tabla de contenido y los grupos de pestañas
+sidebar_position: 3
+icon: layout
+tab_group: guides
+---
+
+# Configuración de Navegación
+
+La sección `navigation` controla cómo los usuarios se mueven a través de su documentación. Configure la barra lateral, las migas de pan, la tabla de contenido y los grupos de pestañas para crear una experiencia de navegación intuitiva.
+
+## Configuración Básica
+
+Aquí hay una configuración de navegación mínima:
+
+```json
+{
+  "navigation": {
+    "showSidebar": true,
+    "showBreadcrumbs": true,
+    "showTableOfContents": true
+  }
+}
+```
+
+Specra proporciona valores predeterminados sensatos, por lo que solo necesita configurar lo que desea cambiar.
+
+## Configuración Completa
+
+```json
+{
+  "navigation": {
+    "showSidebar": true,
+    "collapsibleSidebar": true,
+    "showBreadcrumbs": true,
+    "showTableOfContents": true,
+    "tocPosition": "right",
+    "tocMaxDepth": 3,
+    "tabGroups": [
+      {
+        "id": "guides",
+        "label": "Guías",
+        "icon": "book-open"
+      },
+      {
+        "id": "api",
+        "label": "Referencia API",
+        "icon": "zap"
+      },
+      {
+        "id": "components",
+        "label": "Componentes",
+        "icon": "layers"
+      }
+    ]
+  }
+}
+```
+
+## Configuración de la Barra Lateral
+
+### showSidebar
+
+**Tipo:** `boolean`
+**Predeterminado:** `true`
+
+Mostrar u ocultar la navegación de la barra lateral.
+
+```json
+{
+  "navigation": {
+    "showSidebar": true
+  }
+}
+```
+
+Establezca en `false` para ocultar la barra lateral completamente. Útil para páginas de destino o sitios de marketing.
+
+### collapsibleSidebar
+
+**Tipo:** `boolean`
+**Predeterminado:** `true`
+
+Permitir a los usuarios contraer y expandir secciones de la barra lateral.
+
+```json
+{
+  "navigation": {
+    "collapsibleSidebar": true
+  }
+}
+```
+
+Cuando es `true`, las secciones de carpeta tienen flechas para contraer/expandir. Cuando es `false`, todas las secciones están siempre expandidas.
+
+## Migas de Pan (Breadcrumbs)
+
+### showBreadcrumbs
+
+**Tipo:** `boolean`
+**Predeterminado:** `true`
+
+Mostrar la navegación de migas de pan en la parte superior de cada página.
+
+```json
+{
+  "navigation": {
+    "showBreadcrumbs": true
+  }
+}
+```
+
+Las migas de pan muestran la ubicación de la página en la jerarquía de documentación:
+
+```
+Inicio > Guías > Introducción
+```
+
+<Callout type="tip">
+Las migas de pan ayudan a los usuarios a comprender dónde se encuentran y navegar de regreso a las secciones principales.
+</Callout>
+
+## Tabla de Contenido (Table of Contents)
+
+### showTableOfContents
+
+**Tipo:** `boolean`
+**Predeterminado:** `true`
+
+Mostrar la tabla de contenido (TOC) en las páginas de documentación.
+
+```json
+{
+  "navigation": {
+    "showTableOfContents": true
+  }
+}
+```
+
+La TOC muestra todos los encabezados de la página actual con enlaces para desplazarse a cada sección.
+
+### tocPosition
+
+**Tipo:** `"left"` o `"right"`
+**Predeterminado:** `"right"`
+
+Coloque la tabla de contenido en el lado izquierdo o derecho de la página.
+
+```json
+{
+  "navigation": {
+    "tocPosition": "right"
+  }
+}
+```
+
+**Posición derecha (predeterminado):**
+- La TOC aparece en la barra lateral derecha
+- Diseño de documentación tradicional
+- Más espacio de lectura para el contenido
+
+**Posición izquierda:**
+- La TOC aparece en la barra lateral izquierda debajo de la navegación principal
+- Diseño compacto
+- Menos desplazamiento horizontal en pantallas más pequeñas
+
+### tocMaxDepth
+
+**Tipo:** `number` (1-6)
+**Predeterminado:** `3`
+
+Nivel máximo de encabezado para mostrar en la tabla de contenido.
+
+```json
+{
+  "navigation": {
+    "tocMaxDepth": 3
+  }
+}
+```
+
+**Opciones:**
+- `1` - Solo encabezados H1
+- `2` - Encabezados H1 y H2
+- `3` - Encabezados H1, H2 y H3 (recomendado)
+- `4` - Hasta H4
+- `5` - Hasta H5
+- `6` - Todos los encabezados
+
+<Callout type="warning">
+Establecer esto demasiado alto (5 o 6) puede hacer que la TOC se vea abarrotada. La mayoría de los documentos funcionan mejor con 2 o 3.
+</Callout>
+
+## Grupos de Pestañas (Tab Groups)
+
+Los grupos de pestañas organizan su documentación en secciones lógicas con pestañas de navegación separadas.
+
+### Grupos de Pestañas Básicos
+
+```json
+{
+  "navigation": {
+    "tabGroups": [
+      {
+        "id": "guides",
+        "label": "Guías",
+        "icon": "book-open"
+      },
+      {
+        "id": "api",
+        "label": "Referencia API",
+        "icon": "zap"
+      }
+    ]
+  }
+}
+```
+
+### Propiedades del Grupo de Pestañas
+
+Cada grupo de pestañas tiene tres propiedades:
+
+**id** (requerido)
+- Identificador único para el grupo de pestañas
+- Usado en el frontmatter de la página: `tab_group: "guides"`
+- Minúsculas, sin espacios
+
+**label** (requerido)
+- Nombre para mostrar en la pestaña
+- Puede incluir espacios y mayúsculas
+
+**icon** (opcional)
+- Nombre del icono Lucide para mostrar junto a la etiqueta
+- Hace que las pestañas sean más visuales y fáciles de escanear
+
+### Asignar Páginas a Grupos de Pestañas
+
+En su frontmatter MDX, especifique a qué grupo de pestañas pertenece una página:
+
+```mdx
+---
+title: Introducción
+tab_group: guides
+---
+```
+
+Las páginas con el mismo valor `tab_group` aparecen juntas bajo esa pestaña.
+
+### Configuraciones Comunes de Grupos de Pestañas
+
+**Documentación + API:**
+```json
+{
+  "tabGroups": [
+    {
+      "id": "docs",
+      "label": "Documentación",
+      "icon": "book"
+    },
+    {
+      "id": "api",
+      "label": "Referencia API",
+      "icon": "code"
+    }
+  ]
+}
+```
+
+**Guías + Componentes + API:**
+```json
+{
+  "tabGroups": [
+    {
+      "id": "guides",
+      "label": "Guías",
+      "icon": "book-open"
+    },
+    {
+      "id": "components",
+      "label": "Componentes",
+      "icon": "layers"
+    },
+    {
+      "id": "api",
+      "label": "API",
+      "icon": "zap"
+    }
+  ]
+}
+```
+
+**Documentación multiproducto:**
+```json
+{
+  "tabGroups": [
+    {
+      "id": "platform",
+      "label": "Plataforma",
+      "icon": "box"
+    },
+    {
+      "id": "mobile",
+      "label": "SDK Móvil",
+      "icon": "smartphone"
+    },
+    {
+      "id": "web",
+      "label": "SDK Web",
+      "icon": "monitor"
+    }
+  ]
+}
+```
+
+## Iconos Disponibles
+
+Specra usa iconos Lucide. Opciones populares para documentación:
+
+**General:**
+- `book` - Libros, documentación
+- `book-open` - Libro abierto, lectura
+- `file-text` - Documentos, páginas
+- `layout` - Diseño, estructura
+
+**Técnico:**
+- `code` - Código, programación
+- `zap` - API, rápido, dinámico
+- `terminal` - CLI, línea de comandos
+- `database` - Base de datos, datos
+
+**UI:**
+- `layers` - Componentes, pila
+- `palette` - Diseño, temas
+- `settings` - Configuración
+- `grid` - Cuadrícula de diseño
+
+**Acciones:**
+- `rocket` - Lanzamiento, implementación
+- `wrench` - Herramientas, utilidades
+- `shield` - Seguridad
+- `search` - Búsqueda, encontrar
+
+Explore todos los iconos en [lucide.dev](https://lucide.dev/icons/)
+
+## Organización de la Barra Lateral
+
+### Generación Automática
+
+Specra genera automáticamente su barra lateral a partir de su estructura de archivos:
+
+```txt
+docs/v1.0.0/
+├── getting-started.mdx        → Introducción
+├── installation.mdx           → Instalación
+└── guides/                    → Guías (carpeta)
+    ├── basics.mdx            →   Básicos
+    └── advanced.mdx          →   Avanzado
+```
+
+### Controlar el Orden
+
+Use `sidebar_position` en el frontmatter para controlar el orden de la página:
+
+```mdx
+---
+title: Introducción
+sidebar_position: 1
+---
+```
+
+Los números más bajos aparecen primero. Las páginas sin posiciones se ordenan alfabéticamente.
+
+### Configuración de Categoría
+
+Personalice la apariencia de la carpeta con `_category_.json`:
+
+```json
+{
+  "label": "Guías de Usuario",
+  "position": 2,
+  "collapsible": true,
+  "collapsed": false,
+  "icon": "book-open"
+}
+```
+
+Consulte [Escribir Contenido](/docs/v1.0.0/writing-content) para obtener más información sobre cómo organizar el contenido.
+
+## Ejemplos
+
+### Configuración Mínima
+
+Simplemente habilite lo básico:
+
+```json
+{
+  "navigation": {
+    "showSidebar": true,
+    "showBreadcrumbs": true,
+    "showTableOfContents": true
+  }
+}
+```
+
+### Diseño Limpio
+
+TOC a la izquierda, encabezados más profundos:
+
+```json
+{
+  "navigation": {
+    "showSidebar": true,
+    "collapsibleSidebar": true,
+    "showBreadcrumbs": true,
+    "showTableOfContents": true,
+    "tocPosition": "left",
+    "tocMaxDepth": 4
+  }
+}
+```
+
+### Documentación Multisección
+
+Con grupos de pestañas para diferentes audiencias:
+
+```json
+{
+  "navigation": {
+    "showSidebar": true,
+    "collapsibleSidebar": true,
+    "showBreadcrumbs": true,
+    "showTableOfContents": true,
+    "tocPosition": "right",
+    "tocMaxDepth": 3,
+    "tabGroups": [
+      {
+        "id": "getting-started",
+        "label": "Introducción",
+        "icon": "rocket"
+      },
+      {
+        "id": "developers",
+        "label": "Desarrolladores",
+        "icon": "code"
+      },
+      {
+        "id": "designers",
+        "label": "Diseñadores",
+        "icon": "palette"
+      }
+    ]
+  }
+}
+```
+
+## Mejores Prácticas
+
+**Use los grupos de pestañas sabiamente** - No cree demasiados. 3-5 pestañas como máximo funcionan mejor.
+
+**Elija etiquetas descriptivas** - Haga obvio lo que hay en cada pestaña o sección.
+
+**Elija iconos apropiados** - Los iconos deben reforzar el propósito de la pestaña.
+
+**Establezca tocMaxDepth apropiadamente** - La mayoría de los documentos funcionan mejor con 2 o 3 niveles.
+
+**Mantenga la barra lateral contraíble** - Permita a los usuarios ocultar secciones que no necesitan.
+
+**Mostrar migas de pan** - Ayudan a los usuarios a navegar por documentación compleja.
+
+## Próximos Pasos
+
+<CardGrid cols={2}>
+  <Card
+    icon="globe"
+    title="Configuración del Sitio"
+    description="Configure metadatos y marca del sitio"
+    href="/docs/v1.0.0/configuration/site-config"
+  />
+  <Card
+    icon="rocket"
+    title="Config de Implementación"
+    description="Configurar ajustes de implementación"
+    href="/docs/v1.0.0/configuration/deployment-config"
+  />
+  <Card
+    icon="sliders"
+    title="Configuración Avanzada"
+    description="Análisis, búsqueda, características y más"
+    href="/docs/v1.0.0/configuration/advanced"
+  />
+  <Card
+    icon="arrow-left"
+    title="Descripción General de Configuración"
+    description="Volver a la descripción general de configuración"
+    href="/docs/v1.0.0/configuration/overview"
+  />
+</CardGrid>

@@ -1,0 +1,65 @@
+---
+title: Badge
+description: Affichez des indicateurs d'état et des étiquettes avec des badges stylisés
+sidebar_position: 2
+---
+
+Les badges sont de petits indicateurs d'état qui mettent en évidence des informations importantes, des catégories ou des statuts.
+
+## Utilisation
+
+```mdx
+<Badge>Défaut</Badge>
+<Badge variant="success">Succès</Badge>
+<Badge variant="warning">Avertissement</Badge>
+<Badge variant="error">Erreur</Badge>
+<Badge variant="info">Info</Badge>
+```
+
+## Exemple en direct
+
+<Badge>Défaut</Badge> <Badge variant="success">Succès</Badge> <Badge variant="warning">Avertissement</Badge> <Badge variant="error">Erreur</Badge> <Badge variant="info">Info</Badge>
+
+## Variantes
+
+### Défaut
+<Badge>Badge par défaut</Badge>
+
+Utilisé pour des informations neutres ou des étiquettes générales.
+
+### Succès
+<Badge variant="success">Terminé</Badge>
+
+Indique des opérations réussies, un statut actif ou des résultats positifs.
+
+### Avertissement
+<Badge variant="warning">En attente</Badge>
+
+Met en évidence les éléments qui nécessitent une attention ou sont dans un état de transition.
+
+### Erreur
+<Badge variant="error">Échoué</Badge>
+
+Affiche les erreurs, les problèmes critiques ou un statut négatif.
+
+### Info
+<Badge variant="info">Nouveau</Badge>
+
+Fournit un contexte informatif ou met en évidence de nouvelles fonctionnalités.
+
+## Props
+
+| Prop | Type | Défaut | Description |
+|------|------|--------|-------------|
+| `children` | `ReactNode` | requis | Contenu texte du badge |
+| `variant` | `"default" \| "success" \| "warning" \| "error" \| "info"` | `"default"` | Variante de couleur |
+
+## Modèles courants
+
+Utilisez des badges en ligne avec du texte pour indiquer le statut :
+
+```mdx
+Cette fonctionnalité est <Badge variant="success">Stable</Badge> et prête pour la production.
+```
+
+Cette fonctionnalité est <Badge variant="success">Stable</Badge> et prête pour la production.

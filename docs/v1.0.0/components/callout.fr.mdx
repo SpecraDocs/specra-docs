@@ -1,0 +1,312 @@
+---
+title: Callout
+description: Mettez en évidence des informations importantes avec des boîtes d'appel stylisées
+sidebar_position: 4
+icon: alert-circle
+tab_group: components
+---
+
+# Callout
+
+Les Callouts attirent l'attention sur des informations importantes dans votre documentation. Ils existent en différents styles pour transmettre différents types de messages, des astuces utiles aux avertissements critiques.
+
+## Utilisation de base
+
+<Tabs defaultValue="Preview">
+  <Tab label="Aperçu">
+<Callout type="info">
+  Ceci est une information utile pour le lecteur.
+</Callout>
+  </Tab>
+  <Tab label="Code">
+```mdx
+<Callout type="info">
+  Ceci est une information utile pour le lecteur.
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+## Types de Callout
+
+Specra inclut sept types de callout, chacun avec un style distinct :
+
+### Info
+
+<Tabs defaultValue="Preview">
+  <Tab label="Aperçu">
+<Callout type="info">
+  Fournit un contexte supplémentaire ou des informations utiles qui améliorent la compréhension.
+</Callout>
+  </Tab>
+  <Tab label="Code">
+```mdx
+<Callout type="info">
+  Fournit un contexte supplémentaire ou des informations utiles.
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+### Note
+
+<Tabs defaultValue="Preview">
+  <Tab label="Aperçu">
+<Callout type="note">
+  Met en évidence des détails importants dont le lecteur doit être conscient.
+</Callout>
+  </Tab>
+  <Tab label="Code">
+```mdx
+<Callout type="note">
+  Met en évidence des détails importants dont le lecteur doit être conscient.
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+### Conseil (Tip)
+
+<Tabs defaultValue="Preview">
+  <Tab label="Aperçu">
+<Callout type="tip">
+  Offre des suggestions pour une meilleure utilisation ou de meilleures pratiques.
+</Callout>
+  </Tab>
+  <Tab label="Code">
+```mdx
+<Callout type="tip">
+  Offre des suggestions pour une meilleure utilisation ou de meilleures pratiques.
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+### Avertissement (Warning)
+
+<Tabs defaultValue="Preview">
+  <Tab label="Aperçu">
+<Callout type="warning">
+  Alerte les utilisateurs sur des problèmes potentiels ou des changements de rupture.
+</Callout>
+  </Tab>
+  <Tab label="Code">
+```mdx
+<Callout type="warning">
+  Alerte les utilisateurs sur des problèmes potentiels ou des changements de rupture.
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+### Succès (Success)
+
+<Tabs defaultValue="Preview">
+  <Tab label="Aperçu">
+<Callout type="success">
+  Confirme des résultats positifs ou des actions terminées avec succès.
+</Callout>
+  </Tab>
+  <Tab label="Code">
+```mdx
+<Callout type="success">
+  Confirme des résultats positifs ou des actions terminées avec succès.
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+### Erreur (Error)
+
+<Tabs defaultValue="Preview">
+  <Tab label="Aperçu">
+<Callout type="error">
+  Met en évidence des problèmes critiques ou des choses que les utilisateurs doivent éviter.
+</Callout>
+  </Tab>
+  <Tab label="Code">
+```mdx
+<Callout type="error">
+  Met en évidence des problèmes critiques ou des choses que les utilisateurs doivent éviter.
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+### Danger
+
+<Tabs defaultValue="Preview">
+  <Tab label="Aperçu">
+<Callout type="danger">
+  Avertit d'actions potentiellement destructrices ou irréversibles.
+</Callout>
+  </Tab>
+  <Tab label="Code">
+```mdx
+<Callout type="danger">
+  Avertit d'actions potentiellement destructrices ou irréversibles.
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+## Props
+
+| Prop | Type | Défaut | Description |
+|------|------|--------|-------------|
+| `type` | `string` | `"info"` | Style de callout : `info`, `note`, `tip`, `warning`, `success`, `error`, ou `danger` |
+| `children` | `ReactNode` | Requis | Le contenu à l'intérieur du callout |
+
+## Exemples avancés
+
+### Contenu multi-lignes
+
+Les callouts peuvent contenir n'importe quel contenu MDX, y compris du texte formaté, des listes et du code :
+
+<Tabs defaultValue="Preview">
+  <Tab label="Aperçu">
+<Callout type="warning">
+  **Considérations importantes avant de déployer :**
+
+  - Sauvegardez votre base de données
+  - Testez d'abord dans l'environnement de staging
+  - Informez votre équipe des temps d'arrêt
+
+  Exécutez `npm run db:backup` pour créer une sauvegarde.
+</Callout>
+  </Tab>
+  <Tab label="Code">
+```mdx
+<Callout type="warning">
+  **Considérations importantes avant de déployer :**
+
+  - Sauvegardez votre base de données
+  - Testez d'abord dans l'environnement de staging
+  - Informez votre équipe des temps d'arrêt
+
+  Exécutez `npm run db:backup` pour créer une sauvegarde.
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+### Composants imbriqués
+
+Vous pouvez imbriquer d'autres composants à l'intérieur des callouts :
+
+<Tabs defaultValue="Preview">
+  <Tab label="Aperçu">
+<Callout type="info">
+  **Conseil de pro :** Utilisez des blocs de code pour montrer des exemples
+
+  <Tabs defaultValue="js">
+    <Tab label="JavaScript">
+      console.log("Bonjour !")
+    </Tab>
+    <Tab label="Python">
+      print("Bonjour !")
+    </Tab>
+  </Tabs>
+</Callout>
+  </Tab>
+  <Tab label="Code">
+```mdx
+<Callout type="info">
+  **Conseil de pro :** Utilisez des blocs de code pour montrer des exemples
+
+  <Tabs defaultValue="js">
+    <Tab label="JavaScript">
+      console.log("Bonjour !")
+    </Tab>
+    <Tab label="Python">
+      print("Bonjour !")
+    </Tab>
+  </Tabs>
+</Callout>
+```
+  </Tab>
+</Tabs>
+
+## Alertes de style GitHub
+
+Vous préférez la syntaxe Markdown ? Specra prend également en charge la syntaxe d'alerte de style GitHub en utilisant des blockquotes :
+
+<Tabs defaultValue="Preview">
+  <Tab label="Aperçu">
+> [!NOTE]
+> Ceci est une note utilisant la syntaxe de style GitHub.
+
+> [!TIP]
+> Ceci est une astuce utilisant la syntaxe blockquote.
+
+> [!WARNING]
+> Ceci est une alerte d'avertissement.
+  </Tab>
+  <Tab label="Code">
+```markdown
+> [!NOTE]
+> Ceci est une note utilisant la syntaxe de style GitHub.
+
+> [!TIP]
+> Ceci est une astuce utilisant la syntaxe blockquote.
+
+> [!WARNING]
+> Ceci est une alerte d'avertissement.
+```
+  </Tab>
+</Tabs>
+
+**Types d'alertes pris en charge :**
+- `[!NOTE]` - Identique à type="note"
+- `[!TIP]` - Identique à type="tip"
+- `[!IMPORTANT]` - Identique à type="warning"
+- `[!WARNING]` - Identique à type="warning"
+- `[!CAUTION]` - Identique à type="danger"
+
+## Quand utiliser chaque type
+
+**Info** - Contexte supplémentaire qui améliore la compréhension
+- "Vous pouvez également réaliser cela en utilisant le CLI"
+- "Cette fonctionnalité est disponible dans la v2.0 et ultérieure"
+
+**Note** - Informations importantes qui ne doivent pas être ignorées
+- "Ce paramètre affecte tous les utilisateurs de votre organisation"
+- "Les changements prennent effet après le redémarrage du serveur"
+
+**Tip** - Meilleures pratiques et suggestions utiles
+- "Pour de meilleures performances, activez la mise en cache"
+- "Utilisez TypeScript pour une meilleure autocomplétion"
+
+**Warning** - Problèmes potentiels ou changements de rupture
+- "Cela modifiera votre schéma de base de données"
+- "Obsolète dans la v3.0, utilisez newMethod() à la place"
+
+**Success** - Confirmations positives
+- "Configuration terminée ! Votre site est prêt"
+- "Tous les tests ont réussi"
+
+**Error** - Problèmes critiques à éviter
+- "N'exposez pas votre clé API dans le code client"
+- "Cette opération ne peut pas être annulée"
+
+**Danger** - Actions destructrices ou irréversibles
+- "Cela supprimera définitivement toutes les données"
+- "Continuer révoquera tous les jetons d'accès"
+
+## Accessibilité
+
+Les callouts sont sémantiques et accessibles :
+
+- Utilise les rôles ARIA appropriés
+- Compatible avec les lecteurs d'écran
+- Navigable au clavier
+- Conforme au contraste des couleurs (WCAG AA)
+- Les icônes sont décoratives avec un texte alternatif approprié
+
+## Composants associés
+
+<CardGrid cols={3}>
+  <Card icon="square" title="Card" href="/docs/v1.0.0/components/card" />
+  <Card icon="message-square" title="Badge" href="/docs/v1.0.0/components/badge" />
+  <Card icon="layers" title="Accordéon" href="/docs/v1.0.0/components/accordion" />
+</CardGrid>

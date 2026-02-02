@@ -1,0 +1,85 @@
+---
+title: Icônes
+description: Affichez des icônes de Lucide, Font Awesome ou des sources personnalisées
+sidebar_position: 9
+---
+
+Le composant Icon affiche des icônes provenant de diverses sources, notamment les icônes Lucide, Font Awesome et des images personnalisées.
+
+## Utilisation
+
+```mdx
+<Icon icon="rocket" size={24} color="#3b82f6" />
+```
+
+## Exemples en direct
+
+### Icônes Lucide
+
+<Icon icon="rocket" size={24} /> <Icon icon="star" size={24} /> <Icon icon="heart" size={24} /> <Icon icon="check-circle" size={24} />
+
+### Avec des couleurs
+
+<Icon icon="rocket" size={24} color="#3b82f6" /> <Icon icon="star" size={24} color="#f59e0b" /> <Icon icon="heart" size={24} color="#ef4444" /> <Icon icon="check-circle" size={24} color="#10b981" />
+
+### Différentes tailles
+
+<Icon icon="settings" size={16} /> <Icon icon="settings" size={20} /> <Icon icon="settings" size={24} /> <Icon icon="settings" size={32} />
+
+### En ligne avec le texte
+
+Cette tâche est <Icon icon="check-circle" size={16} color="#10b981" /> terminée !
+
+Vous voulez en savoir plus ? <Icon icon="arrow-right" size={16} /> Consultez la documentation.
+
+## Props
+
+| Prop | Type | Défaut | Description |
+|------|------|--------|-------------|
+| `icon` | `string \| ReactNode` | requis | Nom de l'icône, URL ou nœud React |
+| `iconType` | `string` | `"regular"` | Style Font Awesome (si utilisation de FA) |
+| `color` | `string` | - | Couleur de l'icône (valeur de couleur CSS) |
+| `size` | `number` | `20` | Taille de l'icône en pixels |
+| `className` | `string` | - | Classes CSS supplémentaires |
+
+## Sources d'icônes
+
+### Icônes Lucide (Défaut)
+
+Utilisez des noms d'icônes en kebab-case de [Lucide](https://lucide.dev/icons) :
+
+```mdx
+<Icon icon="arrow-right" />
+<Icon icon="check-circle" />
+<Icon icon="external-link" />
+```
+
+### URLs d'images
+
+Utilisez n'importe quelle URL d'image ou chemin local :
+
+```mdx
+<Icon icon="/images/logo.svg" size={24} />
+<Icon icon="https://example.com/icon.png" size={24} />
+```
+
+### Font Awesome
+
+Préfixez les icônes avec `fa-` pour utiliser Font Awesome :
+
+```mdx
+<Icon icon="fa-github" iconType="brands" />
+```
+
+## Icônes courantes
+
+| Icône | Nom | Utilisation |
+|-------|-----|-------------|
+| <Icon icon="home" size={16} /> | `home` | Accueil/tableau de bord |
+| <Icon icon="settings" size={16} /> | `settings` | Configuration |
+| <Icon icon="user" size={16} /> | `user` | Profil utilisateur |
+| <Icon icon="search" size={16} /> | `search` | Recherche |
+| <Icon icon="plus" size={16} /> | `plus` | Ajouter nouveau |
+| <Icon icon="x" size={16} /> | `x` | Fermer |
+| <Icon icon="check" size={16} /> | `check` | Succès |
+| <Icon icon="alert-triangle" size={16} /> | `alert-triangle` | Avertissement |

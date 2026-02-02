@@ -1,0 +1,60 @@
+---
+title: Acordeón
+description: Cree secciones de contenido plegables con los componentes Accordion y AccordionItem
+sidebar_position: 1
+---
+
+El componente Acordeón crea secciones de contenido plegables, perfecto para preguntas frecuentes, menús expandibles u organizar grandes cantidades de contenido.
+
+## Uso
+
+```mdx
+<Accordion>
+  <AccordionItem title="Primera pregunta" defaultOpen>
+    Este contenido es visible por defecto debido a `defaultOpen`.
+  </AccordionItem>
+  
+  <AccordionItem title="Segunda pregunta">
+    Este contenido está colapsado por defecto.
+  </AccordionItem>
+</Accordion>
+```
+
+## Ejemplo en vivo
+
+<Accordion>
+  <AccordionItem title="¿Qué es un acordeón?" defaultOpen>
+    Un acordeón es un patrón de interfaz de usuario que permite a los usuarios expandir y colapsar secciones de contenido. Es útil para organizar información en un formato compacto y escaneable.
+  </AccordionItem>
+  
+  <AccordionItem title="¿Cuándo debo usar acordeones?">
+    Use acordeones cuando tenga múltiples secciones de contenido que los usuarios puedan querer explorar sin desplazarse por todo. Los casos de uso comunes incluyen preguntas frecuentes, listas de características y opciones de configuración.
+  </AccordionItem>
+  
+  <AccordionItem title="¿Puedo tener varios elementos abiertos?">
+    ¡Sí! Por defecto, el Acordeón permite que varios elementos estén abiertos simultáneamente. Cada AccordionItem funciona de forma independiente.
+  </AccordionItem>
+</Accordion>
+
+## Props
+
+### Accordion
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `children` | `ReactNode` | requerido | Componentes AccordionItem para renderizar |
+| `type` | `"single" \| "multiple"` | `"multiple"` | Si uno o varios elementos pueden estar abiertos |
+
+### AccordionItem
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `title` | `string` | requerido | El texto del encabezado en el que se puede hacer clic |
+| `children` | `ReactNode` | requerido | Contenido mostrado cuando se expande |
+| `defaultOpen` | `boolean` | `false` | Si el elemento comienza expandido |
+
+## Consejos
+
+<Callout type="tip">
+Use la propiedad `defaultOpen` en el primer AccordionItem para dar a los usuarios una vista previa del formato del contenido.
+</Callout>

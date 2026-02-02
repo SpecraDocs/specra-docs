@@ -1,0 +1,353 @@
+---
+title: Implementar en Vercel
+description: Despliegue su documentación Specra en Vercel sin configuración
+sidebar_position: 2
+icon: triangle
+tab_group: guides
+---
+
+# Implementar en Vercel
+
+Vercel es la forma más fácil de implementar su documentación Specra. Está construido por los creadores de Next.js, por lo que todo funciona perfectamente desde el primer momento.
+
+## ¿Por qué Vercel?
+
+- **Cero configuración** - Detección y configuración automáticas
+- **Implementaciones instantáneas** - En vivo en menos de 60 segundos
+- **HTTPS automático** - Certificados SSL incluidos
+- **Red perimetral** - Carga rápida en todo el mundo
+- **Implementaciones de vista previa** - Cada envío de git obtiene una URL
+- **Nivel gratuito** - Límites generosos para sitios de documentación
+
+## Implementación Rápida
+
+<Steps>
+  <Step title="Enviar a GitHub">
+    Si aún no lo ha hecho, envíe su proyecto a GitHub:
+
+```bash
+git init
+git add .
+git commit -m "Commit inicial"
+git remote add origin https://github.com/username/repo.git
+git push -u origin main
+```
+  </Step>
+
+  <Step title="Importar a Vercel">
+    1. Vaya a [vercel.com/new](https://vercel.com/new)
+    2. Haga clic en "Import Git Repository" (Importar Repositorio Git)
+    3. Seleccione su repositorio de documentación
+    4. Vercel detecta automáticamente Next.js y configura todo
+
+    ¡No se necesita configuración manual!
+  </Step>
+
+  <Step title="Implementar">
+    Haga clic en "Deploy" (Implementar) y espere unos 30-60 segundos.
+
+    Obtendrá una URL de producción como `su-proyecto.vercel.app`
+  </Step>
+</Steps>
+
+<Callout type="success">
+¡Eso es todo! Su documentación ahora está en vivo con HTTPS automático y CDN global.
+</Callout>
+
+## Configuración
+
+Vercel utiliza automáticamente esta configuración para proyectos Next.js:
+
+| Configuración | Valor |
+|---------------|-------|
+| Comando de Compilación | `npm run build` |
+| Directorio de Salida | `.next` |
+| Comando de Instalación | `npm install` |
+| Versión de Node | 20.x (última LTS) |
+
+### Anular Configuración (Opcional)
+
+Si necesita configuraciones personalizadas, cree `vercel.json`:
+
+```json
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm ci",
+  "framework": "nextjs",
+  "regions": ["iad1"]
+}
+```
+
+## Variables de Entorno
+
+Agregue variables de entorno en el panel de Vercel:
+
+<Steps>
+  <Step title="Ir a Configuración del Proyecto">
+    Haga clic en su proyecto → Settings → Environment Variables
+  </Step>
+
+  <Step title="Agregar Variables">
+    Agregue sus variables una por una:
+
+```
+MEILISEARCH_HOST=https://search.example.com
+MEILISEARCH_API_KEY=su-clave-de-busqueda
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+```
+
+<Callout type="tip">
+Las variables que comienzan con `NEXT_PUBLIC_` están expuestas al navegador. Mantenga las claves confidenciales sin este prefijo.
+</Callout>
+  </Step>
+
+  <Step title="Volver a Implementar">
+    Los cambios de entorno requieren una nueva implementación. Vaya a Deployments → Haga clic en los tres puntos → Redeploy.
+  </Step>
+</Steps>
+
+## Dominio Personalizado
+
+Agregue su propio dominio a su proyecto Vercel:
+
+<Steps>
+  <Step title="Agregar Dominio">
+    1. Vaya a Project Settings → Domains
+    2. Ingrese su dominio (por ejemplo, `docs.ejemplo.com`)
+    3. Haga clic en "Add" (Agregar)
+  </Step>
+
+  <Step title="Configurar DNS">
+    Vercel le muestra los registros DNS para agregar. Típicamente:
+
+**Para subdominio (docs.ejemplo.com):**
+```
+Tipo: CNAME
+Nombre: docs
+Valor: cname.vercel-dns.com
+```
+
+**Para dominio ápice (ejemplo.com):**
+```
+Tipo: A
+Nombre: @
+Valor: 76.76.21.21
+```
+  </Step>
+
+  <Step title="Esperar Verificación">
+    La propagación de DNS tarda de 5 minutos a 48 horas (generalmente menos de una hora).
+
+    Vercel aprovisiona automáticamente un certificado SSL una vez que se verifica el DNS.
+  </Step>
+</Steps>
+
+## Implementaciones Automáticas
+
+Cada envío de git activa una implementación:
+
+**Implementaciones de Producción:**
+- Los commits a la rama `main` se implementan en producción
+- Actualiza su sitio en vivo automáticamente
+
+**Implementaciones de Vista Previa:**
+- Los commits a otras ramas obtienen URL de vista previa
+- Las solicitudes de extracción obtienen URL únicas para pruebas
+- Perfecto para revisar cambios antes de fusionar
+
+### URL de Vista Previa
+
+Cada implementación de vista previa obtiene una URL única:
+
+```
+su-proyecto-git-feature-branch-username.vercel.app
+```
+
+Comparta esto con su equipo para revisar los cambios antes de salir en vivo.
+
+## Configuración de Implementación
+
+### Configuración de Rama
+
+Controle qué ramas se implementan:
+
+1. Vaya a Settings → Git
+2. Establezca Production Branch (generalmente `main`)
+3. Habilite/deshabilite las implementaciones de vista previa para otras ramas
+
+### Protección de Implementación
+
+Proteja las implementaciones de producción:
+
+```json
+{
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "staging": "preview"
+    }
+  }
+}
+```
+
+## Optimización de Rendimiento
+
+Vercel optimiza automáticamente su implementación:
+
+- **Almacenamiento en caché perimetral** - Archivos estáticos almacenados en caché globalmente
+- **Optimización de imagen** - Componente Image de Next.js optimizado automáticamente
+- **Compresión** - Compresión Gzip/Brotli habilitada
+- **HTTP/2** - Conexiones multiplexadas más rápidas
+
+### Análisis
+
+Habilite Vercel Analytics gratis:
+
+1. Vaya a la pestaña Analytics
+2. Haga clic en "Enable Analytics" (Habilitar Análisis)
+3. Agregue el componente Analytics a su diseño
+
+```tsx
+// app/layout.tsx
+import { Analytics } from '@vercel/analytics/react'
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Analytics />
+      </body>
+    </html>
+  )
+}
+```
+
+## Integración CI/CD
+
+Vercel actúa como su tubería CI/CD:
+
+**Qué se ejecuta en cada implementación:**
+- `npm install` (dependencias)
+- `npm run build` (compilación Next.js)
+- Comprobaciones y validaciones automáticas
+- Implementar en la red perimetral
+
+### Integración GitHub
+
+Vercel comenta en las solicitudes de extracción con:
+- URL de implementación de vista previa
+- Registros de compilación
+- Información de rendimiento
+
+### Registros de Compilación
+
+Ver registros de compilación detallados:
+1. Vaya a Deployments
+2. Haga clic en cualquier implementación
+3. Vea la sección Building para ver los registros
+
+## Solución de Problemas
+
+### La Compilación Falla
+
+**Verificar Versión de Node:**
+Asegúrese de estar usando Node 18+. Agregue a `package.json`:
+
+```json
+{
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+```
+
+**Borrar caché de compilación:**
+1. Vaya a Settings → General
+2. Desplácese a Build & Development Settings
+3. Clear build cache (Borrar caché de compilación)
+
+### Las Variables de Entorno No Funcionan
+
+- Verifique los nombres de las variables (distinguen mayúsculas de minúsculas)
+- Prefije las variables del lado del cliente con `NEXT_PUBLIC_`
+- Vuelva a implementar después de cambiar las variables
+
+### El Dominio Personalizado No Funciona
+
+- Verifique que los registros DNS sean correctos
+- Espere la propagación de DNS (verifique con `dig` o `nslookup`)
+- Asegúrese de que CNAME apunte a `cname.vercel-dns.com`
+- Verifique el estado de verificación del dominio en el panel de Vercel
+
+## Implementación de Monorepo
+
+Si sus documentos están en un monorepo:
+
+1. Establezca Root Directory en la configuración del proyecto
+2. Apunte a su carpeta de documentos (por ejemplo, `apps/docs`)
+3. Vercel compila solo ese directorio
+
+```json
+{
+  "buildCommand": "cd ../.. && npm run build:docs",
+  "outputDirectory": ".next"
+}
+```
+
+## Mejores Prácticas
+
+**Usar implementaciones de vista previa** - Probar cambios antes de fusionar a main
+
+**Habilitar protección de rama** - Requerir éxito de implementación de vista previa antes de fusionar
+
+**Configurar notificaciones** - Obtener alertas de Slack/correo electrónico para el estado de implementación
+
+**Monitorear análisis** - Rastrear vistas de página y rendimiento
+
+**Usar configuración perimetral** - Almacenar indicadores de características y configuración en el perímetro para actualizaciones instantáneas
+
+## Precios
+
+El nivel gratuito de Vercel incluye:
+- Implementaciones ilimitadas
+- 100GB de ancho de banda/mes
+- HTTPS automático
+- Implementaciones de vista previa
+- Análisis (básico)
+
+Esto generalmente es suficiente para sitios de documentación. Actualice a Pro si necesita:
+- Más ancho de banda
+- Análisis avanzado
+- Protección con contraseña
+- Soporte empresarial
+
+## Próximos Pasos
+
+<CardGrid cols={2}>
+  <Card
+    icon="github"
+    title="GitHub Pages"
+    description="Implementar como sitio estático en GitHub Pages"
+    href="/docs/v1.0.0/deployment/github-pages"
+  />
+  <Card
+    icon="globe"
+    title="Netlify"
+    description="Plataforma de alojamiento estático alternativa"
+    href="/docs/v1.0.0/deployment/netlify"
+  />
+  <Card
+    icon="arrow-left"
+    title="Descripción General de Implementación"
+    description="Volver a opciones de implementación"
+    href="/docs/v1.0.0/deployment/overview"
+  />
+  <Card
+    icon="zap"
+    title="Rendimiento"
+    description="Optimizar su documentación"
+    href="/docs/v1.0.0/performance"
+  />
+</CardGrid>

@@ -1,0 +1,89 @@
+---
+title: Tarjeta (Card)
+description: Muestre contenido en contenedores de tarjetas estilizados con enlaces opcionales
+sidebar_position: 5
+---
+
+Las tarjetas crean bloques de contenido visualmente distintos, perfectos para listas de características, enlaces de navegación o contenido destacado.
+
+## Uso
+
+```mdx
+<Card 
+  title="Empezando" 
+  description="Aprenda los conceptos básicos de nuestra plataforma"
+  href="/docs/v1.0.0/getting-started"
+/>
+```
+
+## Ejemplos en vivo
+
+### Tarjeta básica
+
+<Card 
+  title="Documentación" 
+  description="Lea la documentación completa para guías detalladas y referencias de API."
+/>
+
+### Tarjeta vinculada
+
+<Card 
+  title="Empezando" 
+  description="Comience su viaje con nuestra guía de inicio rápido"
+  href="/docs/v1.0.0/getting-started"
+/>
+
+### Tarjeta con icono
+
+<Card 
+  icon="book-open"
+  title="Guías" 
+  description="Tutoriales paso a paso y mejores prácticas"
+/>
+
+### Enlace externo
+
+<Card 
+  title="Repositorio GitHub" 
+  description="Ver el código fuente y contribuir"
+  href="https://github.com"
+  external
+/>
+
+## Cuadrícula de tarjetas
+
+Use `CardGrid` para mostrar varias tarjetas en un diseño de cuadrícula adaptable:
+
+```mdx
+<CardGrid cols={2}>
+  <Card title="Tarjeta 1" description="Primera tarjeta" />
+  <Card title="Tarjeta 2" description="Segunda tarjeta" />
+</CardGrid>
+```
+
+<CardGrid cols={2}>
+  <Card icon="rocket" title="Inicio rápido" description="Póngase en marcha en 5 minutos" href="/docs/v1.0.0/getting-started/quickstart" />
+  <Card icon="book" title="Guías" description="Tutoriales detallados y recorridos" href="/docs/v1.0.0/guides" />
+  <Card icon="code" title="Referencia API" description="Documentación completa de la API" />
+  <Card icon="github" title="GitHub" description="Contribuir al proyecto" href="https://github.com" external />
+</CardGrid>
+
+## Props
+
+### Card
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `title` | `string` | requerido | Título de la tarjeta |
+| `description` | `string` | - | Texto de descripción de la tarjeta |
+| `href` | `string` | - | URL del enlace (hace que la tarjeta sea clicable) |
+| `icon` | `string \| ReactNode` | - | Nombre del icono Lucide o icono personalizado |
+| `external` | `boolean` | `false` | Abre el enlace en una nueva pestaña |
+| `children` | `ReactNode` | - | Contenido personalizado |
+
+### CardGrid
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `children` | `ReactNode` | requerido | Componentes de tarjeta |
+| `cols` | `1 \| 2 \| 3` | `2` | Número de columnas |

@@ -1,0 +1,388 @@
+---
+title: Configuration de la recherche
+description: Configurez MeiliSearch pour une recherche puissante et tolérante aux fautes de frappe dans votre documentation
+sidebar_position: 4
+icon: search
+tab_group: guides
+---
+
+# Configuration de la recherche
+
+Specra prend en charge une recherche puissante en texte intégral grâce à l'intégration de MeiliSearch. Ce guide vous montre comment configurer la recherche pour votre documentation.
+
+## Options de recherche
+
+Specra propose deux solutions de recherche :
+
+**Recherche locale** (Par défaut)
+- Fonctionne immédiatement
+- Pas de dépendances externes
+- Bon pour les sites de doc petits à moyens
+- Recherche dans le navigateur
+
+**MeiliSearch** (Recommandé pour la production)
+- Moteur de recherche ultra-rapide
+- Tolérance aux fautes de frappe
+- Résultats instantanés
+- Mieux pour les grands sites de doc
+- Nécessite un serveur séparé
+
+## Démarrage rapide avec MeiliSearch
+
+### Prérequis
+
+- Docker (configuration la plus simple) ou capacité à exécuter un serveur MeiliSearch
+- Votre site de documentation déjà configuré avec Specra
+
+### Installation
+
+<Steps>
+  <Step title="Exécuter MeiliSearch avec Docker">
+    Le moyen le plus simple de faire fonctionner MeiliSearch localement :
+
+```bash
+docker run -d \
+  --name meilisearch \
+  -p 7700:7700 \
+  -e MEILI_MASTER_KEY="aSampleMasterKey" \
+  -v $(pwd)/meili_data:/meili_data \
+  getmeili/meilisearch:latest
+```
+
+Cela démarre MeiliSearch sur `http://localhost:7700` avec une clé principale pour l'authentification.
+
+<Callout type="warning">
+  Utilisez une clé principale forte en production ! Cette clé d'exemple est uniquement pour le développement.
+</Callout>
+  </Step>
+
+  <Step title="Configurer Specra">
+    Mettez à jour votre `specra.config.json` :
+
+```json
+{
+  "search": {
+    "enabled": true,
+    "provider": "meilisearch",
+    "placeholder": "Rechercher dans la documentation...",
+    "meilisearch": {
+      "host": "http://localhost:7700",
+      "apiKey": "aSampleMasterKey",
+      "indexName": "docs"
+    }
+  }
+}
+```
+  </Step>
+
+  <Step title="Indexer votre contenu">
+    Specra inclut des utilitaires d'indexation. Exécutez ceci depuis la racine de votre projet :
+
+```bash
+npm run index:search
+```
+
+Cela scanne votre dossier `docs/` et envoie tout le contenu à MeiliSearch pour l'indexation.
+
+<Callout type="info">
+  Réexécutez la commande d'indexation chaque fois que vous ajoutez ou mettez à jour la documentation.
+</Callout>
+  </Step>
+
+  <Step title="Tester la recherche">
+    Démarrez votre serveur de développement :
+
+```bash
+npm run dev
+```
+
+Appuyez sur **⌘K** (Mac) ou **Ctrl+K** (Windows/Linux) pour ouvrir le modal de recherche. Commencez à taper pour voir des résultats instantanés !
+  </Step>
+</Steps>
+
+## Configuration de MeiliSearch
+
+### Options de configuration
+
+Tous les paramètres MeiliSearch vont dans `specra.config.json` sous la section `search` :
+
+```json
+{
+  "search": {
+    "enabled": true,
+    "provider": "meilisearch",
+    "placeholder": "Rechercher docs...",
+    "meilisearch": {
+      "host": "http://localhost:7700",
+      "apiKey": "your-api-key",
+      "indexName": "docs"
+    }
+  }
+}
+```
+
+**Référence des champs :**
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `enabled` | boolean | Activer/désactiver la fonctionnalité de recherche |
+| `provider` | string | "meilisearch" ou "local" |
+| `placeholder` | string | Texte indicatif dans la zone de recherche |
+| `meilisearch.host` | string | URL du serveur MeiliSearch |
+| `meilisearch.apiKey` | string | Clé API pour l'authentification |
+| `meilisearch.indexName` | string | Nom de l'index pour vos docs |
+
+### Clé de recherche vs Clé principale
+
+MeiliSearch utilise deux types de clés :
+
+**Clé principale** (développement)
+- Accès complet à toutes les opérations
+- Utilisé pour indexer le contenu
+- Ne jamais exposer dans le code côté client en production
+
+**Clé de recherche** (production)
+- Accès en lecture seule
+- Sûr à utiliser dans le navigateur
+- Générer à partir de la clé principale
+
+Générez une clé de recherche :
+
+```bash
+curl -X POST 'http://localhost:7700/keys' \
+  -H 'Authorization: Bearer aSampleMasterKey' \
+  -H 'Content-Type: application/json' \
+  --data-binary '{
+    "description": "Clé de recherche pour la documentation",
+    "actions": ["search"],
+    "indexes": ["docs"],
+    "expiresAt": null
+  }'
+```
+
+Utilisez la clé retournée dans votre configuration de production.
+
+## Déploiement en production
+
+### Hébergement de MeiliSearch
+
+Pour la production, vous devez héberger MeiliSearch séparément de vos docs. Options :
+
+**MeiliSearch Cloud** (Le plus simple)
+- Hébergement géré officiel
+- Commence à 0,02 $/heure
+- Sauvegardes et mises à jour automatiques
+- Visitez [meilisearch.com/cloud](https://www.meilisearch.com/cloud)
+
+**Auto-hébergé sur VPS**
+- DigitalOcean, AWS, Google Cloud, etc.
+- Plus de contrôle, nécessite une maintenance
+- Utilisez Docker ou une installation binaire
+
+**Railway / Render / Fly.io**
+- Options de déploiement en un clic disponibles
+- Bon pour les projets petits à moyens
+
+### Configuration de production
+
+Mettez à jour `specra.config.json` pour la production :
+
+```json
+{
+  "search": {
+    "enabled": true,
+    "provider": "meilisearch",
+    "meilisearch": {
+      "host": "https://your-meilisearch-domain.com",
+      "apiKey": "your-public-search-key",
+      "indexName": "docs"
+    }
+  }
+}
+```
+
+<Callout type="warning">
+  Utilisez toujours une clé API de recherche uniquement en production, jamais votre clé principale !
+</Callout>
+
+### Indexation dans CI/CD
+
+Automatisez l'indexation lorsque vous déployez. Exemple GitHub Action :
+
+```yaml
+name: Index Documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Index documentation
+        env:
+          MEILISEARCH_HOST: ${{ secrets.MEILISEARCH_HOST }}
+          MEILISEARCH_API_KEY: ${{ secrets.MEILISEARCH_MASTER_KEY }}
+        run: npm run index:search
+```
+
+Stockez vos identifiants MeiliSearch en tant que secrets GitHub.
+
+## Personnalisation du comportement de recherche
+
+### Paramètres de recherche
+
+Configurez comment MeiliSearch gère les recherches :
+
+```javascript
+// Dans votre script d'indexation
+const settings = {
+  searchableAttributes: [
+    'title',
+    'description',
+    'content',
+    'headings'
+  ],
+  displayedAttributes: [
+    'title',
+    'description',
+    'url',
+    'breadcrumb'
+  ],
+  rankingRules: [
+    'words',
+    'typo',
+    'proximity',
+    'attribute',
+    'sort',
+    'exactness'
+  ],
+  stopWords: ['the', 'a', 'an'],
+  synonyms: {
+    'js': ['javascript'],
+    'ts': ['typescript']
+  }
+}
+```
+
+### Filtres
+
+Ajoutez des filtres pour affiner les résultats de recherche :
+
+```json
+{
+  "search": {
+    "meilisearch": {
+      "filters": "version = 'v1.0.0'"
+    }
+  }
+}
+```
+
+Cela affiche uniquement les résultats d'une version spécifique.
+
+## Recherche locale (Alternative)
+
+Si vous ne voulez pas exécuter MeiliSearch, utilisez la recherche locale :
+
+```json
+{
+  "search": {
+    "enabled": true,
+    "provider": "local",
+    "placeholder": "Rechercher dans la documentation..."
+  }
+}
+```
+
+Recherche locale :
+- ✅ Fonctionne immédiatement, aucune installation
+- ✅ Aucune dépendance externe
+- ✅ Gratuit
+- ❌ Moins puissant que MeiliSearch
+- ❌ Pas de tolérance aux fautes de frappe
+- ❌ Plus lent pour les grands sites de doc
+
+La recherche locale est automatiquement construite pendant `npm run build`.
+
+## Raccourcis clavier
+
+Les utilisateurs peuvent déclencher la recherche avec :
+
+- **⌘K** ou **Ctrl+K** - Ouvrir la recherche
+- **Échap** - Fermer la recherche
+- **↑↓** - Naviguer dans les résultats
+- **Entrée** - Aller au résultat sélectionné
+
+Ceux-ci fonctionnent avec les options locales et MeiliSearch.
+
+## Dépannage
+
+### La recherche n'apparaît pas
+
+**Vérifiez la configuration :**
+```json
+{
+  "search": {
+    "enabled": true  // ← Doit être true
+  }
+}
+```
+
+**Vérifiez que MeiliSearch est en cours d'exécution :**
+```bash
+curl http://localhost:7700/health
+```
+
+Devrait renvoyer `{"status":"available"}`.
+
+### Aucun résultat de recherche
+
+**Réindexez votre contenu :**
+```bash
+npm run index:search
+```
+
+**Vérifiez que l'index existe :**
+```bash
+curl -X GET 'http://localhost:7700/indexes' \
+  -H 'Authorization: Bearer aSampleMasterKey'
+```
+
+### Erreurs CORS
+
+Si vous obtenez des erreurs CORS dans la console du navigateur, configurez MeiliSearch pour autoriser votre domaine :
+
+```bash
+docker run -d \
+  --name meilisearch \
+  -p 7700:7700 \
+  -e MEILI_MASTER_KEY="aSampleMasterKey" \
+  -e MEILI_HTTP_ADDR="0.0.0.0:7700" \
+  -e MEILI_NO_ANALYTICS=true \
+  getmeili/meilisearch:latest
+```
+
+Ou définissez les en-têtes CORS dans votre proxy inverse.
+
+### Indexation lente
+
+Pour les grands sites de documentation (1000+ pages) :
+
+- Indexez de manière incrémentielle (uniquement les fichiers modifiés)
+- Utilisez des requêtes par lots
+- Augmentez l'allocation de mémoire MeiliSearch
+- Exécutez l'indexation dans des tâches en arrière-plan

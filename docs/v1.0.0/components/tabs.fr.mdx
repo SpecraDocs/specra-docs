@@ -1,0 +1,92 @@
+---
+title: Onglets (Tabs)
+description: Organisez le contenu en sections à onglets
+sidebar_position: 15
+---
+
+Les onglets organisent le contenu en panneaux commutables, parfaits pour montrer des alternatives comme différents gestionnaires de paquets ou exemples de langage.
+
+## Utilisation
+
+```mdx
+<Tabs defaultValue="npm">
+  <Tab label="npm">
+    contenu npm ici
+  </Tab>
+
+  <Tab label="yarn">
+    contenu yarn ici
+  </Tab>
+
+  <Tab label="pnpm">
+    contenu pnpm ici
+  </Tab>
+</Tabs>
+```
+
+## Exemples en direct
+
+### Sélection du gestionnaire de paquets
+
+<Tabs defaultValue="npm">
+  <Tab label="npm">
+```bash
+npm install my-package
+```
+  </Tab>
+
+  <Tab label="yarn">
+```bash
+yarn add my-package
+```
+  </Tab>
+
+  <Tab label="pnpm">
+```bash
+pnpm add my-package
+```
+  </Tab>
+</Tabs>
+
+### Exemples de code
+
+<Tabs defaultValue="JavaScript">
+  <Tab label="JavaScript">
+```javascript
+function greet(name) {
+  return `Bonjour, ${name}!`;
+}
+```
+  </Tab>
+
+  <Tab label="TypeScript">
+```typescript
+function greet(name: string): string {
+  return `Bonjour, ${name}!`;
+}
+```
+  </Tab>
+
+  <Tab label="Python">
+```python
+def greet(name):
+    return f"Bonjour, {name}!"
+```
+  </Tab>
+</Tabs>
+
+## Props
+
+### Tabs
+
+| Prop | Typ | Défaut | Description |
+|------|------|--------|-------------|
+| `children` | `ReactNode` | requis | Composants Tab |
+| `defaultValue` | `string` | - | Étiquette de l'onglet initialement sélectionné (par défaut le premier onglet) |
+
+### Tab
+
+| Prop | Typ | Défaut | Description |
+|------|------|--------|-------------|
+| `label` | `string` | requis | Étiquette du bouton d'onglet |
+| `children` | `ReactNode` | requis | Contenu affiché lorsque l'onglet est actif |

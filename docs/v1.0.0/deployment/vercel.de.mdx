@@ -1,0 +1,353 @@
+---
+title: Auf Vercel bereitstellen
+description: Stellen Sie Ihre Specra-Dokumentation ohne Konfiguration auf Vercel bereit
+sidebar_position: 2
+icon: triangle
+tab_group: guides
+---
+
+# Auf Vercel bereitstellen
+
+Vercel ist der einfachste Weg, Ihre Specra-Dokumentation bereitzustellen. Es wurde von den Schöpfern von Next.js entwickelt, sodass alles sofort perfekt funktioniert.
+
+## Warum Vercel?
+
+- **Keine Konfiguration** - Automatische Erkennung und Einrichtung
+- **Sofortige Bereitstellungen** - Live in weniger als 60 Sekunden
+- **Automatisches HTTPS** - SSL-Zertifikate inklusive
+- **Edge-Netzwerk** - Schnelles Laden weltweit
+- **Vorschau-Bereitstellungen** - Jeder Git-Push erhält eine URL
+- **Kostenlose Stufe** - Großzügige Limits für Dokumentationsseiten
+
+## Schnelle Bereitstellung
+
+<Steps>
+  <Step title="Zu GitHub pushen">
+    Falls Sie es noch nicht getan haben, pushen Sie Ihr Projekt zu GitHub:
+
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/username/repo.git
+git push -u origin main
+```
+  </Step>
+
+  <Step title="Zu Vercel importieren">
+    1. Gehen Sie zu [vercel.com/new](https://vercel.com/new)
+    2. Klicken Sie auf "Import Git Repository"
+    3. Wählen Sie Ihr Dokumentations-Repository aus
+    4. Vercel erkennt Next.js automatisch und konfiguriert alles
+
+    Keine manuelle Konfiguration erforderlich!
+  </Step>
+
+  <Step title="Bereitstellen">
+    Klicken Sie auf "Deploy" und warten Sie etwa 30-60 Sekunden.
+
+    Sie erhalten eine Produktions-URL wie `ihr-projekt.vercel.app`
+  </Step>
+</Steps>
+
+<Callout type="success">
+Das war's! Ihre Dokumentation ist jetzt live mit automatischem HTTPS und globalem CDN.
+</Callout>
+
+## Konfiguration
+
+Vercel verwendet automatisch diese Einstellungen für Next.js-Projekte:
+
+| Einstellung | Wert |
+|-------------|------|
+| Build Command | `npm run build` |
+| Output Directory | `.next` |
+| Install Command | `npm install` |
+| Node Version | 20.x (latest LTS) |
+
+### Einstellungen überschreiben (Optional)
+
+Wenn Sie benutzerdefinierte Einstellungen benötigen, erstellen Sie `vercel.json`:
+
+```json
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm ci",
+  "framework": "nextjs",
+  "regions": ["iad1"]
+}
+```
+
+## Umgebungsvariablen
+
+Fügen Sie Umgebungsvariablen im Vercel-Dashboard hinzu:
+
+<Steps>
+  <Step title="Zu Systemeinstellungen gehen">
+    Klicken Sie auf Ihr Projekt → Settings → Environment Variables
+  </Step>
+
+  <Step title="Variablen hinzufügen">
+    Fügen Sie Ihre Variablen einzeln hinzu:
+
+```
+MEILISEARCH_HOST=https://search.example.com
+MEILISEARCH_API_KEY=ihr-such-schluessel
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+```
+
+<Callout type="tip">
+Variablen, die mit `NEXT_PUBLIC_` beginnen, sind für den Browser sichtbar. Halten Sie sensible Schlüssel ohne dieses Präfix.
+</Callout>
+  </Step>
+
+  <Step title="Neu bereitstellen">
+    Umgebungsänderungen erfordern eine neue Bereitstellung. Gehen Sie zu Deployments → Klicken Sie auf die drei Punkte → Redeploy.
+  </Step>
+</Steps>
+
+## Benutzerdefinierte Domain
+
+Fügen Sie Ihre eigene Domain zu Ihrem Vercel-Projekt hinzu:
+
+<Steps>
+  <Step title="Domain hinzufügen">
+    1. Gehen Sie zu Project Settings → Domains
+    2. Geben Sie Ihre Domain ein (z.B. `docs.example.com`)
+    3. Klicken Sie auf "Add"
+  </Step>
+
+  <Step title="DNS konfigurieren">
+    Vercel zeigt Ihnen die hinzuzufügenden DNS-Einträge. Typischerweise:
+
+**Für Subdomain (docs.example.com):**
+```
+Typ: CNAME
+Name: docs
+Wert: cname.vercel-dns.com
+```
+
+**Für Apex-Domain (example.com):**
+```
+Typ: A
+Name: @
+Wert: 76.76.21.21
+```
+  </Step>
+
+  <Step title="Auf Verifizierung warten">
+    Die DNS-Verbreitung dauert 5 Minuten bis 48 Stunden (normalerweise unter einer Stunde).
+
+    Vercel stellt automatisch ein SSL-Zertifikat bereit, sobald DNS verifiziert ist.
+  </Step>
+</Steps>
+
+## Automatische Bereitstellungen
+
+Jeder Git-Push löst eine Bereitstellung aus:
+
+**Produktions-Bereitstellungen:**
+- Commits zum `main`-Branch werden live geschaltet
+- Aktualisiert Ihre Live-Site automatisch
+
+**Vorschau-Bereitstellungen:**
+- Commits zu anderen Branches erhalten Vorschau-URLs
+- Pull Requests erhalten eindeutige URLs zum Testen
+- Perfekt zum Überprüfen von Änderungen vor dem Zusammenführen
+
+### Vorschau-URLs
+
+Jede Vorschau-Bereitstellung erhält eine eindeutige URL:
+
+```
+ihr-projekt-git-feature-branch-username.vercel.app
+```
+
+Teilen Sie diese mit Ihrem Team, um Änderungen zu überprüfen, bevor sie live gehen.
+
+## Bereitstellungseinstellungen
+
+### Branch-Konfiguration
+
+Steuern Sie, welche Branches bereitgestellt werden:
+
+1. Gehen Sie zu Settings → Git
+2. Setzen Sie Production Branch (normalerweise `main`)
+3. Aktivieren/deaktivieren Sie Vorschau-Bereitstellungen für andere Branches
+
+### Bereitstellungsschutz
+
+Schützen Sie Produktions-Bereitstellungen:
+
+```json
+{
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "staging": "preview"
+    }
+  }
+}
+```
+
+## Leistungsoptimierung
+
+Vercel optimiert Ihre Bereitstellung automatisch:
+
+- **Edge-Caching** - Statische Dateien weltweit zwischengespeichert
+- **Bildoptimierung** - Next.js Image-Komponente automatisch optimiert
+- **Kompression** - Gzip/Brotli-Kompression aktiviert
+- **HTTP/2** - Schnellere gemultiplexte Verbindungen
+
+### Analytik
+
+Aktivieren Sie Vercel Analytics kostenlos:
+
+1. Gehen Sie zum Analytics-Tab
+2. Klicken Sie auf "Enable Analytics"
+3. Fügen Sie die Analytics-Komponente zu Ihrem Layout hinzu
+
+```tsx
+// app/layout.tsx
+import { Analytics } from '@vercel/analytics/react'
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Analytics />
+      </body>
+    </html>
+  )
+}
+```
+
+## CI/CD-Integration
+
+Vercel fungiert als Ihre CI/CD-Pipeline:
+
+**Was bei jeder Bereitstellung läuft:**
+- `npm install` (Abhängigkeiten)
+- `npm run build` (Next.js Build)
+- Automatische Überprüfungen und Validierungen
+- Bereitstellung im Edge-Netzwerk
+
+### GitHub-Integration
+
+Vercel kommentiert Pull Requests mit:
+- Vorschau-Bereitstellungs-URL
+- Build-Logs
+- Leistungseinblicke
+
+### Build-Logs
+
+Detaillierte Build-Logs anzeigen:
+1. Gehen Sie zu Deployments
+2. Klicken Sie auf eine beliebige Bereitstellung
+3. Sehen Sie sich den Building-Abschnitt für Logs an
+
+## Fehlerbehebung
+
+### Build fehlgeschlagen
+
+**Node-Version überprüfen:**
+Stellen Sie sicher, dass Sie Node 18+ verwenden. Zu `package.json` hinzufügen:
+
+```json
+{
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+```
+
+**Build-Cache leeren:**
+1. Gehen Sie zu Settings → General
+2. Scrollen Sie zu Build & Development Settings
+3. Build-Cache leeren
+
+### Umgebungsvariablen funktionieren nicht
+
+- Variablennamen überprüfen (Groß-/Kleinschreibung beachten)
+- Clientseitige Variablen mit `NEXT_PUBLIC_` präfixen
+- Nach Änderung von Variablen neu bereitstellen
+
+### Benutzerdefinierte Domain funktioniert nicht
+
+- Überprüfen Sie, ob DNS-Einträge korrekt sind
+- Warten Sie auf DNS-Verbreitung (überprüfen Sie mit `dig` oder `nslookup`)
+- Stellen Sie sicher, dass CNAME auf `cname.vercel-dns.com` zeigt
+- Überprüfen Sie den Domain-Verifizierungsstatus im Vercel-Dashboard
+
+## Monorepo-Bereitstellung
+
+Wenn sich Ihre Docs in einem Monorepo befinden:
+
+1. Setzen Sie Root Directory in den Projekteinstellungen
+2. Verweisen Sie auf Ihren Docs-Ordner (z.B. `apps/docs`)
+3. Vercel baut nur dieses Verzeichnis
+
+```json
+{
+  "buildCommand": "cd ../.. && npm run build:docs",
+  "outputDirectory": ".next"
+}
+```
+
+## Best Practices
+
+**Vorschau-Bereitstellungen verwenden** - Änderungen testen, bevor sie in main zusammengeführt werden
+
+**Branch-Schutz aktivieren** - Vorschau-Bereitstellungserfolg vor dem Zusammenführen erfordern
+
+**Benachrichtigungen einrichten** - Slack/E-Mail-Warnungen für Bereitstellungsstatus erhalten
+
+**Analytik überwachen** - Seitenaufrufe und Leistung verfolgen
+
+**Edge-Konfiguration verwenden** - Feature-Flags und Konfiguration am Edge für sofortige Updates speichern
+
+## Preise
+
+Die kostenlose Stufe von Vercel beinhaltet:
+- Unbegrenzte Bereitstellungen
+- 100GB Bandbreite/Monat
+- Automatisches HTTPS
+- Vorschau-Bereitstellungen
+- Analytik (Basis)
+
+Dies reicht normalerweise für Dokumentationsseiten aus. Upgrade auf Pro, wenn erforderlich:
+- Mehr Bandbreite
+- Erweiterte Analytik
+- Passwortschutz
+- Enterprise-Support
+
+## Nächste Schritte
+
+<CardGrid cols={2}>
+  <Card
+    icon="github"
+    title="GitHub Pages"
+    description="Als statische Seite auf GitHub Pages bereitstellen"
+    href="/docs/v1.0.0/deployment/github-pages"
+  />
+  <Card
+    icon="globe"
+    title="Netlify"
+    description="Alternative statische Hosting-Plattform"
+    href="/docs/v1.0.0/deployment/netlify"
+  />
+  <Card
+    icon="arrow-left"
+    title="Bereitstellungsübersicht"
+    description="Zurück zu Bereitstellungsoptionen"
+    href="/docs/v1.0.0/deployment/overview"
+  />
+  <Card
+    icon="zap"
+    title="Leistung"
+    description="Ihre Dokumentation optimieren"
+    href="/docs/v1.0.0/performance"
+  />
+</CardGrid>

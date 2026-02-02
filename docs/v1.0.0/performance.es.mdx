@@ -1,0 +1,178 @@
+---
+title: Rendimiento y desarrollo
+description: Comprenda las optimizaciones de rendimiento y las características de desarrollo integradas en el sistema de documentación
+order: 7
+icon: zap
+---
+
+## Sistema de caché
+
+### Caché en memoria
+
+El sistema utiliza una capa de caché inteligente para operaciones costosas del sistema de archivos:
+
+- **Caché de lista de versiones**: En caché por 5 segundos en dev, 60 segundos en producción
+- **Caché de lista de documentos**: Caché por versión con invalidación automática
+- **Caché de documento individual**: Clave por versión y slug
+
+La caché se invalida automáticamente cuando los archivos MDX o de configuración cambian en modo de desarrollo.
+
+### Estadísticas de caché
+
+En modo de desarrollo, las operaciones de caché se registran en la consola:
+
+```
+✅ [Cache] hit: getAllDocs:v1.0.0
+❌ [Cache] miss: getDocBySlug:v1.0.0:configuration
+⏱️  getDocBySlug(configuration): 45.23ms
+```
+
+## Recarga en caliente
+
+### Actualizaciones en tiempo real
+
+El sistema monitorea su directorio `docs/` en busca de cambios y actualiza automáticamente la página cuando guarda:
+
+- Observa archivos `.mdx` para cambios de contenido
+- Observa archivos `_category_.json` para actualizaciones de navegación
+- Utiliza eventos enviados por el servidor (SSE) para una comunicación eficiente
+- Solo activo en modo de desarrollo
+
+### Cómo funciona
+
+1. El observador de archivos monitorea el directorio `docs/` recursivamente
+2. Cuando un archivo cambia, la API envía un evento al navegador
+3. El navegador activa una actualización suave para recargar el contenido
+4. La caché se invalida para los archivos afectados
+
+## Generación estática
+
+### Proceso de construcción optimizado
+
+El proceso de construcción utiliza datos en caché para acelerar `generateStaticParams`:
+
+```typescript
+export async function generateStaticParams() {
+  const versions = getCachedVersions()  // En caché
+  const params = []
+
+  for (const version of versions) {
+    const docs = await getCachedAllDocs(version)  // En caché
+    for (const doc of docs) {
+      params.push({
+        version,
+        slug: doc.slug.split("/").filter(Boolean),
+      })
+    }
+  }
+
+  return params
+}
+```
+
+### Consejos de rendimiento
+
+Para sitios de documentación grandes (1000+ archivos):
+
+1. **Use organización de carpetas**: Organice los documentos en carpetas lógicas para mejorar la localidad de la caché
+2. **Habilite el modo borrador**: Marque los documentos en progreso con `draft: true` para excluirlos de las compilaciones de producción
+3. **Optimice imágenes**: Use la optimización de imágenes de Next.js para capturas de pantalla y diagramas
+4. **Monitoree tiempos de compilación**: Observe los registros de rendimiento durante el desarrollo
+
+## Características del modo de desarrollo
+
+### Registro de rendimiento
+
+Cuando ejecuta `npm run dev`, verá métricas de rendimiento detalladas:
+
+```
+⏱️  getAllDocs(v1.0.0): 234.56ms
+⏱️  getDocBySlug(getting-started): 12.34ms
+💾 Memory Usage: { rss: '156MB', heapTotal: '89MB', heapUsed: '67MB' }
+```
+
+### Utilidades de depuración
+
+El sistema incluye herramientas de depuración útiles (solo modo dev):
+
+- **PerfTimer**: Medir duración de operación
+- **logCacheOperation**: Rostrear aciertos/fallos de caché
+- **logMemoryUsage**: Monitorear consumo de memoria
+- **debugLog**: Imprimir objetos complejos de forma bonita
+
+## Optimizaciones de producción
+
+### Generación de sitio estático (SSG)
+
+Todas las páginas de documentación se pre-renderizan en tiempo de compilación:
+
+- Cero sobrecarga de renderizado del lado del servidor
+- Cargas de página instantáneas
+- Excelente rendimiento SEO
+- Activos estáticos aptos para CDN
+
+### Optimización de bundle
+
+- Componentes de servidor por defecto (JavaScript mínimo)
+- Componentes de cliente solo donde sea necesario (pestañas, selector de tema)
+- División de código automática por ruta
+- Tree-shaking de dependencias no utilizadas
+
+## Monitoreo de rendimiento
+
+### Análisis de compilación
+
+Monitoree su salida de compilación para obtener información sobre el rendimiento:
+
+```bash
+npm run build
+```
+
+Busque:
+- Tiempo de generación de página estática
+- Número de páginas generadas
+- Advertencias de tamaño de bundle
+
+### Métricas de desarrollo
+
+Durante el desarrollo, observe la consola para:
+- Ratios de acierto/fallo de caché (deberían mejorar con el tiempo)
+- Tiempos de operación de archivos (identificar operaciones lentas)
+- Patrones de uso de memoria (detectar fugas de memoria)
+
+## Mejores prácticas
+
+1. **Mantenga los archivos organizados**: La estructura de carpetas lógica mejora el almacenamiento en caché
+2. **Use frontmatter sabiamente**: Agregue solo los metadatos necesarios
+3. **Optimice el contenido**: Los archivos grandes (>1MB) deben dividirse
+4. **Monitoree la caché**: Las altas tasas de fallos indican problemas de almacenamiento en caché
+5. **Compilaciones limpias**: Ocasionalmente borre `.next/` para compilaciones frescas
+
+## Solución de problemas
+
+### Tiempos de compilación lentos
+
+Si las compilaciones son lentas:
+
+1. Verifique si hay archivos MDX extremadamente grandes (>5MB)
+2. Reduzca el número de páginas generadas simultáneamente
+3. Borre la caché: Elimine `.next/` y `node_modules/.cache/`
+4. Actualice las dependencias a las últimas versiones
+
+### La recarga en caliente no funciona
+
+Si los cambios no se reflejan:
+
+1. Verifique que está en modo de desarrollo (`npm run dev`)
+2. Busque errores en la consola del navegador
+3. Verifique que el punto final `/api/mdx-watch` está respondiendo
+4. Refresco fuerte del navegador (Cmd+Shift+R o Ctrl+Shift+R)
+
+### Problemas de memoria
+
+Si experimenta un alto uso de memoria:
+
+1. Verifique referencias circulares en la documentación
+2. Monitoree el tamaño de la caché con `getCacheStats()`
+3. Reduzca `CACHE_TTL` en `lib/mdx-cache.ts`
+4. Borre cachés manualmente con `clearAllCaches()`

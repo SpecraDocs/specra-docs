@@ -1,0 +1,260 @@
+---
+title: Groupes d'onglets
+description: Organisez votre documentation en onglets pour une meilleure navigation et structure
+icon: notebook-tabs
+tab_group: guides
+---
+
+Les groupes d'onglets vous permettent d'organiser votre documentation en différentes sections accessibles via des onglets en haut de vos pages de documentation. Ceci est particulièrement utile pour séparer différents types de contenu comme la documentation SDK, les références API et les guides.
+
+## Aperçu
+
+Les groupes d'onglets fournissent une barre de navigation persistante qui :
+- Se place sous l'en-tête
+- Filtre le contenu de la barre latérale en fonction de l'onglet actif
+- Persiste à travers la navigation de page
+- Prend en charge les icônes de Lucide React
+- Maintient la structure de la barre latérale générée automatiquement
+
+## Configuration
+
+Définissez des groupes d'onglets dans votre `specra.config.json` :
+
+```json
+{
+  "navigation": {
+    "tabGroups": [
+      {
+        "id": "sdk",
+        "label": "Documentation SDK",
+        "icon": "code"
+      },
+      {
+        "id": "api",
+        "label": "Référence API",
+        "icon": "zap"
+      },
+      {
+        "id": "guides",
+        "label": "Guides",
+        "icon": "book-open"
+      }
+    ]
+  }
+}
+```
+
+### Propriétés du groupe d'onglets
+
+| Propriété | Type | Requis | Description |
+|-----------|------|--------|-------------|
+| `id` | string | Oui | Identifiant unique pour le groupe d'onglets |
+| `label` | string | Oui | Texte d'affichage pour l'onglet |
+| `icon` | string | Non | Nom de l'icône Lucide (par ex., "code", "zap", "book-open") |
+
+## Attribution de contenu aux onglets
+
+Il existe deux façons d'attribuer du contenu aux groupes d'onglets :
+
+### 1. Attribution au niveau du fichier
+
+Ajoutez `tab_group` au frontmatter de vos fichiers MDX :
+
+```mdx
+---
+title: Démarrage
+description: Guide de démarrage rapide
+tab_group: guides
+---
+
+# Démarrage
+
+Votre contenu ici...
+```
+
+### 2. Attribution au niveau du dossier
+
+Ajoutez `tab_group` à votre fichier `_category_.json` pour attribuer tous les fichiers de ce dossier :
+
+```json
+{
+  "label": "Composants",
+  "position": 2,
+  "collapsible": true,
+  "collapsed": false,
+  "icon": "grid",
+  "tab_group": "sdk"
+}
+```
+
+Tous les fichiers dans ce dossier hériteront automatiquement du groupe d'onglets `sdk`.
+
+## Comportement et règles
+
+### Attribution d'onglet par défaut
+
+Les fichiers sans `tab_group` spécifié apparaîtront automatiquement dans le **premier groupe d'onglets** défini dans votre configuration.
+
+### Priorité
+
+`tab_group` au niveau du fichier dans le frontmatter a la priorité sur l'attribution au niveau du dossier de `_category_.json`.
+
+### Persistance des onglets
+
+L'onglet actif persiste lorsque :
+- Vous naviguez entre les pages au sein du même groupe d'onglets
+- Vous changez manuellement d'onglets
+- Vous cliquez sur des liens vers des pages dans différents groupes d'onglets (l'onglet change automatiquement)
+
+### Sélection initiale de l'onglet
+
+Lorsque vous arrivez sur une page :
+- L'onglet change automatiquement pour correspondre au groupe de la page
+- Lors du rechargement de la page, l'onglet reflète le groupe de la page actuelle
+- La sélection manuelle de l'onglet est préservée lors de la navigation au sein du même groupe
+
+## Meilleures pratiques
+
+### 1. Regroupement logique
+
+Regroupez le contenu connexe ensemble :
+- **Docs SDK/Bibliothèque** : Installation, configuration, référence API
+- **Docs API** : Points de terminaison REST, schémas GraphQL, webhooks
+- **Guides** : Tutoriels, modes d'emploi, meilleures pratiques
+
+### 2. Nommage cohérent
+
+Utilisez des étiquettes claires et concises :
+- ✅ "Documentation SDK", "Référence API", "Guides"
+- ❌ "Docs1", "Section A", "Divers"
+
+### 3. Icônes significatives
+
+Choisissez des icônes qui représentent le contenu :
+- `code` pour la documentation SDK/bibliothèque
+- `zap` pour les références API
+- `book-open` pour les guides et tutoriels
+- `rocket` pour le contenu de démarrage
+
+### 4. Limiter le nombre d'onglets
+
+Gardez le nombre d'onglets gérable :
+- **Recommandé** : 2-4 onglets
+- **Maximum** : 5-6 onglets
+- Trop d'onglets peuvent submerger les utilisateurs
+
+## Exemples
+
+### Exemple 1 : Simple séparation SDK + API
+
+```json
+{
+  "navigation": {
+    "tabGroups": [
+      {
+        "id": "sdk",
+        "label": "SDK",
+        "icon": "code"
+      },
+      {
+        "id": "api",
+        "label": "API",
+        "icon": "zap"
+      }
+    ]
+  }
+}
+```
+
+### Exemple 2 : Documentation complète
+
+```json
+{
+  "navigation": {
+    "tabGroups": [
+      {
+        "id": "getting-started",
+        "label": "Démarrage",
+        "icon": "rocket"
+      },
+      {
+        "id": "sdk",
+        "label": "Référence SDK",
+        "icon": "code"
+      },
+      {
+        "id": "api",
+        "label": "Référence API",
+        "icon": "server"
+      },
+      {
+        "id": "guides",
+        "label": "Guides",
+        "icon": "book-open"
+      }
+    ]
+  }
+}
+```
+
+## Utilisation avancée
+
+### Dossiers imbriqués
+
+Les groupes d'onglets fonctionnent de manière transparente avec des structures de dossiers imbriquées :
+
+```txt
+docs/v1.0.0/
+├── components/              # tab_group: sdk
+│   ├── _category_.json
+│   ├── button.mdx
+│   └── input.mdx
+├── api/                     # tab_group: api
+│   ├── _category_.json
+│   ├── authentication.mdx
+│   └── endpoints.mdx
+└── guides/                  # tab_group: guides
+    ├── _category_.json
+    └── quickstart.mdx       # Peut remplacer avec tab_group au niveau du fichier
+```
+
+### Groupes d'onglets mixtes dans le même dossier
+
+Vous pouvez avoir des fichiers dans le même dossier appartenant à différents onglets :
+
+```txt
+docs/v1.0.0/
+├── _category_.json          # Par défaut : tab_group: sdk
+├── overview.mdx             # Hérite : sdk
+├── api-overview.mdx         # Remplacement : tab_group: api
+└── tutorial.mdx             # Remplacement : tab_group: guides
+```
+
+## Dépannage
+
+### L'onglet ne s'affiche pas
+
+**Problème** : Groupe d'onglets défini mais non visible
+
+**Solutions** :
+- Assurez-vous qu'au moins un fichier est attribué à ce groupe d'onglets
+- Vérifiez que l'`id` du groupe d'onglets correspond exactement dans la configuration et le frontmatter
+- Vérifiez que `navigation.tabGroups` est défini dans `specra.config.json`
+
+### Le contenu apparaît dans le mauvais onglet
+
+**Problème** : La page apparaît sous l'onglet incorrect
+
+**Solutions** :
+- Vérifiez le frontmatter au niveau du fichier pour le remplacement de `tab_group`
+- Vérifiez que `_category_.json` au niveau du dossier a le bon `tab_group`
+- Rappelez-vous : le frontmatter a la priorité sur `_category_.json`
+
+### L'onglet ne persiste pas
+
+**Problème** : L'onglet se réinitialise lors de la navigation
+
+**Solutions** :
+- C'est le comportement attendu lors de la navigation vers une page dans un groupe d'onglets différent
+- L'onglet change automatiquement pour correspondre au groupe de la page actuelle
+- La sélection manuelle persiste uniquement lors de la navigation au sein du même groupe d'onglets

@@ -1,0 +1,498 @@
+---
+title: Configuration de la navigation
+description: Configurez la barre latérale, le fil d'Ariane, la table des matières et les groupes d'onglets
+sidebar_position: 3
+icon: layout
+tab_group: guides
+---
+
+# Configuration de la navigation
+
+La section `navigation` contrôle la manière dont les utilisateurs se déplacent dans votre documentation. Configurez la barre latérale, le fil d'Ariane, la table des matières et les groupes d'onglets pour créer une expérience de navigation intuitive.
+
+## Configuration de base
+
+Voici une configuration de navigation minimale :
+
+```json
+{
+  "navigation": {
+    "showSidebar": true,
+    "showBreadcrumbs": true,
+    "showTableOfContents": true
+  }
+}
+```
+
+Specra fournit des valeurs par défaut judicieuses, vous n'avez donc qu'à configurer ce que vous souhaitez modifier.
+
+## Configuration complète
+
+```json
+{
+  "navigation": {
+    "showSidebar": true,
+    "collapsibleSidebar": true,
+    "showBreadcrumbs": true,
+    "showTableOfContents": true,
+    "tocPosition": "right",
+    "tocMaxDepth": 3,
+    "tabGroups": [
+      {
+        "id": "guides",
+        "label": "Guides",
+        "icon": "book-open"
+      },
+      {
+        "id": "api",
+        "label": "Référence API",
+        "icon": "zap"
+      },
+      {
+        "id": "components",
+        "label": "Composants",
+        "icon": "layers"
+      }
+    ]
+  }
+}
+```
+
+## Configuration de la barre latérale
+
+### showSidebar
+
+**Type :** `boolean`
+**Défaut :** `true`
+
+Afficher ou masquer la navigation de la barre latérale.
+
+```json
+{
+  "navigation": {
+    "showSidebar": true
+  }
+}
+```
+
+Définissez à `false` pour masquer complètement la barre latérale. Utile pour les pages de destination ou les sites marketing.
+
+### collapsibleSidebar
+
+**Type :** `boolean`
+**Défaut :** `true`
+
+Permettre aux utilisateurs de réduire et d'agrandir les sections de la barre latérale.
+
+```json
+{
+  "navigation": {
+    "collapsibleSidebar": true
+  }
+}
+```
+
+Lorsque `true`, les sections de dossier ont des flèches pour réduire/agrandir. Lorsque `false`, toutes les sections sont toujours agrandies.
+
+## Fil d'Ariane (Breadcrumbs)
+
+### showBreadcrumbs
+
+**Type :** `boolean`
+**Défaut :** `true`
+
+Afficher la navigation par fil d'Ariane en haut de chaque page.
+
+```json
+{
+  "navigation": {
+    "showBreadcrumbs": true
+  }
+}
+```
+
+Le fil d'Ariane montre l'emplacement de la page dans la hiérarchie de la documentation :
+
+```
+Accueil > Guides > Démarrage
+```
+
+<Callout type="tip">
+Le fil d'Ariane aide les utilisateurs à comprendre où ils se trouvent et à revenir aux sections parentes.
+</Callout>
+
+## Table des matières (Table of Contents)
+
+### showTableOfContents
+
+**Type :** `boolean`
+**Défaut :** `true`
+
+Afficher la table des matières (TOC) sur les pages de documentation.
+
+```json
+{
+  "navigation": {
+    "showTableOfContents": true
+  }
+}
+```
+
+La TOC affiche tous les titres de la page actuelle avec des liens pour faire défiler vers chaque section.
+
+### tocPosition
+
+**Type :** `"left"` ou `"right"`
+**Défaut :** `"right"`
+
+Positionnez la table des matières sur le côté gauche ou droit de la page.
+
+```json
+{
+  "navigation": {
+    "tocPosition": "right"
+  }
+}
+```
+
+**Position droite (par défaut) :**
+- La TOC apparaît dans la barre latérale droite
+- Mise en page de documentation traditionnelle
+- Plus d'espace de lecture pour le contenu
+
+**Position gauche :**
+- La TOC apparaît dans la barre latérale gauche sous la navigation principale
+- Mise en page compacte
+- Moins de défilement horizontal sur les petits écrans
+
+### tocMaxDepth
+
+**Type :** `number` (1-6)
+**Défaut :** `3`
+
+Niveau de titre maximum à afficher dans la table des matières.
+
+```json
+{
+  "navigation": {
+    "tocMaxDepth": 3
+  }
+}
+```
+
+**Options :**
+- `1` - Titres H1 uniquement
+- `2` - Titres H1 et H2
+- `3` - Titres H1, H2 et H3 (recommandé)
+- `4` - Jusqu'à H4
+- `5` - Jusqu'à H5
+- `6` - Tous les titres
+
+<Callout type="warning">
+Si cette valeur est trop élevée (5 ou 6), la TOC peut sembler encombrée. La plupart des docs fonctionnent mieux avec 2 ou 3.
+</Callout>
+
+## Groupes d'onglets (Tab Groups)
+
+Les groupes d'onglets organisent votre documentation en sections logiques avec des onglets de navigation séparés.
+
+### Groupes d'onglets basiques
+
+```json
+{
+  "navigation": {
+    "tabGroups": [
+      {
+        "id": "guides",
+        "label": "Guides",
+        "icon": "book-open"
+      },
+      {
+        "id": "api",
+        "label": "Référence API",
+        "icon": "zap"
+      }
+    ]
+  }
+}
+```
+
+### Propriétés du groupe d'onglets
+
+Chaque groupe d'onglets a trois propriétés :
+
+**id** (requis)
+- Identifiant unique pour le groupe d'onglets
+- Utilisé dans le frontmatter de la page : `tab_group: "guides"`
+- Minuscule, pas d'espaces
+
+**label** (requis)
+- Nom d'affichage montré dans l'onglet
+- Peut inclure des espaces et des majuscules
+
+**icon** (optionnel)
+- Nom de l'icône Lucide à afficher à côté de l'étiquette
+- Rend les onglets plus visuels et faciles à parcourir
+
+### Assigner des pages aux groupes d'onglets
+
+Dans votre frontmatter MDX, spécifiez à quel groupe d'onglets une page appartient :
+
+```mdx
+---
+title: Démarrage
+tab_group: guides
+---
+```
+
+Les pages avec la même valeur `tab_group` apparaissent ensemble sous cet onglet.
+
+### Configurations courantes de groupes d'onglets
+
+**Documentation + API :**
+```json
+{
+  "tabGroups": [
+    {
+      "id": "docs",
+      "label": "Documentation",
+      "icon": "book"
+    },
+    {
+      "id": "api",
+      "label": "Référence API",
+      "icon": "code"
+    }
+  ]
+}
+```
+
+**Guides + Composants + API :**
+```json
+{
+  "tabGroups": [
+    {
+      "id": "guides",
+      "label": "Guides",
+      "icon": "book-open"
+    },
+    {
+      "id": "components",
+      "label": "Composants",
+      "icon": "layers"
+    },
+    {
+      "id": "api",
+      "label": "API",
+      "icon": "zap"
+    }
+  ]
+}
+```
+
+**Documentation multi-produits :**
+```json
+{
+  "tabGroups": [
+    {
+      "id": "platform",
+      "label": "Plateforme",
+      "icon": "box"
+    },
+    {
+      "id": "mobile",
+      "label": "SDK Mobile",
+      "icon": "smartphone"
+    },
+    {
+      "id": "web",
+      "label": "SDK Web",
+      "icon": "monitor"
+    }
+  ]
+}
+```
+
+## Icônes disponibles
+
+Specra utilise les icônes Lucide. Choix populaires pour la documentation :
+
+**Général :**
+- `book` - Livres, documentation
+- `book-open` - Livre ouvert, lecture
+- `file-text` - Documents, pages
+- `layout` - Mise en page, structure
+
+**Technique :**
+- `code` - Code, programmation
+- `zap` - API, rapide, dynamique
+- `terminal` - CLI, ligne de commande
+- `database` - Base de données, données
+
+**UI :**
+- `layers` - Composants, pile
+- `palette` - Design, thèmes
+- `settings` - Configuration
+- `grid` - Grille de mise en page
+
+**Actions :**
+- `rocket` - Lancement, déploiement
+- `wrench` - Outils, utilitaires
+- `shield` - Sécurité
+- `search` - Recherche, trouver
+
+Parcourez toutes les icônes sur [lucide.dev](https://lucide.dev/icons/)
+
+## Organisation de la barre latérale
+
+### Génération automatique
+
+Specra génère automatiquement votre barre latérale à partir de votre structure de fichiers :
+
+```txt
+docs/v1.0.0/
+├── getting-started.mdx        → Démarrage
+├── installation.mdx           → Installation
+└── guides/                    → Guides (dossier)
+    ├── basics.mdx            →   Bases
+    └── advanced.mdx          →   Avancé
+```
+
+### Contrôler l'ordre
+
+Utilisez `sidebar_position` dans le frontmatter pour contrôler l'ordre des pages :
+
+```mdx
+---
+title: Démarrage
+sidebar_position: 1
+---
+```
+
+Les nombres inférieurs apparaissent en premier. Les pages sans position sont triées par ordre alphabétique.
+
+### Configuration de catégorie
+
+Personnalisez l'apparence des dossiers avec `_category_.json` :
+
+```json
+{
+  "label": "Guides utilisateur",
+  "position": 2,
+  "collapsible": true,
+  "collapsed": false,
+  "icon": "book-open"
+}
+```
+
+Voir [Rédaction de contenu](/docs/v1.0.0/writing-content) pour en savoir plus sur l'organisation du contenu.
+
+## Exemples
+
+### Configuration minimale
+
+Activez simplement les bases :
+
+```json
+{
+  "navigation": {
+    "showSidebar": true,
+    "showBreadcrumbs": true,
+    "showTableOfContents": true
+  }
+}
+```
+
+### Mise en page épurée
+
+TOC à gauche, titres plus profonds :
+
+```json
+{
+  "navigation": {
+    "showSidebar": true,
+    "collapsibleSidebar": true,
+    "showBreadcrumbs": true,
+    "showTableOfContents": true,
+    "tocPosition": "left",
+    "tocMaxDepth": 4
+  }
+}
+```
+
+### Documentation multi-sections
+
+Avec des groupes d'onglets pour différents publics :
+
+```json
+{
+  "navigation": {
+    "showSidebar": true,
+    "collapsibleSidebar": true,
+    "showBreadcrumbs": true,
+    "showTableOfContents": true,
+    "tocPosition": "right",
+    "tocMaxDepth": 3,
+    "tabGroups": [
+      {
+        "id": "getting-started",
+        "label": "Démarrage",
+        "icon": "rocket"
+      },
+      {
+        "id": "developers",
+        "label": "Développeurs",
+        "icon": "code"
+      },
+      {
+        "id": "designers",
+        "label": "Designers",
+        "icon": "palette"
+      }
+    ]
+  }
+}
+```
+
+## Meilleures pratiques
+
+**Utiliser les groupes d'onglets judicieusement** - N'en créez pas trop. 3-5 onglets maximum fonctionnent le mieux.
+
+**Choisir des étiquettes descriptives** - Rendez évident ce qui se trouve dans chaque onglet ou section.
+
+**Choisir des icônes appropriées** - Les icônes doivent renforcer l'objectif de l'onglet.
+
+**Définir tocMaxDepth de manière appropriée** - La plupart des docs fonctionnent le mieux avec 2 ou 3 niveaux.
+
+**Garder la barre latérale réductible** - Permettez aux utilisateurs de masquer les sections dont ils n'ont pas besoin.
+
+**Afficher le fil d'Ariane** - Il aide les utilisateurs à naviguer dans une documentation complexe.
+
+## Prochaines étapes
+
+<CardGrid cols={2}>
+  <Card
+    icon="globe"
+    title="Configuration du site"
+    description="Configurer les métadonnées et la marque du site"
+    href="/docs/v1.0.0/configuration/site-config"
+  />
+  <Card
+    icon="rocket"
+    title="Config de déploiement"
+    description="Configurer les paramètres de déploiement"
+    href="/docs/v1.0.0/configuration/deployment-config"
+  />
+  <Card
+    icon="sliders"
+    title="Configuration avancée"
+    description="Analytique, recherche, fonctionnalités et plus"
+    href="/docs/v1.0.0/configuration/advanced"
+  />
+  <Card
+    icon="arrow-left"
+    title="Aperçu de la configuration"
+    description="Retour à l'aperçu de la configuration"
+    href="/docs/v1.0.0/configuration/overview"
+  />
+</CardGrid>

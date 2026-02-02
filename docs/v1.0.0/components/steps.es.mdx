@@ -1,0 +1,88 @@
+---
+title: Pasos (Steps)
+description: Cree instrucciones paso a paso y tutoriales
+sidebar_position: 14
+---
+
+El componente Steps crea instrucciones numeradas paso a paso, perfectas para tutoriales y guías.
+
+## Uso
+
+```mdx
+<Steps>
+  <Step title="Primer paso">
+    Descripción del primer paso.
+  </Step>
+  
+  <Step title="Segundo paso">
+    Descripción del segundo paso.
+  </Step>
+</Steps>
+```
+
+## Ejemplo en vivo
+
+<Steps>
+  <Step title="Instalar dependencias">
+    Primero, instale los paquetes npm requeridos:
+    
+```bash
+npm install next react react-dom
+```
+  </Step>
+  
+  <Step title="Crear configuración">
+    Cree un archivo de configuración en la raíz de su proyecto:
+    
+```javascript
+// next.config.js
+module.exports = {
+  reactStrictMode: true,
+}
+```
+  </Step>
+  
+  <Step title="Iniciar servidor de desarrollo">
+    Ejecute el servidor de desarrollo:
+    
+```bash
+npm run dev
+```
+    
+    ¡Su sitio ahora se está ejecutando en `http://localhost:3000`!
+  </Step>
+  
+  <Step title="Desplegar a producción">
+    Cuando esté listo, construya y despliegue su aplicación:
+    
+```bash
+npm run build
+npm start
+```
+  </Step>
+</Steps>
+
+## Props
+
+### Steps
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `children` | `ReactNode` | requerido | Componentes Step |
+
+### Step
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `title` | `string` | requerido | Título/encabezado del paso |
+| `children` | `ReactNode` | requerido | Contenido del paso |
+
+## Características
+
+- **Numeración automática** - Los pasos se numeran automáticamente usando contadores CSS
+- **Línea de tiempo visual** - Una línea de conexión muestra la progresión a través de los pasos
+- **Contenido enriquecido** - Cada paso admite contenido MDX completo, incluidos bloques de código
+
+<Callout type="tip">
+Los pasos funcionan muy bien para guías de instalación, tutoriales y cualquier proceso secuencial que los usuarios deban seguir.
+</Callout>

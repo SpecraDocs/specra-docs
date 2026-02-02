@@ -1,0 +1,247 @@
+---
+title: Thèmes et personnalisation
+description: Personnalisez les couleurs, les polices, les mises en page et les styles pour correspondre à votre marque
+sidebar_position: 5
+icon: palette
+tab_group: guides
+---
+
+# Thèmes et personnalisation
+
+Faites de Specra le vôtre. Ce guide couvre tout, des simples changements de couleur au style personnalisé complet.
+
+## Personnalisation rapide
+
+Le moyen le plus rapide de personnaliser vos documents est via `specra.config.json`.
+
+### Couleurs de la marque
+
+Définissez votre couleur principale pour correspondre à votre marque :
+
+```json
+{
+  "theme": {
+    "primaryColor": "#3b82f6"
+  }
+}
+```
+
+Specra génère automatiquement toutes les variations de couleur (états de survol, anneaux de focus, etc.) à partir de cette valeur unique.
+
+### Paramètres du mode sombre
+
+Contrôlez le fonctionnement du mode sombre :
+
+```json
+{
+  "theme": {
+    "defaultMode": "system",
+    "respectPrefersColorScheme": true
+  }
+}
+```
+
+**Options pour `defaultMode` :**
+- `"system"` - Respecter les préférences du système d'exploitation (recommandé)
+- `"light"` - Toujours démarrer en mode clair
+- `"dark"` - Toujours démarrer en mode sombre
+
+Définissez `respectPrefersColorScheme` sur `false` pour ignorer les paramètres du système d'exploitation et utiliser uniquement votre valeur par défaut.
+
+### Logos
+
+Ajoutez votre logo pour les modes clair et sombre :
+
+```json
+{
+  "site": {
+    "logo": {
+      "light": "/logo-light.svg",
+      "dark": "/logo-dark.svg"
+    }
+  }
+}
+```
+
+Ou utilisez un seul logo pour les deux :
+
+```json
+{
+  "site": {
+    "logo": "/logo.svg"
+  }
+}
+```
+
+Placez les fichiers de logo dans le répertoire `public/`.
+
+## CSS personnalisé
+
+Pour une personnalisation plus approfondie, ajoutez du CSS personnalisé.
+
+### Méthode 1 : Fichier CSS personnalisé
+
+Créez un fichier CSS et référencez-le dans la configuration :
+
+**1. Créez `/public/custom.css` :**
+
+```css
+:root {
+  --font-heading: 'Inter', system-ui, sans-serif;
+  --border-radius: 12px;
+}
+
+.doc-content h1 {
+  font-size: 3rem;
+  color: var(--color-primary);
+}
+
+.sidebar {
+  background: linear-gradient(to bottom, #f8f9fa, #ffffff);
+}
+```
+
+**2. Référencez-le dans la configuration :**
+
+```json
+{
+  "theme": {
+    "customCss": "/custom.css"
+  }
+}
+```
+
+### Méthode 2 : Styles globaux
+
+Modifiez directement `app/globals.css` pour plus de contrôle :
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Vos propriétés personnalisées */
+    --radius: 0.75rem;
+  }
+}
+
+@layer components {
+  /* Vos styles de composants personnalisés */
+  .custom-card {
+    @apply rounded-lg border border-gray-200 p-4;
+  }
+}
+```
+
+## Référence des variables CSS
+
+Specra utilise des variables CSS pour les thèmes. Surchargez-les pour personnaliser l'apparence :
+
+### Couleurs
+
+```css
+:root {
+  /* Couleur principale de la marque */
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-light: #dbeafe;
+
+  /* Couleurs de fond */
+  --color-bg: #ffffff;
+  --color-bg-secondary: #f9fafb;
+  --color-bg-tertiary: #f3f4f6;
+
+  /* Couleurs de texte */
+  --color-text: #111827;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #9ca3af;
+
+  /* Couleurs de bordure */
+  --color-border: #e5e7eb;
+  --color-border-hover: #d1d5db;
+
+  /* Couleurs des blocs de code */
+  --color-code-bg: #f3f4f6;
+  --color-code-text: #1f2937;
+}
+```
+
+### Typographie
+
+```css
+:root {
+  /* Familles de polices */
+  --font-sans: system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-heading: var(--font-sans);
+
+  /* Tailles de police */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+}
+```
+
+### Espacement
+
+```css
+:root {
+  /* Rayon de bordure */
+  --radius-sm: 0.25rem;
+  --radius: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+}
+```
+
+## Polices personnalisées
+
+### Utilisation de Google Fonts
+
+**1. Ajoutez la police à votre mise en page :**
+
+```tsx
+// app/layout.tsx
+import { Inter, JetBrains_Mono } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'] })
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'] })
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" className={`${inter.className}`}>
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+**2. Mettez à jour les variables CSS :**
+
+```css
+:root {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+```
+
+### Utilisation de polices locales
+
+Placez les fichiers de police dans `public/fonts/` et chargez-les :
+
+```css
+@font-face {
+  font-family: 'CustomFont';
+  src: url('/fonts/custom-font.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-sans: 'CustomFont', system-ui, sans-serif;
+}
+```

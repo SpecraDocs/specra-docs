@@ -1,0 +1,178 @@
+---
+title: Performance et développement
+description: Comprendre les optimisations de performance et les fonctionnalités de développement intégrées au système de documentation
+order: 7
+icon: zap
+---
+
+## Système de mise en cache
+
+### Mise en cache en mémoire
+
+Le système utilise une couche de mise en cache intelligente pour les opérations de système de fichiers coûteuses :
+
+- **Mise en cache de la liste des versions** : Mis en cache pendant 5 secondes en dev, 60 secondes en production
+- **Mise en cache de la liste des documents** : Mise en cache par version avec invalidation automatique
+- **Mise en cache des documents individuels** : Clé par version et slug
+
+Le cache s'invalide automatiquement lorsque les fichiers MDX ou de configuration changent en mode développement.
+
+### Statistiques de cache
+
+En mode développement, les opérations de cache sont journalisées dans la console :
+
+```
+✅ [Cache] hit: getAllDocs:v1.0.0
+❌ [Cache] miss: getDocBySlug:v1.0.0:configuration
+⏱️  getDocBySlug(configuration): 45.23ms
+```
+
+## Rechargement à chaud
+
+### Mises à jour en temps réel
+
+Le système surveille votre répertoire `docs/` pour les changements et rafraîchit automatiquement la page lorsque vous enregistrez :
+
+- Surveille les fichiers `.mdx` pour les changements de contenu
+- Surveille les fichiers `_category_.json` pour les mises à jour de navigation
+- Utilise les événements envoyés par le serveur (SSE) pour une communication efficace
+- Actif uniquement en mode développement
+
+### Comment ça marche
+
+1. L'observateur de fichiers surveille le répertoire `docs/` de manière récursive
+2. Lorsqu'un fichier change, l'API envoie un événement au navigateur
+3. Le navigateur déclenche un rafraîchissement doux pour recharger le contenu
+4. Le cache est invalidé pour les fichiers affectés
+
+## Génération statique
+
+### Processus de construction optimisé
+
+Le processus de construction utilise des données mises en cache pour accélérer `generateStaticParams` :
+
+```typescript
+export async function generateStaticParams() {
+  const versions = getCachedVersions()  // Mis en cache
+  const params = []
+
+  for (const version of versions) {
+    const docs = await getCachedAllDocs(version)  // Mis en cache
+    for (const doc of docs) {
+      params.push({
+        version,
+        slug: doc.slug.split("/").filter(Boolean),
+      })
+    }
+  }
+
+  return params
+}
+```
+
+### Conseils de performance
+
+Pour les grands sites de documentation (1000+ fichiers) :
+
+1. **Utiliser l'organisation des dossiers** : Organisez les documents dans des dossiers logiques pour améliorer la localité du cache
+2. **Activer le mode brouillon** : marquez les documents en cours de rédaction avec `draft: true` pour les exclure des builds de production
+3. **Optimiser les images** : Utilisez l'optimisation d'image Next.js pour les captures d'écran et les diagrammes
+4. **Surveiller les temps de construction** : Surveillez les journaux de performance pendant le développement
+
+## Fonctionnalités du mode développement
+
+### Journalisation des performances
+
+Lors de l'exécution de `npm run dev`, vous verrez des métriques de performance détaillées :
+
+```
+⏱️  getAllDocs(v1.0.0): 234.56ms
+⏱️  getDocBySlug(getting-started): 12.34ms
+💾 Memory Usage: { rss: '156MB', heapTotal: '89MB', heapUsed: '67MB' }
+```
+
+### Utilitaires de débogage
+
+Le système comprend des outils de débogage utiles (mode dev uniquement) :
+
+- **PerfTimer** : Mesurer la durée des opérations
+- **logCacheOperation** : Suivre les succès/échecs du cache
+- **logMemoryUsage** : Surveiller la consommation de mémoire
+- **debugLog** : Imprimer proprement des objets complexes
+
+## Optimisations de production
+
+### Génération de site statique (SSG)
+
+Toutes les pages de documentation sont pré-rendues au moment de la construction :
+
+- Zéro surcharge de rendu côté serveur
+- Chargements de page instantanés
+- Excellente performance SEO
+- Actifs statiques compatibles CDN
+
+### Optimisation du bundle
+
+- Composants serveur par défaut (JavaScript minimal)
+- Composants client uniquement là où nécessaire (onglets, sélecteur de thème)
+- Découpage de code automatique par route
+- Tree-shaking des dépendances inutilisées
+
+## Surveillance des performances
+
+### Analyse de construction
+
+Surveillez votre sortie de construction pour des informations sur les performances :
+
+```bash
+npm run build
+```
+
+Recherchez :
+- Temps de génération de page statique
+- Nombre de pages générées
+- Avertissements de taille de bundle
+
+### Métriques de développement
+
+Pendant le développement, surveillez la console pour :
+- Ratios succès/échec du cache (devraient s'améliorer avec le temps)
+- Temps d'opération sur les fichiers (identifier les opérations lentes)
+- Modèles d'utilisation de la mémoire (détecter les fuites de mémoire)
+
+## Meilleures pratiques
+
+1. **Gardez les fichiers organisés** : Une structure de dossiers logique améliore la mise en cache
+2. **Utilisez le frontmatter judicieusement** : Ajoutez uniquement les métadonnées nécessaires
+3. **Optimisez le contenu** : Les gros fichiers (>1Mo) doivent être divisés
+4. **Surveillez le cache** : Des taux d'échec élevés indiquent des problèmes de mise en cache
+5. **Builds propres** : Effacez occasionnellement `.next/` pour des builds frais
+
+## Dépannage
+
+### Temps de construction lents
+
+Si les builds sont lents :
+
+1. Vérifiez les fichiers MDX extrêmement volumineux (>5Mo)
+2. Réduisez le nombre de pages générées simultanément
+3. Effacez le cache : Supprimez `.next/` et `node_modules/.cache/`
+4. Mettez à jour les dépendances vers les dernières versions
+
+### Le rechargement à chaud ne fonctionne pas
+
+Si les modifications ne sont pas reflétées :
+
+1. Vérifiez que vous êtes en mode développement (`npm run dev`)
+2. Recherchez des erreurs dans la console du navigateur
+3. Vérifiez que le point de terminaison `/api/mdx-watch` répond
+4. Rafraîchissement forcé du navigateur (Cmd+Maj+R ou Ctrl+Maj+R)
+
+### Problèmes de mémoire
+
+Si vous rencontrez une utilisation élevée de la mémoire :
+
+1. Vérifiez les références circulaires dans la documentation
+2. Surveillez la taille du cache avec `getCacheStats()`
+3. Réduisez `CACHE_TTL` dans `lib/mdx-cache.ts`
+4. Effacez les caches manuellement avec `clearAllCaches()`

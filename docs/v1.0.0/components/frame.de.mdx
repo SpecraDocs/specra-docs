@@ -1,0 +1,57 @@
+---
+title: Frame
+description: Externe Inhalte sicher mit Iframes einbinden
+sidebar_position: 8
+---
+
+Die Frame-Komponente bindet externe Inhalte sicher mittels Iframes ein.
+
+## Verwendung
+
+```mdx
+<Frame 
+  src="https://example.com/embed" 
+  title="Eingebetteter Inhalt"
+  height={400}
+/>
+```
+
+## Live-Beispiel
+
+<Frame 
+  src="https://www.openstreetmap.org/export/embed.html?bbox=-0.1%2C51.5%2C0%2C51.52&layer=mapnik"
+  title="OpenStreetMap"
+  height={300}
+/>
+
+## Props
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `src` | `string` | erforderlich | URL des einzubettenden Inhalts |
+| `title` | `string` | `"Embedded content"` | Barrierefreier Titel für das Iframe |
+| `height` | `number \| string` | `500` | Höhe des Iframes |
+| `width` | `string` | `"100%"` | Breite des Iframes |
+
+## Sicherheit
+
+<Callout type="warning">
+Die Frame-Komponente verwendet ein sandboxed Iframe mit eingeschränkten Berechtigungen für Sicherheit. Erlaubte Funktionen sind: `allow-scripts`, `allow-same-origin`, `allow-forms` und `allow-popups`.
+</Callout>
+
+## Häufige Anwendungsfälle
+
+- Einbetten von Karten (Google Maps, OpenStreetMap)
+- Interaktive Demos und Playgrounds
+- Widgets von Drittanbietern
+- Code Sandboxes (CodeSandbox, StackBlitz)
+
+## Beispiel: CodeSandbox Embed
+
+```mdx
+<Frame 
+  src="https://codesandbox.io/embed/new?codemirror=1"
+  title="CodeSandbox"
+  height={500}
+/>
+```

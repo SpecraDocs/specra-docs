@@ -1,0 +1,70 @@
+---
+title: Ejemplo de formato Postman
+description: Documentos de API generados automáticamente desde Postman Collection v2.1
+icon: box
+sidebar_position: 5
+---
+
+Esta página demuestra la generación automática de documentación de API a partir de una **Colección Postman v2.1**.
+
+Exporte su colección de Postman y suéltela: ¡la documentación se genera automáticamente!
+
+<Callout type="success" title="¡Funciona con Postman!">
+Simplemente exporte su colección desde Postman (v2.0 o v2.1) y referénciela aquí. ¡No se necesita conversión!
+</Callout>
+
+---
+
+<ApiReference spec="/api-specs/postman-example.json" />
+
+---
+
+## Sobre este ejemplo
+
+Este ejemplo muestra cómo el analizador maneja:
+
+- ✅ Detección de formato **Postman Collection v2.x**
+- ✅ **Organización de carpetas** (elementos anidados aplanados)
+- ✅ **Variables de entorno** (interpolación `{{baseUrl}}`)
+- ✅ **Parámetros de ruta** (sintaxis `:id` preservada)
+- ✅ **Parámetros de consulta** con descripciones
+- ✅ **Cuerpos de solicitud** (raw, form-data, urlencoded)
+- ✅ **Ejemplos de respuesta** de respuestas guardadas
+- ✅ **Autenticación** (Bearer, API Key, Basic)
+
+## Cómo usar su colección Postman
+
+### Paso 1: Exportar desde Postman
+
+1. Abra su colección en Postman
+2. Haga clic en el menú de **tres puntos** (•••)
+3. Seleccione **Exportar**
+4. Elija **Colección v2.1** (recomendado)
+5. Guarde el archivo JSON
+
+### Paso 2: Añadir a sus documentos
+
+1. **Coloque el archivo** en `/public/api-specs/`
+2. **Referéncielo** en su MDX:
+
+```mdx
+<ApiReference spec="/api-specs/my-collection.json" parser="postman" />
+```
+
+O use la detección automática:
+
+```mdx
+<ApiReference spec="/api-specs/my-collection.json" />
+```
+
+### Paso 3: ¡Disfrute!
+
+Toda su colección de Postman está ahora bellamente documentada con:
+- Playground interactivo para pruebas
+- Extracción automática de parámetros
+- Ejemplos de respuesta
+- Información de autenticación
+
+<Callout type="tip" title="Consejo Pro">
+¡Mantenga su colección de Postman actualizada y simplemente vuelva a exportarla para actualizar su documentación!
+</Callout>

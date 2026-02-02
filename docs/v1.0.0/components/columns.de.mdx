@@ -1,0 +1,87 @@
+---
+title: Spalten (Columns)
+description: Erstellen Sie responsive mehrspaltige Layouts für Ihre Inhalte
+sidebar_position: 7
+---
+
+Die Spalten-Komponente erstellt responsive Rasterlayouts zur Organisation von Inhalten nebeneinander.
+
+## Verwendung
+
+```mdx
+<Columns cols={{ sm: 1, md: 2, lg: 3 }}>
+  <Column>Erster Spalteninhalt</Column>
+  <Column>Zweiter Spalteninhalt</Column>
+  <Column>Dritter Spalteninhalt</Column>
+</Columns>
+```
+
+## Live-Beispiele
+
+### Zwei Spalten
+
+<Columns cols={{ sm: 1, md: 2 }}>
+  <Column>
+    ### Linke Spalte
+    Dieser Inhalt erscheint auf der linken Seite (oder stapelt sich auf Mobilgeräten).
+  </Column>
+  <Column>
+    ### Rechte Spalte
+    Dieser Inhalt erscheint auf der rechten Seite.
+  </Column>
+</Columns>
+
+### Drei Spalten
+
+<Columns cols={{ sm: 1, md: 2, lg: 3 }}>
+  <Column>
+    <Card title="Funktion 1" description="Beschreibung der ersten Funktion" />
+  </Column>
+  <Column>
+    <Card title="Funktion 2" description="Beschreibung der zweiten Funktion" />
+  </Column>
+  <Column>
+    <Card title="Funktion 3" description="Beschreibung der dritten Funktion" />
+  </Column>
+</Columns>
+
+### Spaltenübergreifend (Spanning)
+
+Verwenden Sie die `span` Prop, damit Spalten mehr Platz einnehmen:
+
+<Columns cols={{ sm: 1, md: 3 }}>
+  <Column span={2}>
+    ### Breite Spalte
+    Diese Spalte erstreckt sich über 2 von 3 Spalten für prominenteren Inhalt.
+  </Column>
+  <Column>
+    ### Schmal
+    Einzelne Spaltenbreite.
+  </Column>
+</Columns>
+
+## Props
+
+### Columns
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `children` | `ReactNode` | erforderlich | Spalten-Komponenten |
+| `cols` | `object` | `{ sm: 1, md: 2, lg: 3 }` | Spalten bei jedem Breakpoint |
+| `cols.sm` | `1-4` | `1` | Spalten auf kleinen Bildschirmen |
+| `cols.md` | `1-4` | `2` | Spalten auf mittleren Bildschirmen |
+| `cols.lg` | `1-4` | `3` | Spalten auf großen Bildschirmen |
+| `cols.xl` | `1-4` | - | Spalten auf extra-großen Bildschirmen |
+
+### Column
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `children` | `ReactNode` | erforderlich | Spalteninhalt |
+| `span` | `1 \| 2 \| 3 \| 4` | `1` | Anzahl der zu überspannenden Spalten |
+
+## Responsives Verhalten
+
+<Callout type="tip">
+Spalten stapeln sich automatisch auf Mobilgeräten. Die `sm`, `md`, `lg` und `xl` Breakpoints ermöglichen es Ihnen zu steuern, wie Inhalte bei verschiedenen Bildschirmgrößen umfließen.
+</Callout>

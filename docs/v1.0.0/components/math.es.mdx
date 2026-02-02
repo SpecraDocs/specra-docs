@@ -1,0 +1,84 @@
+---
+title: Matemáticas (Math)
+description: Renderizar ecuaciones matemáticas con KaTeX
+sidebar_position: 12
+---
+
+El componente Math renderiza ecuaciones matemáticas con KaTeX, admitiendo matemáticas tanto en línea como en bloque.
+
+## Uso
+
+### Matemáticas en línea
+
+```mdx
+La ecuación <Math>{"E = mc^2"}</Math> es famosa.
+```
+
+### Matemáticas en bloque
+
+```mdx
+<Math block>
+  {"\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}"}
+</Math>
+```
+
+## Ejemplos en vivo
+
+### Matemáticas en línea
+
+La famosa ecuación de Einstein <Math>{"E = mc^2"}</Math> relaciona energía y masa.
+
+La fórmula cuadrática es <Math>{"x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}"}</Math>.
+
+### Matemáticas en bloque
+
+<Math block>
+  {"\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}"}
+</Math>
+
+<Math block>
+  {"f(x) = \\frac{1}{\\sigma\\sqrt{2\\pi}} e^{-\\frac{1}{2}\\left(\\frac{x-\\mu}{\\sigma}\\right)^2}"}
+</Math>
+
+### Matriz
+
+<Math block>
+  {"\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}"}
+</Math>
+
+### Sumatoria
+
+<Math block>
+  {"\\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6}"}
+</Math>
+
+## Props
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `children` | `string` | requerido | Expresión matemática LaTeX |
+| `block` | `boolean` | `false` | Mostrar como bloque (centrado) |
+
+## Sintaxis LaTeX
+
+<Callout type="tip">
+Recuerde escapar las barras invertidas en JSX. Use `\\` en lugar de `\` para comandos LaTeX.
+</Callout>
+
+### Símbolos comunes
+
+| Símbolo | LaTeX | Resultado |
+|---------|-------|-----------|
+| Letras griegas | `\alpha, \beta, \gamma` | <Math>{"\\alpha, \\beta, \\gamma"}</Math> |
+| Fracciones | `\frac{a}{b}` | <Math>{"\\frac{a}{b}"}</Math> |
+| Raíz cuadrada | `\sqrt{x}` | <Math>{"\\sqrt{x}"}</Math> |
+| Exponentes | `x^{n}` | <Math>{"x^{n}"}</Math> |
+| Subíndices | `x_{i}` | <Math>{"x_{i}"}</Math> |
+| Infinito | `\infty` | <Math>{"\\infty"}</Math> |
+| Suma | `\sum` | <Math>{"\\sum"}</Math> |
+| Integral | `\int` | <Math>{"\\int"}</Math> |
+
+## Recursos
+
+- [Documentación de KaTeX](https://katex.org/docs/supported.html)
+- [Símbolos matemáticos LaTeX](https://oeis.org/wiki/List_of_LaTeX_mathematical_symbols)

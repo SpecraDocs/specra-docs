@@ -1,0 +1,86 @@
+---
+title: Video
+description: Binden Sie Videos von lokalen Dateien, YouTube oder Vimeo ein
+sidebar_position: 17
+---
+
+Die Video-Komponente bindet Videos von lokalen Dateien oder beliebten Plattformen wie YouTube und Vimeo ein.
+
+## Verwendung
+
+### YouTube Video
+
+```mdx
+<Video 
+  src="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+  caption="Beispielvideo"
+/>
+```
+
+### Lokales Video
+
+```mdx
+<Video 
+  src="/videos/demo.mp4"
+  caption="Produktdemo"
+  controls
+  poster="/videos/poster.jpg"
+/>
+```
+
+## Live-Beispiele
+
+### YouTube Embed
+
+<Video 
+  src="https://youtu.be/puRFmqfVlLk"
+  caption="YouTube Video-Embed Beispiel"
+  muted
+  autoplay
+/>
+
+## Props
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `src` | `string` | erforderlich | Video-URL (YouTube, Vimeo oder lokaler Pfad) |
+| `caption` | `string` | - | Bildunterschrift unter dem Video |
+| `autoplay` | `boolean` | `false` | Automatische Wiedergabe beim Laden |
+| `loop` | `boolean` | `false` | Video-Wiedergabe in Schleife |
+| `muted` | `boolean` | `false` | Video-Audio stummschalten |
+| `controls` | `boolean` | `true` | Video-Steuerelemente anzeigen |
+| `poster` | `string` | - | Vorschaubild-URL (nur lokale Videos) |
+
+## Unterstützte Plattformen
+
+### YouTube
+
+Unterstützt verschiedene YouTube-URL-Formate:
+- `https://www.youtube.com/watch?v=VIDEO_ID`
+- `https://youtu.be/VIDEO_ID`
+
+### Vimeo
+
+Unterstützt Vimeo-URLs:
+- `https://vimeo.com/VIDEO_ID`
+
+### Lokale Dateien
+
+Unterstützt Standard-Videoformate:
+- MP4 (`.mp4`)
+- WebM (`.webm`)
+- Ogg (`.ogg`)
+
+## Tipps
+
+<Callout type="warning">
+Autoplay wird oft von Browsern blockiert, es sei denn, das Video ist auch stummgeschaltet. Für automatisch abspielende Videos verwenden Sie sowohl `autoplay` als auch `muted`:
+
+```mdx
+<Video src="/videos/animation.mp4" autoplay muted loop />
+```
+</Callout>
+
+<Callout type="tip">
+Verwenden Sie die `poster` Prop für lokale Videos, um ein Vorschaubild anzuzeigen, bevor das Video geladen wird.
+</Callout>

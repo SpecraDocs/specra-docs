@@ -1,0 +1,262 @@
+---
+title: Manuelle Komponenten
+description: Handgefertigte API-Dokumente mit einzelnen MDX-Komponenten
+icon: code
+sidebar_position: 6
+---
+
+Diese Seite demonstriert, wie Sie Ihre REST-API-Endpunkte mit den API-Komponenten von Specra dokumentieren.
+
+## Benutzer abrufen
+
+<ApiEndpoint
+  method="GET"
+  path="/api/users/:id"
+  summary="Einen einzelnen Benutzer per ID abrufen"
+>
+
+### Pfadparameter
+
+<ApiParams
+  title="Pfadparameter"
+  params={[
+    {
+      name: "id",
+      type: "string",
+      required: true,
+      description: "Die eindeutige Kennung des Benutzers"
+    }
+  ]}
+/>
+
+### Query-Parameter
+
+<ApiParams
+  title="Query-Parameter"
+  params={[
+    {
+      name: "fields",
+      type: "string",
+      description: "Kommagetrennte Liste der Felder, die in die Antwort aufgenommen werden sollen",
+      default: "all"
+    },
+    {
+      name: "include_metadata",
+      type: "boolean",
+      description: "Ob Benutzermetadaten enthalten sein sollen",
+      default: "false"
+    }
+  ]}
+/>
+
+### Antworten
+
+<ApiResponse
+  status={200}
+  description="Erfolg"
+  example={{
+    "id": "user_123",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "created_at": "2024-01-15T10:30:00Z"
+  }}
+/>
+
+<ApiResponse
+  status={404}
+  description="Benutzer nicht gefunden"
+  example={{
+    "error": "User not found",
+    "code": "USER_NOT_FOUND"
+  }}
+/>
+
+### Ausprobieren
+
+<ApiPlayground
+  method="GET"
+  path="/api/users/user_123"
+  baseUrl="https://api.example.com"
+/>
+
+</ApiEndpoint>
+
+## Benutzer erstellen
+
+<ApiEndpoint
+  method="POST"
+  path="/api/users"
+  summary="Ein neues Benutzerkonto erstellen"
+>
+
+### Request Body
+
+<ApiParams
+  title="Body-Parameter"
+  params={[
+    {
+      name: "name",
+      type: "string",
+      required: true,
+      description: "Vollständiger Name des Benutzers"
+    },
+    {
+      name: "email",
+      type: "string",
+      required: true,
+      description: "E-Mail-Adresse (muss eindeutig sein)"
+    },
+    {
+      name: "role",
+      type: "string",
+      description: "Benutzerrolle",
+      default: "user"
+    }
+  ]}
+/>
+
+### Antworten
+
+<ApiResponse
+  status={201}
+  description="Benutzer erfolgreich erstellt"
+  example={{
+    "id": "user_124",
+    "name": "Jane Smith",
+    "email": "jane@example.com",
+    "role": "user",
+    "created_at": "2024-01-15T11:00:00Z"
+  }}
+/>
+
+<ApiResponse
+  status={400}
+  description="Validierungsfehler"
+  example={{
+    "error": "Invalid request body",
+    "details": {
+      "email": "Email already exists"
+    }
+  }}
+/>
+
+### Ausprobieren
+
+<ApiPlayground
+  method="POST"
+  path="/api/users"
+  baseUrl="https://api.example.com"
+  defaultBody={JSON.stringify({
+    name: "Jane Smith",
+    email: "jane@example.com",
+    role: "user"
+  }, null, 2)}
+/>
+
+</ApiEndpoint>
+
+## Benutzer aktualisieren
+
+<ApiEndpoint
+  method="PATCH"
+  path="/api/users/:id"
+  summary="Benutzerinformationen aktualisieren"
+>
+
+### Pfadparameter
+
+<ApiParams
+  params={[
+    {
+      name: "id",
+      type: "string",
+      required: true,
+      description: "Die eindeutige Kennung des Benutzers"
+    }
+  ]}
+/>
+
+### Request Body
+
+<ApiParams
+  title="Body-Parameter"
+  params={[
+    {
+      name: "name",
+      type: "string",
+      description: "Aktualisierter Name"
+    },
+    {
+      name: "email",
+      type: "string",
+      description: "Aktualisierte E-Mail-Adresse"
+    },
+    {
+      name: "role",
+      type: "string",
+      description: "Aktualisierte Rolle"
+    }
+  ]}
+/>
+
+### Antworten
+
+<ApiResponse
+  status={200}
+  description="Benutzer erfolgreich aktualisiert"
+  example={{
+    "id": "user_123",
+    "name": "John Updated",
+    "email": "john.updated@example.com",
+    "role": "admin",
+    "updated_at": "2024-01-15T12:00:00Z"
+  }}
+/>
+
+</ApiEndpoint>
+
+## Benutzer löschen
+
+<ApiEndpoint
+  method="DELETE"
+  path="/api/users/:id"
+  summary="Ein Benutzerkonto löschen"
+>
+
+### Pfadparameter
+
+<ApiParams
+  params={[
+    {
+      name: "id",
+      type: "string",
+      required: true,
+      description: "Die eindeutige Kennung des zu löschenden Benutzers"
+    }
+  ]}
+/>
+
+### Antworten
+
+<ApiResponse
+  status={204}
+  description="Benutzer erfolgreich gelöscht"
+/>
+
+<ApiResponse
+  status={404}
+  description="Benutzer nicht gefunden"
+/>
+
+</ApiEndpoint>
+
+## Authentifizierung
+
+Alle API-Anfragen erfordern eine Authentifizierung mit einem Bearer-Token:
+
+```bash
+curl -H "Authorization: Bearer your_api_key" \
+  https://api.example.com/api/users/user_123
+```
+
+Erhalten Sie Ihren API-Schlüssel vom [Entwickler-Dashboard](https://example.com/dashboard).

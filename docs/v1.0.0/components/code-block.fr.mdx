@@ -1,0 +1,103 @@
+---
+title: Bloc de code
+description: Affichez du code avec coloration syntaxique, numéros de ligne et fonctionnalité de copie
+sidebar_position: 6
+---
+
+Les blocs de code affichent du code avec une coloration syntaxique, des numéros de ligne, un bouton de copie et des en-têtes de nom de fichier optionnels.
+
+## Utilisation
+
+Les blocs de code sont créés automatiquement lors de l'utilisation de blocs de code délimités avec un spécificateur de langage :
+
+````mdx
+```javascript
+const greeting = "Bonjour le monde !";
+console.log(greeting);
+```
+````
+
+## Exemples en direct
+
+### JavaScript
+
+```javascript
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+console.log(fibonacci(10)); // 55
+```
+
+### TypeScript
+
+```typescript
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+function greetUser(user: User): string {
+  return `Bonjour, ${user.name}!`;
+}
+```
+
+### Python
+
+```python
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+```
+
+### Bash
+
+```bash
+# Installer les dépendances
+npm install
+
+# Démarrer le serveur de développement
+npm run dev
+```
+
+### JSON
+
+```json
+{
+  "name": "my-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "react": "^19.0.0",
+    "next": "^16.0.0"
+  }
+}
+```
+
+## Fonctionnalités
+
+<Callout type="info">
+Les blocs de code incluent une coloration syntaxique automatique pour de nombreux langages, y compris JavaScript, TypeScript, Python, Bash, JSON, CSS, et plus encore.
+</Callout>
+
+- **Coloration syntaxique** - Détection et coloration automatiques du langage
+- **Numéros de ligne** - Référence facile pour des lignes spécifiques
+- **Bouton Copier** - Copie du code en un clic
+- **En-tête de nom de fichier** - Affichage optionnel du nom de fichier
+
+## Langages pris en charge
+
+Les langages courants incluent :
+- `javascript`, `typescript`, `jsx`, `tsx`
+- `python`, `ruby`, `go`, `rust`
+- `bash`, `shell`, `powershell`
+- `html`, `css`, `scss`
+- `json`, `yaml`, `toml`
+- `sql`, `graphql`
+- `markdown`, `mdx`

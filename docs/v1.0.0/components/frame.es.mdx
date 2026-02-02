@@ -1,0 +1,57 @@
+---
+title: Frame
+description: Incruste contenido externo de forma segura utilizando iframes
+sidebar_position: 8
+---
+
+El componente Frame incrusta contenido externo de forma segura utilizando iframes.
+
+## Uso
+
+```mdx
+<Frame 
+  src="https://example.com/embed" 
+  title="Contenido incrustado"
+  height={400}
+/>
+```
+
+## Ejemplo en vivo
+
+<Frame 
+  src="https://www.openstreetmap.org/export/embed.html?bbox=-0.1%2C51.5%2C0%2C51.52&layer=mapnik"
+  title="OpenStreetMap"
+  height={300}
+/>
+
+## Props
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `src` | `string` | requerido | URL del contenido a incrustar |
+| `title` | `string` | `"Embedded content"` | Título accesible para el iframe |
+| `height` | `number \| string` | `500` | Altura del iframe |
+| `width` | `string` | `"100%"` | Ancho del iframe |
+
+## Seguridad
+
+<Callout type="warning">
+El componente Frame utiliza un iframe en modo sandbox con permisos limitados por seguridad. Las características permitidas incluyen: `allow-scripts`, `allow-same-origin`, `allow-forms`, y `allow-popups`.
+</Callout>
+
+## Casos de uso comunes
+
+- Incrustación de mapas (Google Maps, OpenStreetMap)
+- Demos interactivas y áreas de juego
+- Widgets de terceros
+- Code sandboxes (CodeSandbox, StackBlitz)
+
+## Ejemplo: Incrustación de CodeSandbox
+
+```mdx
+<Frame 
+  src="https://codesandbox.io/embed/new?codemirror=1"
+  title="CodeSandbox"
+  height={500}
+/>
+```

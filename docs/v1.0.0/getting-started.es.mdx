@@ -1,0 +1,206 @@
+---
+title: Empezando
+description: Configure y comience a escribir documentación con Specra en menos de 5 minutos
+sidebar_position: 2
+icon: book
+tab_group: guides
+---
+
+# Empezando con Specra
+
+Esta guía lo llevará de cero a un sitio de documentación completamente funcional en menos de 5 minutos. Cubriremos la instalación, la configuración básica y la escritura de su primera página.
+
+## Requisitos previos
+
+Antes de comenzar, asegúrese de tener:
+- **Node.js 18 o superior** (verifique con `node --version`)
+- Un gestor de paquetes: **npm** (viene con Node.js), **yarn**, o **pnpm**
+- Un editor de código (se recomienda VS Code para soporte MDX)
+
+## Instalación
+
+La forma más rápida de comenzar es usar `create-specra`, nuestra herramienta de andamiaje que configura todo por usted.
+
+<Steps>
+  <Step title="Cree su proyecto">
+    Ejecute el comando de creación con el nombre de su proyecto:
+
+    <Tabs defaultValue="npm">
+      <Tab label="npm">
+```bash
+npx create-specra@latest my-docs
+```
+      </Tab>
+      <Tab label="yarn">
+```bash
+yarn create specra my-docs
+```
+      </Tab>
+      <Tab label="pnpm">
+```bash
+pnpm create specra my-docs
+```
+      </Tab>
+    </Tabs>
+
+    Esto crea un nuevo directorio llamado `my-docs` con todos los archivos que necesita para comenzar.
+  </Step>
+
+  <Step title="Navegar e instalar">
+    Muévase a su nuevo proyecto e instale las dependencias:
+
+    <Tabs defaultValue="npm">
+      <Tab label="npm">
+```bash
+cd my-docs
+npm install
+```
+      </Tab>
+      <Tab label="yarn">
+```bash
+cd my-docs
+yarn install
+```
+      </Tab>
+      <Tab label="pnpm">
+```bash
+cd my-docs
+pnpm install
+```
+      </Tab>
+    </Tabs>
+
+    La instalación generalmente toma de 30 a 60 segundos dependiendo de su conexión a Internet.
+  </Step>
+
+  <Step title="Inicie el servidor de desarrollo">
+    Encienda el servidor de desarrollo:
+
+    <Tabs defaultValue="npm">
+      <Tab label="npm">
+```bash
+npm run dev
+```
+      </Tab>
+      <Tab label="yarn">
+```bash
+yarn dev
+```
+      </Tab>
+      <Tab label="pnpm">
+```bash
+pnpm dev
+```
+      </Tab>
+    </Tabs>
+
+    Abra [http://localhost:3000](http://localhost:3000) en su navegador. ¡Debería ver su sitio de documentación con contenido de muestra!
+
+    <Callout type="success">
+    El servidor de desarrollo incluye recarga en caliente. Edite cualquier archivo MDX y vea cómo sus cambios aparecen instantáneamente.
+    </Callout>
+  </Step>
+</Steps>
+
+## Estructura del proyecto
+
+Después de ejecutar `create-specra`, esto es lo que obtiene:
+
+```txt
+my-docs/
+├── app/                     # Next.js App Router
+│   ├── layout.tsx           # Diseño raíz con proveedores de Specra
+│   ├── page.tsx             # Página de inicio
+│   └── docs/                # Rutas de documentación
+│       └── [...slug]/       # Ruta dinámica general
+│           └── page.tsx     # Renderizador de páginas de doc
+├── docs/                    # Su contenido de documentación
+│   └── v1.0.0/             # Carpeta de versión
+│       ├── about.mdx
+│       ├── getting-started.mdx
+│       └── guides/         # Agrupación de carpetas
+│           ├── _category_.json
+│           └── writing.mdx
+├── public/                  # Activos estáticos (imágenes, iconos)
+├── specra.config.json      # Configuración de Specra
+├── package.json
+├── next.config.mjs         # Configuración de Next.js
+└── tailwind.config.ts      # Configuración de Tailwind
+```
+
+<Callout type="info">
+**Importante:** Todos los archivos de documentación deben usar la extensión `.mdx`, no `.md`. MDX le permite usar componentes React junto con Markdown.
+</Callout>
+
+## Su primera página de documentación
+
+Vamos a crear su primera página de documentación personalizada.
+
+<Steps>
+  <Step title="Crear un nuevo archivo">
+    Dentro de `docs/v1.0.0/`, cree un archivo llamado `hello.mdx`:
+
+```mdx
+---
+title: Hola Specra
+description: Mi primera página de documentación
+sidebar_position: 3
+---
+
+# ¡Hola Specra!
+
+Esta es mi primera página de documentación. Puedo usar **texto en negrita**,
+*texto en cursiva*, e incluso [enlaces](https://specra.dev).
+
+## Características que amo
+
+- Recarga en caliente rápida
+- Hermosos componentes
+- Estructura de archivos simple
+- Cero configuración necesaria
+```
+  </Step>
+
+  <Step title="Ver su página">
+    Guarde el archivo y visite [http://localhost:3000/docs/v1.0.0/hello](http://localhost:3000/docs/v1.0.0/hello)
+
+    Debería ver su nueva página en la barra lateral y renderizada bellamente en el área de contenido principal.
+  </Step>
+
+  <Step title="Agregar un componente">
+    Hagámoslo más interesante con un componente Callout:
+
+```mdx
+---
+title: Hola Specra
+description: Mi primera página de documentación
+sidebar_position: 3
+---
+
+# ¡Hola Specra!
+
+Esta es mi primera página de documentación.
+
+<Callout type="success">
+  ¡Acabo de agregar un componente interactivo a mi Markdown! No se necesitan importaciones.
+</Callout>
+
+## Próximos pasos
+
+¿Listo para aprender más? Eche un vistazo a la sección [Componentes](/docs/v1.0.0/components).
+```
+
+    Guarde y observe cómo se actualiza instantáneamente. Note cómo no necesitó importar el componente Callout - está disponible automáticamente en todos sus archivos MDX.
+  </Step>
+</Steps>
+
+## Próximos pasos
+
+Ahora tiene un sitio Specra funcionando y conoce los conceptos básicos de creación de páginas. Aquí es a dónde ir desde aquí:
+
+<CardGrid cols={2}>
+  <Card icon="settings" title="Configure su sitio" description="Personalice la marca, navegación y características" href="/docs/v1.0.0/configuration/overview" />
+  <Card icon="palette" title="Explore componentes" description="Aprenda sobre todos los componentes de UI disponibles" href="/docs/v1.0.0/components" />
+  <Card icon="rocket" title="Despliegue sus documentos" description="Envíe su documentación a producción" href="/docs/v1.0.0/deployment/overview" />
+  <Card icon="zap" title="Características avanzadas" description="Versionado, búsqueda, documentos de API y más" href="/docs/v1.0.0/features" />
+</CardGrid>

@@ -1,0 +1,197 @@
+---
+title: Funktionen
+description: Entdecken Sie alle Funktionen der Specra-Dokumentationsplattform
+sidebar_position: 4
+icon: scroll-text
+---
+
+## Inhaltsfunktionen
+
+### MDX-Unterstützung
+
+Schreiben Sie Dokumentation in MDX – Markdown mit eingebauten React-Komponenten.
+
+```mdx
+# Hallo Welt
+
+Dies ist **Markdown** mit einer <Badge variant="success">React-Komponente</Badge>!
+```
+
+<Callout type="tip">
+MDX ermöglicht es Ihnen, interaktive, dynamische Dokumentation zu erstellen, die über statischen Text hinausgeht.
+</Callout>
+
+### Syntax-Hervorhebung
+
+Codeblöcke erhalten automatisch Syntax-Hervorhebung mit Zeilennummern:
+
+```typescript
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+function greetUser(user: User): string {
+  return `Hello, ${user.name}!`;
+}
+```
+
+Unterstützte Sprachen umfassen JavaScript, TypeScript, Python, Bash, JSON, CSS und viele mehr.
+
+### Mathematische Gleichungen
+
+Rendern Sie mathematische Gleichungen mit KaTeX:
+
+Inline: <Math>{"E = mc^2"}</Math>
+
+Block:
+<Math block>
+  {"\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}"}
+</Math>
+
+### Mermaid-Diagramme
+
+Erstellen Sie Diagramme aus Text mit Mermaid:
+
+<Mermaid
+  chart={`
+    graph LR
+      A[MDX schreiben] --> B[Build]
+      B --> C[Bereitstellen]
+      C --> D[Benutzer lesen Docs]
+  `}
+  caption="Dokumentations-Workflow"
+/>
+
+## Navigationsfunktionen
+
+### Automatische Seitenleiste
+
+Die Seitenleiste wird automatisch aus Ihrer Ordnerstruktur generiert. Verwenden Sie `_category_.json` zum Anpassen:
+
+```json
+{
+  "label": "Anleitungen",
+  "position": 2,
+  "collapsible": true,
+  "collapsed": false
+}
+```
+
+### Inhaltsverzeichnis
+
+Ein schwebendes Inhaltsverzeichnis wird automatisch aus Ihren Überschriften generiert. Es hebt den aktuellen Abschnitt beim Scrollen hervor.
+
+### Brotkrümel
+
+Brotkrümelnavigation hilft Benutzern, ihren Standort in der Dokumentationshierarchie zu verstehen.
+
+### Versionswechsler
+
+Unterstützung mehrerer Dokumentationsversionen mit einfachem Umschalten:
+
+- `/docs/v1.0.0/getting-started`
+- `/docs/v2.0.0/getting-started`
+- `/docs/next/getting-started` (unveröffentlicht)
+
+## Suche
+
+### Volltextsuche
+
+Angetrieben von Meilisearch für sofortige, tippo-tolerante Suchergebnisse.
+
+- **Tastaturkürzel**: Drücken Sie `⌘K` oder `Ctrl+K`, um die Suche zu öffnen
+- **Tippo-Toleranz**: Findet Ergebnisse auch bei Rechtschreibfehlern
+- **Hervorgehobene Ergebnisse**: Sehen Sie, wo Ihre Anfrage übereinstimmt
+
+### Suchindizierung
+
+Die Dokumentation wird zur Build-Zeit automatisch für eine schnelle Suche indiziert.
+
+## Theme & Styling
+
+### Dark Mode
+
+Automatischer Dark Mode, der die Systemeinstellungen respektiert:
+
+- Heller Modus
+- Dunkler Modus
+- Systemeinstellung (auto)
+
+Umschalten mit der Schaltfläche im Header.
+
+### Anpassbares Design
+
+Das gesamte Styling basiert auf CSS-Variablen und Tailwind, was die Anpassung erleichtert:
+
+```css
+:root {
+  --primary: oklch(0.55 0.22 264.376);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+}
+```
+
+## Komponenten
+
+### Reiche Komponentenbibliothek
+
+Eingebaute Komponenten für gängige Dokumentationsmuster:
+
+<CardGrid cols={3}>
+  <Card icon="message-square" title="Callouts" description="Info, Warnung, Tipp, Fehler-Alarme" />
+  <Card icon="layers" title="Tabs" description="Getabte Inhaltsabschnitte" />
+  <Card icon="list" title="Schritte" description="Schritt-für-Schritt-Anleitungen" />
+  <Card icon="chevrons-up-down" title="Akkordeon" description="Einklappbarer Inhalt" />
+  <Card icon="grid" title="Karten" description="Feature-Karten mit Icons" />
+  <Card icon="code" title="Code-Blöcke" description="Syntax-hervorgehobener Code" />
+</CardGrid>
+
+Siehe den Abschnitt [Komponenten](/docs/v1.0.0/components) für die Dokumentation zu jeder Komponente.
+
+## Entwicklererfahrung
+
+### Hot Reload
+
+Änderungen an MDX-Dateien werden sofort ohne vollständige Seitenaktualisierung angezeigt.
+
+### Frontmatter-Validierung
+
+Frontmatter-Felder werden zur Build-Zeit validiert, um Fehler frühzeitig zu erkennen.
+
+### SEO-Optimierung
+
+Automatische Meta-Tags, OpenGraph-Bilder und strukturierte Daten aus Frontmatter:
+
+- Titel- und Beschreibungs-Tags
+- OpenGraph- und Twitter-Karten
+- Kanonische URLs
+- Sitemap-Generierung
+
+### Lesezeit
+
+Automatische Berechnung und Anzeige der geschätzten Lesezeit für jede Seite.
+
+## Produktionsfunktionen
+
+### Statische Generierung
+
+Alle Seiten werden zur Build-Zeit für maximale Leistung vorgerendert:
+
+- Kein JavaScript für Inhalte erforderlich
+- Edge-Caching freundlich
+- Schnelle Time to First Byte (TTFB)
+
+### Leistung
+
+- Lighthouse-Score: 90+ (Desktop)
+- Lazy-loaded Bilder mit Next.js Image
+- Code-Splitting für Komponenten
+
+### Barrierefreiheit
+
+- Tastaturnavigation
+- Screenreader-Unterstützung
+- Hoher Kontrast Unterstützung
+- Fokus-Management

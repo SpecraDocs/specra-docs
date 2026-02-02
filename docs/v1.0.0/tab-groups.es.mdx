@@ -1,0 +1,260 @@
+---
+title: Grupos de pestañas
+description: Organice su documentación en pestañas para una mejor navegación y estructura
+icon: notebook-tabs
+tab_group: guides
+---
+
+Los grupos de pestañas le permiten organizar su documentación en diferentes secciones accesibles a través de pestañas en la parte superior de sus páginas de documentación. Esto es particularmente útil para separar diferentes tipos de contenido como documentos de SDK, referencias de API y guías.
+
+## Descripción general
+
+Los grupos de pestañas proporcionan una barra de navegación fija que:
+- Se encuentra debajo del encabezado
+- Filtra el contenido de la barra lateral según la pestaña activa
+- Persiste a través de la navegación de la página
+- Soporta iconos de Lucide React
+- Mantiene la estructura de la barra lateral generada automáticamente
+
+## Configuración
+
+Defina grupos de pestañas en su `specra.config.json`:
+
+```json
+{
+  "navigation": {
+    "tabGroups": [
+      {
+        "id": "sdk",
+        "label": "Documentación SDK",
+        "icon": "code"
+      },
+      {
+        "id": "api",
+        "label": "Referencia API",
+        "icon": "zap"
+      },
+      {
+        "id": "guides",
+        "label": "Guías",
+        "icon": "book-open"
+      }
+    ]
+  }
+}
+```
+
+### Propiedades del grupo de pestañas
+
+| Propiedad | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| `id` | string | Sí | Identificador único para el grupo de pestañas |
+| `label` | string | Sí | Texto de visualización para la pestaña |
+| `icon` | string | No | Nombre del icono Lucide (por ejemplo, "code", "zap", "book-open") |
+
+## Asignación de contenido a pestañas
+
+Hay dos formas de asignar contenido a grupos de pestañas:
+
+### 1. Asignación a nivel de archivo
+
+Agregue `tab_group` al frontmatter de sus archivos MDX:
+
+```mdx
+---
+title: Empezando
+description: Guía de inicio rápido
+tab_group: guides
+---
+
+# Empezando
+
+Su contenido aquí...
+```
+
+### 2. Asignación a nivel de carpeta
+
+Agregue `tab_group` a su archivo `_category_.json` para asignar todos los archivos en esa carpeta:
+
+```json
+{
+  "label": "Componentes",
+  "position": 2,
+  "collapsible": true,
+  "collapsed": false,
+  "icon": "grid",
+  "tab_group": "sdk"
+}
+```
+
+Todos los archivos dentro de esta carpeta heredarán automáticamente el grupo de pestañas `sdk`.
+
+## Comportamiento y reglas
+
+### Asignación de pestaña predeterminada
+
+Los archivos sin un `tab_group` especificado aparecerán automáticamente en el **primer grupo de pestañas** definido en su configuración.
+
+### Prioridad
+
+`tab_group` a nivel de archivo en frontmatter tiene prioridad sobre la asignación a nivel de carpeta de `_category_.json`.
+
+### Persistencia de pestañas
+
+La pestaña activa persiste cuando:
+- Navega entre páginas dentro del mismo grupo de pestañas
+- Cambia manualmente de pestañas
+- Hace clic en enlaces a páginas en diferentes grupos de pestañas (la pestaña cambia automáticamente)
+
+### Selección inicial de pestaña
+
+Cuando aterriza en una página:
+- La pestaña cambia automáticamente para coincidir con el grupo de la página
+- Al recargar la página, la pestaña refleja el grupo de la página actual
+- La selección manual de pestañas se conserva al navegar dentro del mismo grupo
+
+## Mejores prácticas
+
+### 1. Agrupación lógica
+
+Agrupe el contenido relacionado junto:
+- **Documentos de SDK/Biblioteca**: Instalación, configuración, referencia de API
+- **Documentos de API**: Puntos finales REST, esquemas GraphQL, webhooks
+- **Guías**: Tutoriales, instrucciones, mejores prácticas
+
+### 2. Nomenclatura consistente
+
+Use etiquetas claras y concisas:
+- ✅ "Documentación SDK", "Referencia API", "Guías"
+- ❌ "Docs1", "Sección A", "Varios"
+
+### 3. Iconos significativos
+
+Elija iconos que representen el contenido:
+- `code` para documentación de SDK/biblioteca
+- `zap` para referencias de API
+- `book-open` para guías y tutoriales
+- `rocket` para contenido de inicio
+
+### 4. Limitar el recuento de pestañas
+
+Mantenga el número de pestañas manejable:
+- **Recomendado**: 2-4 pestañas
+- **Máximo**: 5-6 pestañas
+- Demasiadas pestañas pueden abrumar a los usuarios
+
+## Ejemplos
+
+### Ejemplo 1: División simple SDK + API
+
+```json
+{
+  "navigation": {
+    "tabGroups": [
+      {
+        "id": "sdk",
+        "label": "SDK",
+        "icon": "code"
+      },
+      {
+        "id": "api",
+        "label": "API",
+        "icon": "zap"
+      }
+    ]
+  }
+}
+```
+
+### Ejemplo 2: Documentación completa
+
+```json
+{
+  "navigation": {
+    "tabGroups": [
+      {
+        "id": "getting-started",
+        "label": "Empezando",
+        "icon": "rocket"
+      },
+      {
+        "id": "sdk",
+        "label": "Referencia SDK",
+        "icon": "code"
+      },
+      {
+        "id": "api",
+        "label": "Referencia API",
+        "icon": "server"
+      },
+      {
+        "id": "guides",
+        "label": "Guías",
+        "icon": "book-open"
+      }
+    ]
+  }
+}
+```
+
+## Uso avanzado
+
+### Carpetas anidadas
+
+Los grupos de pestañas funcionan a la perfección con estructuras de carpetas anidadas:
+
+```txt
+docs/v1.0.0/
+├── components/              # tab_group: sdk
+│   ├── _category_.json
+│   ├── button.mdx
+│   └── input.mdx
+├── api/                     # tab_group: api
+│   ├── _category_.json
+│   ├── authentication.mdx
+│   └── endpoints.mdx
+└── guides/                  # tab_group: guides
+    ├── _category_.json
+    └── quickstart.mdx       # Puede sobrescribir con tab_group a nivel de archivo
+```
+
+### Grupos de pestañas mixtos en la misma carpeta
+
+Puede tener archivos en la misma carpeta que pertenezcan a diferentes pestañas:
+
+```txt
+docs/v1.0.0/
+├── _category_.json          # Predeterminado: tab_group: sdk
+├── overview.mdx             # Hereda: sdk
+├── api-overview.mdx         # Sobrescribir: tab_group: api
+└── tutorial.mdx             # Sobrescribir: tab_group: guides
+```
+
+## Solución de problemas
+
+### La pestaña no se muestra
+
+**Problema**: Grupo de pestañas definido pero no visible
+
+**Soluciones**:
+- Asegúrese de que al menos un archivo esté asignado a ese grupo de pestañas
+- Verifique que el `id` del grupo de pestañas coincida exactamente tanto en la configuración como en el frontmatter
+- Verifique que `navigation.tabGroups` esté definido en `specra.config.json`
+
+### Contenido que aparece en la pestaña incorrecta
+
+**Problema**: La página aparece bajo la pestaña incorrecta
+
+**Soluciones**:
+- Verifique el frontmatter a nivel de archivo para anulación de `tab_group`
+- Verifique que `_category_.json` a nivel de carpeta tenga el `tab_group` correcto
+- Recuerde: el frontmatter tiene prioridad sobre `_category_.json`
+
+### La pestaña no persiste
+
+**Problema**: La pestaña se restablece al navegar
+
+**Soluciones**:
+- Este es el comportamiento esperado al navegar a una página en un grupo de pestañas diferente
+- La pestaña cambia automáticamente para coincidir con el grupo de la página actual
+- La selección manual persiste solo cuando se navega dentro del mismo grupo de pestañas

@@ -1,0 +1,488 @@
+---
+title: Configuración del Sitio
+description: Configure los metadatos de su sitio, marca y configuración básica
+sidebar_position: 2
+icon: globe
+tab_group: guides
+---
+
+# Configuración del Sitio
+
+La sección `site` en `specra.config.json` controla la identidad, marca y metadatos básicos de su sitio de documentación. Aquí es donde define el título, descripción, logotipo y otras propiedades fundamentales de su sitio.
+
+## Configuración Básica
+
+Aquí hay una configuración mínima del sitio:
+
+```json
+{
+  "site": {
+    "title": "Mi Documentación",
+    "description": "Documentación completa para mi proyecto",
+    "url": "https://docs.ejemplo.com"
+  }
+}
+```
+
+Eso es todo lo que necesita para comenzar. Specra completa los valores predeterminados sensatos para todo lo demás.
+
+## Todas las Opciones del Sitio
+
+### Campos Requeridos
+
+Solo un campo es verdaderamente obligatorio:
+
+```json
+{
+  "site": {
+    "title": "Mi Documentación"
+  }
+}
+```
+
+Todo lo demás es opcional pero recomendado para un sitio de documentos profesional.
+
+### Configuración Completa
+
+Aquí están todas las opciones disponibles:
+
+```json
+{
+  "site": {
+    "title": "Documentación Specra",
+    "description": "Construya hermosa documentación con Specra",
+    "url": "https://docs.ejemplo.com",
+    "baseUrl": "/",
+    "language": "es",
+    "organizationName": "Mi Empresa",
+    "projectName": "specra",
+    "activeVersion": "v1.0.0",
+    "logo": "/logo.svg",
+    "favicon": "/favicon.ico",
+    "hideTitle": false,
+    "hideLogo": false
+  }
+}
+```
+
+## Referencia de Configuración
+
+### title
+
+**Tipo:** `string` (Requerido)
+
+El nombre de su sitio de documentación. Aparece en la pestaña del navegador, encabezado de navegación y vistas previas de redes sociales.
+
+```json
+{
+  "site": {
+    "title": "Documentos Specra"
+  }
+}
+```
+
+<Callout type="tip">
+Manténgalo corto y claro. Esto aparece en muchos lugares, incluidas las pestañas del navegador donde el espacio es limitado.
+</Callout>
+
+### description
+
+**Tipo:** `string`
+
+Breve descripción de su documentación. Usado en metaetiquetas SEO y vistas previas de redes sociales.
+
+```json
+{
+  "site": {
+    "description": "Guía completa para construir documentación con Specra"
+  }
+}
+```
+
+**Mejores prácticas:**
+- Manténgalo por debajo de 160 caracteres
+- Incluya palabras clave relevantes
+- Sea descriptivo y específico
+- Concéntrese en lo que los usuarios aprenderán
+
+### url
+
+**Tipo:** `string`
+
+La URL completa donde se aloja su documentación. Usado para generar URL canónicas y vistas previas de redes sociales.
+
+```json
+{
+  "site": {
+    "url": "https://docs.ejemplo.com"
+  }
+}
+```
+
+<Callout type="warning">
+Incluya el protocolo (`https://`) pero no la barra diagonal final.
+</Callout>
+
+### baseUrl
+
+**Tipo:** `string`
+**Predeterminado:** `"/"`
+
+Ruta base para su sitio. Generalmente solo necesaria para GitHub Pages sin un dominio personalizado.
+
+```json
+{
+  "site": {
+    "baseUrl": "/"
+  }
+}
+```
+
+Para GitHub Pages en `nombreusuario.github.io/nombre-repo`:
+
+```json
+{
+  "site": {
+    "baseUrl": "/nombre-repo/"
+  }
+}
+```
+
+<Callout type="info">
+Para la mayoría de las implementaciones (Vercel, Netlify, dominios personalizados), mantenga esto como `"/"`.
+</Callout>
+
+### language
+
+**Tipo:** `string`
+**Predeterminado:** `"en"`
+
+El idioma principal de su documentación. Usado en el atributo HTML `lang`.
+
+```json
+{
+  "site": {
+    "language": "en"
+  }
+}
+```
+
+Valores comunes: `en`, `es`, `fr`, `de`, `ja`, `zh`, `pt`, `ru`
+
+### organizationName
+
+**Tipo:** `string`
+
+El nombre de su empresa u organización. Usado en el pie de página y metadatos.
+
+```json
+{
+  "site": {
+    "organizationName": "Acme Corporation"
+  }
+}
+```
+
+### projectName
+
+**Tipo:** `string`
+
+El nombre de su proyecto o producto. Usado en metadatos y puede ser referenciado en el contenido.
+
+```json
+{
+  "site": {
+    "projectName": "specra"
+  }
+}
+```
+
+### activeVersion
+
+**Tipo:** `string`
+**Predeterminado:** Primera versión encontrada en la carpeta `docs/`
+
+Qué versión de documentación mostrar por defecto.
+
+```json
+{
+  "site": {
+    "activeVersion": "v2.0.0"
+  }
+}
+```
+
+Los usuarios pueden cambiar de versión usando el menú desplegable de versiones, pero esto establece el valor predeterminado.
+
+### logo
+
+**Tipo:** `string` o `object`
+
+Ruta a su imagen de logotipo. Puede ser un solo logotipo o logotipos separados para modos claro y oscuro.
+
+**Logotipo único:**
+```json
+{
+  "site": {
+    "logo": "/logo.svg"
+  }
+}
+```
+
+**Logotipos separados para temas:**
+```json
+{
+  "site": {
+    "logo": {
+      "light": "/logo-light.svg",
+      "dark": "/logo-dark.svg"
+    }
+  }
+}
+```
+
+**Mejores prácticas:**
+- Use SVG para una representación nítida en cualquier tamaño
+- Mantenga las dimensiones alrededor de 150px de ancho × 40px de alto
+- Optimice archivos (use SVGO o similar)
+- Coloque en la carpeta `public/`
+
+### favicon
+
+**Tipo:** `string`
+
+Ruta a su favicon. Aparece en pestañas del navegador y marcadores.
+
+```json
+{
+  "site": {
+    "favicon": "/favicon.ico"
+  }
+}
+```
+
+**Configuración recomendada:**
+```
+public/
+├── favicon.ico          # 32×32 ICO para navegadores antiguos
+├── favicon-16x16.png    # 16×16 PNG
+├── favicon-32x32.png    # 32×32 PNG
+└── apple-touch-icon.png # 180×180 PNG para iOS
+```
+
+Luego haga referencia al principal:
+```json
+{
+  "site": {
+    "favicon": "/favicon-32x32.png"
+  }
+}
+```
+
+### hideTitle
+
+**Tipo:** `boolean`
+**Predeterminado:** `false`
+
+Ocultar el título del sitio en la navegación del encabezado.
+
+```json
+{
+  "site": {
+    "hideTitle": true
+  }
+}
+```
+
+Útil cuando su logotipo incluye texto y no desea duplicar el título.
+
+### hideLogo
+
+**Tipo:** `boolean`
+**Predeterminado:** `false`
+
+Ocultar el logotipo en la navegación del encabezado.
+
+```json
+{
+  "site": {
+    "hideLogo": true
+  }
+}
+```
+
+Use esto si solo desea mostrar el texto del título sin un logotipo.
+
+## Ejemplos
+
+### Configuración Mínima
+
+Perfecto para comenzar:
+
+```json
+{
+  "site": {
+    "title": "Mis Docs",
+    "description": "Documentación para mi proyecto"
+  }
+}
+```
+
+### Proyecto de Código Abierto
+
+Para un proyecto de código abierto en GitHub:
+
+```json
+{
+  "site": {
+    "title": "Documentación MyLib",
+    "description": "Una biblioteca potente para construir cosas increíbles",
+    "url": "https://mylib.dev",
+    "organizationName": "Colaboradores MyLib",
+    "projectName": "mylib",
+    "logo": "/logo.svg",
+    "favicon": "/favicon.ico"
+  }
+}
+```
+
+### Producto de Empresa
+
+Para un producto comercial:
+
+```json
+{
+  "site": {
+    "title": "Docs API Acme",
+    "description": "Referencia API completa y guías para Acme Platform",
+    "url": "https://docs.acme.com",
+    "organizationName": "Acme Corporation",
+    "projectName": "acme-platform",
+    "activeVersion": "v2.0.0",
+    "logo": {
+      "light": "/acme-logo-light.svg",
+      "dark": "/acme-logo-dark.svg"
+    },
+    "favicon": "/favicon-32x32.png"
+  }
+}
+```
+
+### Sitio Multilingüe
+
+Para documentación en múltiples idiomas:
+
+```json
+{
+  "site": {
+    "title": "Documentación",
+    "language": "es",
+    "url": "https://docs.ejemplo.com/es",
+    "logo": "/logo.svg"
+  }
+}
+```
+
+## Patrones Comunes
+
+### Configuración de GitHub Pages
+
+Para GitHub Pages sin dominio personalizado:
+
+```json
+{
+  "site": {
+    "title": "Mis Docs",
+    "url": "https://username.github.io/nombre-repo",
+    "baseUrl": "/nombre-repo/"
+  }
+}
+```
+
+### Mejores Prácticas de Logotipo
+
+**Para fondo en modo claro:**
+Use un logotipo oscuro o logotipo con color
+
+**Para fondo en modo oscuro:**
+Use un logotipo claro/blanco o invierta los colores
+
+**Configuración de ejemplo:**
+```json
+{
+  "site": {
+    "logo": {
+      "light": "/logo-dark.svg",
+      "dark": "/logo-white.svg"
+    }
+  }
+}
+```
+
+## Validación
+
+Specra valida la configuración de su sitio al inicio. Errores comunes:
+
+**Falta título:**
+```
+❌ Error: site.title es obligatorio
+```
+
+**URL no válida:**
+```
+❌ Error: site.url debe ser una URL válida (incluya https://)
+```
+
+**Archivo de logotipo no encontrado:**
+```
+⚠️ Advertencia: Archivo de logotipo no encontrado en /logo.svg
+```
+
+## Variables de Entorno
+
+Use variables de entorno para diferentes entornos:
+
+```json
+{
+  "site": {
+    "url": "${SITE_URL}",
+    "logo": "${LOGO_PATH}"
+  }
+}
+```
+
+Luego establézcalas:
+```bash
+# .env.local
+SITE_URL=https://docs.ejemplo.com
+LOGO_PATH=/logo.svg
+```
+
+## Próximos Pasos
+
+<CardGrid cols={2}>
+  <Card
+    icon="layout"
+    title="Navegación"
+    description="Configurar barra lateral, migas de pan y grupos de pestañas"
+    href="/docs/v1.0.0/configuration/navigation"
+  />
+  <Card
+    icon="rocket"
+    title="Implementación"
+    description="Configurar ajustes de implementación"
+    href="/docs/v1.0.0/configuration/deployment-config"
+  />
+  <Card
+    icon="sliders"
+    title="Avanzado"
+    description="Análisis, búsqueda y más"
+    href="/docs/v1.0.0/configuration/advanced"
+  />
+  <Card
+    icon="arrow-left"
+    title="Descripción General"
+    description="Volver a la descripción general de configuración"
+    href="/docs/v1.0.0/configuration/overview"
+  />
+</CardGrid>

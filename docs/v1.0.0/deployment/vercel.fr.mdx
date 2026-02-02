@@ -1,0 +1,353 @@
+---
+title: Déployer sur Vercel
+description: Déployez votre documentation Specra sur Vercel sans aucune configuration
+sidebar_position: 2
+icon: triangle
+tab_group: guides
+---
+
+# Déployer sur Vercel
+
+Vercel est le moyen le plus simple de déployer votre documentation Specra. Il est construit par les créateurs de Next.js, donc tout fonctionne parfaitement dès la sortie de la boîte.
+
+## Pourquoi Vercel ?
+
+- **Zéro configuration** - Détection et configuration automatiques
+- **Déploiements instantanés** - En ligne en moins de 60 secondes
+- **HTTPS automatique** - Certificats SSL inclus
+- **Réseau Edge** - Chargement rapide dans le monde entier
+- **Déploiements de prévisualisation** - Chaque push git reçoit une URL
+- **Niveau gratuit** - Limites généreuses pour les sites de documentation
+
+## Déploiement rapide
+
+<Steps>
+  <Step title="Pousser sur GitHub">
+    Si ce n'est pas déjà fait, poussez votre projet sur GitHub :
+
+```bash
+git init
+git add .
+git commit -m "Commit initial"
+git remote add origin https://github.com/username/repo.git
+git push -u origin main
+```
+  </Step>
+
+  <Step title="Importer dans Vercel">
+    1. Allez sur [vercel.com/new](https://vercel.com/new)
+    2. Cliquez sur "Import Git Repository"
+    3. Sélectionnez votre dépôt de documentation
+    4. Vercel détecte automatiquement Next.js et configure tout
+
+    Aucune configuration manuelle nécessaire !
+  </Step>
+
+  <Step title="Déployer">
+    Cliquez sur "Deploy" et attendez environ 30-60 secondes.
+
+    Vous obtiendrez une URL de production comme `votre-projet.vercel.app`
+  </Step>
+</Steps>
+
+<Callout type="success">
+C'est tout ! Votre documentation est maintenant en ligne avec HTTPS automatique et CDN global.
+</Callout>
+
+## Configuration
+
+Vercel utilise automatiquement ces paramètres pour les projets Next.js :
+
+| Paramètre | Valeur |
+|-----------|--------|
+| Commande de build | `npm run build` |
+| Répertoire de sortie | `.next` |
+| Commande d'installation | `npm install` |
+| Version de Node | 20.x (dernière LTS) |
+
+### Remplacer les paramètres (Optionnel)
+
+Si vous avez besoin de paramètres personnalisés, créez `vercel.json` :
+
+```json
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm ci",
+  "framework": "nextjs",
+  "regions": ["iad1"]
+}
+```
+
+## Variables d'environnement
+
+Ajoutez des variables d'environnement dans le tableau de bord Vercel :
+
+<Steps>
+  <Step title="Aller aux paramètres du projet">
+    Cliquez sur votre projet → Settings → Environment Variables
+  </Step>
+
+  <Step title="Ajouter des variables">
+    Ajoutez vos variables une par une :
+
+```
+MEILISEARCH_HOST=https://search.example.com
+MEILISEARCH_API_KEY=votre-clé-de-recherche
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+```
+
+<Callout type="tip">
+Les variables commençant par `NEXT_PUBLIC_` sont exposées au navigateur. Gardez les clés sensibles sans ce préfixe.
+</Callout>
+  </Step>
+
+  <Step title="Redéployer">
+    Les changements d'environnement nécessitent un redéploiement. Allez dans Deployments → Cliquez sur les trois points → Redeploy.
+  </Step>
+</Steps>
+
+## Domaine personnalisé
+
+Ajoutez votre propre domaine à votre projet Vercel :
+
+<Steps>
+  <Step title="Ajouter un domaine">
+    1. Allez dans Project Settings → Domains
+    2. Entrez votre domaine (par ex., `docs.example.com`)
+    3. Cliquez sur "Add"
+  </Step>
+
+  <Step title="Configurer le DNS">
+    Vercel vous montre les enregistrements DNS à ajouter. Typiquement :
+
+**Pour sous-domaine (docs.example.com) :**
+```
+Type: CNAME
+Nom: docs
+Valeur: cname.vercel-dns.com
+```
+
+**Pour domaine apex (example.com) :**
+```
+Type: A
+Nom: @
+Valeur: 76.76.21.21
+```
+  </Step>
+
+  <Step title="Attendre la vérification">
+    La propagation DNS prend de 5 minutes à 48 heures (généralement moins d'une heure).
+
+    Vercel provisionne automatiquement un certificat SSL une fois le DNS vérifié.
+  </Step>
+</Steps>
+
+## Déploiements automatiques
+
+Chaque push git déclenche un déploiement :
+
+**Déploiements de production :**
+- Les commits sur la branche `main` sont déployés en production
+- Met à jour votre site en direct automatiquement
+
+**Déploiements de prévisualisation :**
+- Les commits sur d'autres branches reçoivent des URL de prévisualisation
+- Les pull requests reçoivent des URL uniques pour les tests
+- Parfait pour examiner les changements avant de fusionner
+
+### URL de prévisualisation
+
+Chaque déploiement de prévisualisation reçoit une URL unique :
+
+```
+votre-projet-git-feature-branch-username.vercel.app
+```
+
+Partagez-la avec votre équipe pour examiner les changements avant la mise en ligne.
+
+## Paramètres de déploiement
+
+### Configuration de branche
+
+Contrôlez quelles branches sont déployées :
+
+1. Allez dans Settings → Git
+2. Définissez la Production Branch (généralement `main`)
+3. Ectivez/désactivez les déploiements de prévisualisation pour les autres branches
+
+### Protection de déploiement
+
+Protégez les déploiements de production :
+
+```json
+{
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "staging": "preview"
+    }
+  }
+}
+```
+
+## Optimisation des performances
+
+Vercel optimise automatiquement votre déploiement :
+
+- **Mise en cache Edge** - Fichiers statiques mis en cache mondialement
+- **Optimisation d'image** - Composant Image Next.js optimisé automatiquement
+- **Compression** - Compression Gzip/Brotli activée
+- **HTTP/2** - Connexions multiplexées plus rapides
+
+### Analytique
+
+Activez Vercel Analytics gratuitement :
+
+1. Allez dans l'onglet Analytics
+2. Cliquez sur "Enable Analytics"
+3. Ajoutez le composant Analytics à votre mise en page
+
+```tsx
+// app/layout.tsx
+import { Analytics } from '@vercel/analytics/react'
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Analytics />
+      </body>
+    </html>
+  )
+}
+```
+
+## Intégration CI/CD
+
+Vercel agit comme votre pipeline CI/CD :
+
+**Ce qui s'exécute à chaque déploiement :**
+- `npm install` (dépendances)
+- `npm run build` (build Next.js)
+- Vérifications et validations automatiques
+- Déploiement sur le réseau Edge
+
+### Intégration GitHub
+
+Vercel commente les pull requests avec :
+- URL de déploiement de prévisualisation
+- Journaux de build
+- Aperçus de performance
+
+### Journaux de build
+
+Voir les journaux de build détaillés :
+1. Allez dans Deployments
+2. Cliquez sur n'importe quel déploiement
+3. Consultez la section Building pour les journaux
+
+## Dépannage
+
+### Échec du build
+
+**Vérifier la version de Node :**
+Assurez-vous d'utiliser Node 18+. Ajoutez à `package.json` :
+
+```json
+{
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+```
+
+**Vider le cache de build :**
+1. Allez dans Settings → General
+2. Faites défiler jusqu'à Build & Development Settings
+3. Vider le cache de build
+
+### Les variables d'environnement ne fonctionnent pas
+
+- Vérifiez les noms de variables (sensibles à la casse)
+- Préfixez les variables côté client avec `NEXT_PUBLIC_`
+- Redéployez après avoir changé les variables
+
+### Le domaine personnalisé ne fonctionne pas
+
+- Vérifiez que les enregistrements DNS sont corrects
+- Attendez la propagation DNS (vérifiez avec `dig` ou `nslookup`)
+- Assurez-vous que CNAME pointe vers `cname.vercel-dns.com`
+- Vérifiez le statut de vérification du domaine dans le tableau de bord Vercel
+
+## Déploiement Monorepo
+
+Si vos docs sont dans un monorepo :
+
+1. Définissez le Root Directory dans les paramètres du projet
+2. Pointez vers votre dossier docs (par ex., `apps/docs`)
+3. Vercel ne construit que ce répertoire
+
+```json
+{
+  "buildCommand": "cd ../.. && npm run build:docs",
+  "outputDirectory": ".next"
+}
+```
+
+## Meilleures pratiques
+
+**Utiliser les déploiements de prévisualisation** - Tester les changements avant de fusionner vers main
+
+**Activer la protection de branche** - Exiger le succès du déploiement de prévisualisation avant de fusionner
+
+**Configurer les notifications** - Recevoir des alertes Slack/email pour le statut de déploiement
+
+**Surveiller l'analytique** - Suivre les pages vues et les performances
+
+**Utiliser la configuration Edge** - Stocker les drapeaux de fonctionnalité et la configuration en périphérie pour des mises à jour instantanées
+
+## Tarification
+
+Le niveau gratuit de Vercel comprend :
+- Déploiements illimités
+- 100 Go de bande passante/mois
+- HTTPS automatique
+- Déploiements de prévisualisation
+- Analytique (basique)
+
+Cela est généralement suffisant pour les sites de documentation. Passez à Pro si vous avez besoin de :
+- Plus de bande passante
+- Analytique avancée
+- Protection par mot de passe
+- Support entreprise
+
+## Prochaines étapes
+
+<CardGrid cols={2}>
+  <Card
+    icon="github"
+    title="GitHub Pages"
+    description="Déployer comme site statique sur GitHub Pages"
+    href="/docs/v1.0.0/deployment/github-pages"
+  />
+  <Card
+    icon="globe"
+    title="Netlify"
+    description="Plateforme d'hébergement statique alternative"
+    href="/docs/v1.0.0/deployment/netlify"
+  />
+  <Card
+    icon="arrow-left"
+    title="Aperçu du déploiement"
+    description="Retour aux options de déploiement"
+    href="/docs/v1.0.0/deployment/overview"
+  />
+  <Card
+    icon="zap"
+    title="Performance"
+    description="Optimiser votre documentation"
+    href="/docs/v1.0.0/performance"
+  />
+</CardGrid>

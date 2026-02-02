@@ -1,0 +1,86 @@
+---
+title: Video
+description: Incruste videos de archivos locales, YouTube o Vimeo
+sidebar_position: 17
+---
+
+El componente Video incrusta videos de archivos locales o plataformas populares como YouTube y Vimeo.
+
+## Uso
+
+### Video de YouTube
+
+```mdx
+<Video 
+  src="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+  caption="Video de ejemplo"
+/>
+```
+
+### Video local
+
+```mdx
+<Video 
+  src="/videos/demo.mp4"
+  caption="Demostración de producto"
+  controls
+  poster="/videos/poster.jpg"
+/>
+```
+
+## Ejemplos en vivo
+
+### Incrustación de YouTube
+
+<Video 
+  src="https://youtu.be/puRFmqfVlLk"
+  caption="Ejemplo de incrustación de video de YouTube"
+  muted
+  autoplay
+/>
+
+## Props
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `src` | `string` | requerido | URL del video (YouTube, Vimeo o ruta local) |
+| `caption` | `string` | - | Leyenda debajo del video |
+| `autoplay` | `boolean` | `false` | Reproducción automática al cargar |
+| `loop` | `boolean` | `false` | Reproducción en bucle |
+| `muted` | `boolean` | `false` | Silenciar audio del video |
+| `controls` | `boolean` | `true` | Mostrar controles de video |
+| `poster` | `string` | - | URL de la imagen del póster (solo videos locales) |
+
+## Plataformas admitidas
+
+### YouTube
+
+Admite varios formatos de URL de YouTube:
+- `https://www.youtube.com/watch?v=VIDEO_ID`
+- `https://youtu.be/VIDEO_ID`
+
+### Vimeo
+
+Admite URL de Vimeo:
+- `https://vimeo.com/VIDEO_ID`
+
+### Archivos locales
+
+Admite formatos de video estándar:
+- MP4 (`.mp4`)
+- WebM (`.webm`)
+- Ogg (`.ogg`)
+
+## Consejos
+
+<Callout type="warning">
+La reproducción automática a menudo es bloqueada por los navegadores a menos que el video también esté silenciado. Para videos de reproducción automática, use tanto `autoplay` como `muted`:
+
+```mdx
+<Video src="/videos/animation.mp4" autoplay muted loop />
+```
+</Callout>
+
+<Callout type="tip">
+Use la propiedad `poster` para videos locales para mostrar una imagen de vista previa antes de que se cargue el video.
+</Callout>

@@ -1,0 +1,498 @@
+---
+title: Navigations-Konfiguration
+description: Konfigurieren Sie Seitenleiste, Brotkrumen, Inhaltsverzeichnis und Tab-Gruppen
+sidebar_position: 3
+icon: layout
+tab_group: guides
+---
+
+# Navigations-Konfiguration
+
+Der Abschnitt `navigation` steuert, wie sich Benutzer durch Ihre Dokumentation bewegen. Konfigurieren Sie die Seitenleiste, Brotkrumen, das Inhaltsverzeichnis und Tab-Gruppen, um ein intuitives Navigationserlebnis zu schaffen.
+
+## Grundkonfiguration
+
+Hier ist ein minimales Navigations-Setup:
+
+```json
+{
+  "navigation": {
+    "showSidebar": true,
+    "showBreadcrumbs": true,
+    "showTableOfContents": true
+  }
+}
+```
+
+Specra bietet sinnvolle Standardwerte, sodass Sie nur konfigurieren müssen, was Sie ändern möchten.
+
+## Vollständige Konfiguration
+
+```json
+{
+  "navigation": {
+    "showSidebar": true,
+    "collapsibleSidebar": true,
+    "showBreadcrumbs": true,
+    "showTableOfContents": true,
+    "tocPosition": "right",
+    "tocMaxDepth": 3,
+    "tabGroups": [
+      {
+        "id": "guides",
+        "label": "Anleitungen",
+        "icon": "book-open"
+      },
+      {
+        "id": "api",
+        "label": "API-Referenz",
+        "icon": "zap"
+      },
+      {
+        "id": "components",
+        "label": "Komponenten",
+        "icon": "layers"
+      }
+    ]
+  }
+}
+```
+
+## Seitenleisten-Konfiguration
+
+### showSidebar
+
+**Typ:** `boolean`
+**Standard:** `true`
+
+Seitenleisten-Navigation anzeigen oder ausblenden.
+
+```json
+{
+  "navigation": {
+    "showSidebar": true
+  }
+}
+```
+
+Setzen Sie dies auf `false`, um die Seitenleiste vollständig auszublenden. Nützlich für Landing-Pages oder Marketing-Websites.
+
+### collapsibleSidebar
+
+**Typ:** `boolean`
+**Standard:** `true`
+
+Benutzern erlauben, Seitenleisten-Abschnitte ein- und auszuklappen.
+
+```json
+{
+  "navigation": {
+    "collapsibleSidebar": true
+  }
+}
+```
+
+Wenn `true`, haben Ordner-Abschnitte Pfeile zum Ein-/Ausklappen. Wenn `false`, sind alle Abschnitte immer ausgeklappt.
+
+## Brotkrumen (Breadcrumbs)
+
+### showBreadcrumbs
+
+**Typ:** `boolean`
+**Standard:** `true`
+
+Brotkrumen-Navigation oben auf jeder Seite anzeigen.
+
+```json
+{
+  "navigation": {
+    "showBreadcrumbs": true
+  }
+}
+```
+
+Brotkrumen zeigen den Ort der Seite in der Dokumentationshierarchie:
+
+```
+Home > Anleitungen > Erste Schritte
+```
+
+<Callout type="tip">
+Brotkrumen helfen Benutzern zu verstehen, wo sie sich befinden, und zu übergeordneten Abschnitten zurückzunavigieren.
+</Callout>
+
+## Inhaltsverzeichnis (Table of Contents)
+
+### showTableOfContents
+
+**Typ:** `boolean`
+**Standard:** `true`
+
+Das Inhaltsverzeichnis (TOC) auf Dokumentationsseiten anzeigen.
+
+```json
+{
+  "navigation": {
+    "showTableOfContents": true
+  }
+}
+```
+
+Das TOC zeigt alle Überschriften auf der aktuellen Seite mit Links zum Scrollen zu jedem Abschnitt.
+
+### tocPosition
+
+**Typ:** `"left"` oder `"right"`
+**Standard:** `"right"`
+
+Positionieren Sie das Inhaltsverzeichnis auf der linken oder rechten Seite der Seite.
+
+```json
+{
+  "navigation": {
+    "tocPosition": "right"
+  }
+}
+```
+
+**Rechte Position (Standard):**
+- TOC erscheint in der rechten Seitenleiste
+- Traditionelles Dokumentationslayout
+- Mehr Leseraum für Inhalt
+
+**Linke Position:**
+- TOC erscheint in der linken Seitenleiste unter der Hauptnavigation
+- Kompaktes Layout
+- Weniger horizontales Scrollen auf kleineren Bildschirmen
+
+### tocMaxDepth
+
+**Typ:** `number` (1-6)
+**Standard:** `3`
+
+Maximale Überschriftsebene, die im Inhaltsverzeichnis angezeigt werden soll.
+
+```json
+{
+  "navigation": {
+    "tocMaxDepth": 3
+  }
+}
+```
+
+**Optionen:**
+- `1` - Nur H1-Überschriften
+- `2` - H1- und H2-Überschriften
+- `3` - H1-, H2- und H3-Überschriften (empfohlen)
+- `4` - Bis zu H4
+- `5` - Bis zu H5
+- `6` - Alle Überschriften
+
+<Callout type="warning">
+Wenn dieser Wert zu hoch eingestellt wird (5 oder 6), kann das TOC überladen wirken. Die meisten Docs funktionieren am besten mit 2 oder 3.
+</Callout>
+
+## Tab-Gruppen
+
+Tab-Gruppen organisieren Ihre Dokumentation in logische Abschnitte mit separaten Navigations-Tabs.
+
+### Einfache Tab-Gruppen
+
+```json
+{
+  "navigation": {
+    "tabGroups": [
+      {
+        "id": "guides",
+        "label": "Anleitungen",
+        "icon": "book-open"
+      },
+      {
+        "id": "api",
+        "label": "API-Referenz",
+        "icon": "zap"
+      }
+    ]
+  }
+}
+```
+
+### Tab-Gruppen-Eigenschaften
+
+Jede Tab-Gruppe hat drei Eigenschaften:
+
+**id** (erforderlich)
+- Eindeutige Kennung für die Tab-Gruppe
+- Verwendet im Seiten-Frontmatter: `tab_group: "guides"`
+- Kleinbuchstaben, keine Leerzeichen
+
+**label** (erforderlich)
+- Anzeigename, der im Tab angezeigt wird
+- Kann Leerzeichen und Großschreibung enthalten
+
+**icon** (optional)
+- Lucide-Icon-Name zur Anzeige neben dem Label
+- Macht Tabs visueller und leichter scanbar
+
+### Seiten zu Tab-Gruppen zuweisen
+
+Geben Sie in Ihrem MDX-Frontmatter an, zu welcher Tab-Gruppe eine Seite gehört:
+
+```mdx
+---
+title: Erste Schritte
+tab_group: guides
+---
+```
+
+Seiten mit demselben `tab_group`-Wert erscheinen zusammen unter diesem Tab.
+
+### Häufige Tab-Gruppen-Setups
+
+**Dokumentation + API:**
+```json
+{
+  "tabGroups": [
+    {
+      "id": "docs",
+      "label": "Dokumentation",
+      "icon": "book"
+    },
+    {
+      "id": "api",
+      "label": "API-Referenz",
+      "icon": "code"
+    }
+  ]
+}
+```
+
+**Anleitungen + Komponenten + API:**
+```json
+{
+  "tabGroups": [
+    {
+      "id": "guides",
+      "label": "Anleitungen",
+      "icon": "book-open"
+    },
+    {
+      "id": "components",
+      "label": "Komponenten",
+      "icon": "layers"
+    },
+    {
+      "id": "api",
+      "label": "API",
+      "icon": "zap"
+    }
+  ]
+}
+```
+
+**Multi-Produkt-Dokumentation:**
+```json
+{
+  "tabGroups": [
+    {
+      "id": "platform",
+      "label": "Plattform",
+      "icon": "box"
+    },
+    {
+      "id": "mobile",
+      "label": "Mobile SDK",
+      "icon": "smartphone"
+    },
+    {
+      "id": "web",
+      "label": "Web SDK",
+      "icon": "monitor"
+    }
+  ]
+}
+```
+
+## Verfügbare Icons
+
+Specra verwendet Lucide-Icons. Beliebte Auswahl für Dokumentation:
+
+**Allgemein:**
+- `book` - Bücher, Dokumentation
+- `book-open` - Offenes Buch, Lesen
+- `file-text` - Dokumente, Seiten
+- `layout` - Layout, Struktur
+
+**Technisch:**
+- `code` - Code, Programmierung
+- `zap` - API, schnell, dynamisch
+- `terminal` - CLI, Befehlszeile
+- `database` - Datenbank, Dateien
+
+**UI:**
+- `layers` - Komponenten, Stack
+- `palette` - Design, Theming
+- `settings` - Konfiguration
+- `grid` - Layout-Raster
+
+**Aktionen:**
+- `rocket` - Start, Bereitstellung
+- `wrench` - Werkzeuge, Utilities
+- `shield` - Sicherheit
+- `search` - Suche, Finden
+
+Durchsuchen Sie alle Icons auf [lucide.dev](https://lucide.dev/icons/)
+
+## Seitenleisten-Organisation
+
+### Automatische Generierung
+
+Specra generiert Ihre Seitenleiste automatisch aus Ihrer Dateistruktur:
+
+```txt
+docs/v1.0.0/
+├── getting-started.mdx        → Erste Schritte
+├── installation.mdx           → Installation
+└── guides/                    → Anleitungen (Ordner)
+    ├── basics.mdx            →   Grundlagen
+    └── advanced.mdx          →   Fortgeschritten
+```
+
+### Reihenfolge steuern
+
+Verwenden Sie `sidebar_position` im Frontmatter, um die Seitenreihenfolge zu steuern:
+
+```mdx
+---
+title: Erste Schritte
+sidebar_position: 1
+---
+```
+
+Niedrigere Zahlen erscheinen zuerst. Seiten ohne Positionen werden alphabetisch sortiert.
+
+### Kategorie-Konfiguration
+
+Passen Sie das Erscheinungsbild von Ordnern mit `_category_.json` an:
+
+```json
+{
+  "label": "Benutzerhandbücher",
+  "position": 2,
+  "collapsible": true,
+  "collapsed": false,
+  "icon": "book-open"
+}
+```
+
+Siehe [Inhalte schreiben](/docs/v1.0.0/writing-content) für mehr zur Organisation von Inhalten.
+
+## Beispiele
+
+### Minimales Setup
+
+Einfach die Grundlagen aktivieren:
+
+```json
+{
+  "navigation": {
+    "showSidebar": true,
+    "showBreadcrumbs": true,
+    "showTableOfContents": true
+  }
+}
+```
+
+### Sauberes Layout
+
+TOC links, tiefere Überschriften:
+
+```json
+{
+  "navigation": {
+    "showSidebar": true,
+    "collapsibleSidebar": true,
+    "showBreadcrumbs": true,
+    "showTableOfContents": true,
+    "tocPosition": "left",
+    "tocMaxDepth": 4
+  }
+}
+```
+
+### Mehrteilige Dokumentation
+
+Mit Tab-Gruppen für verschiedene Zielgruppen:
+
+```json
+{
+  "navigation": {
+    "showSidebar": true,
+    "collapsibleSidebar": true,
+    "showBreadcrumbs": true,
+    "showTableOfContents": true,
+    "tocPosition": "right",
+    "tocMaxDepth": 3,
+    "tabGroups": [
+      {
+        "id": "getting-started",
+        "label": "Erste Schritte",
+        "icon": "rocket"
+      },
+      {
+        "id": "developers",
+        "label": "Entwickler",
+        "icon": "code"
+      },
+      {
+        "id": "designers",
+        "label": "Designer",
+        "icon": "palette"
+      }
+    ]
+  }
+}
+```
+
+## Best Practices
+
+**Tab-Gruppen weise verwenden** - Erstellen Sie nicht zu viele. 3-5 Tabs Maximum funktioniert am besten.
+
+**Beschreibende Labels wählen** - Machen Sie offensichtlich, was in jedem Tab oder Abschnitt enthalten ist.
+
+**Geeignete Icons wählen** - Icons sollten den Zweck des Tabs verstärken.
+
+**tocMaxDepth angemessen setzen** - Die meisten Docs funktionieren am besten mit 2 oder 3 Ebenen.
+
+**Seitenleiste einklappbar halten** - Lassen Sie Benutzer Abschnitte ausblenden, die sie nicht benötigen.
+
+**Brotkrumen anzeigen** - Sie helfen Benutzern, komplexe Dokumentation zu navigieren.
+
+## Nächste Schritte
+
+<CardGrid cols={2}>
+  <Card
+    icon="globe"
+    title="Seiten-Konfiguration"
+    description="Seiten-Metadaten und Branding konfigurieren"
+    href="/docs/v1.0.0/configuration/site-config"
+  />
+  <Card
+    icon="rocket"
+    title="Bereitstellungskonfig"
+    description="Bereitstellungseinstellungen einrichten"
+    href="/docs/v1.0.0/configuration/deployment-config"
+  />
+  <Card
+    icon="sliders"
+    title="Erweiterte Konfiguration"
+    description="Analytik, Suche, Features und mehr"
+    href="/docs/v1.0.0/configuration/advanced"
+  />
+  <Card
+    icon="arrow-left"
+    title="Konfigurationsübersicht"
+    description="Zurück zur Konfigurationsübersicht"
+    href="/docs/v1.0.0/configuration/overview"
+  />
+</CardGrid>

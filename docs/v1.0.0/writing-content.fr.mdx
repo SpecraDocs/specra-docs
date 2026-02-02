@@ -1,0 +1,516 @@
+---
+title: Rédaction de contenu
+description: Maîtrisez la création MDX, l'organisation du contenu et les meilleures pratiques
+sidebar_position: 3
+icon: pen-tool
+tab_group: guides
+---
+
+# Rédaction de contenu dans Specra
+
+Specra utilise MDX (Markdown + JSX) pour la documentation, vous offrant la simplicité de Markdown avec la puissance des composants React. Ce guide couvre tout ce dont vous avez besoin pour rédiger une excellente documentation.
+
+## Bases MDX
+
+Les fichiers MDX ressemblent au Markdown ordinaire mais vous permettent d'utiliser des composants React n'importe où dans votre contenu.
+
+### Markdown standard
+
+Toute la syntaxe Markdown standard fonctionne comme prévu :
+
+**Titres :**
+```markdown
+# Titre 1
+## Titre 2
+### Titre 3
+```
+
+**Formatage du texte :**
+```markdown
+**Texte en gras**
+*Texte en italique*
+~~Barré~~
+`Code en ligne`
+```
+
+**Listes :**
+```markdown
+- Liste non ordonnée
+- Un autre élément
+  - Élément imbriqué
+
+1. Liste ordonnée
+2. Deuxième élément
+   1. Élément ordonné imbriqué
+```
+
+**Liens et images :**
+```markdown
+[Texte du lien](https://example.com)
+![Texte alternatif](/images/photo.png)
+```
+
+**Blocs de code :**
+````markdown
+```javascript
+function hello() {
+  console.log("Bonjour le monde !")
+}
+```
+````
+
+**Tableaux :**
+```markdown
+| Colonne 1 | Colonne 2 | Colonne 3 |
+|-----------|-----------|-----------|
+| Donnée 1  | Donnée 2  | Donnée 3  |
+| Plus      | Info      | Ici       |
+```
+
+**Citations :**
+```markdown
+> Ceci est une citation.
+> Elle peut s'étendre sur plusieurs lignes.
+```
+
+**Règles horizontales :**
+```markdown
+---
+```
+
+## Utilisation des composants
+
+Les composants sont utilisés avec la syntaxe JSX directement dans votre MDX :
+
+```mdx
+<Callout type="info">
+  Ceci est un composant callout !
+</Callout>
+```
+
+Tous les composants sont automatiquement disponibles - aucune importation nécessaire.
+
+### Exemples de composants
+
+**Alerter les lecteurs d'une information importante :**
+```mdx
+<Callout type="warning">
+  Assurez-vous de sauvegarder vos données avant de continuer.
+</Callout>
+```
+
+**Créer du contenu à onglets :**
+```mdx
+<Tabs defaultValue="option1">
+  <Tab label="Option 1">
+    Contenu pour le premier onglet
+  </Tab>
+  <Tab label="Option 2">
+    Contenu pour le deuxième onglet
+  </Tab>
+</Tabs>
+```
+
+**Guider les utilisateurs à travers des étapes :**
+```mdx
+<Steps>
+  <Step title="Installer les dépendances">
+    Exécutez `npm install` pour commencer.
+  </Step>
+  <Step title="Configurer votre application">
+    Modifiez le fichier de configuration avec vos paramètres.
+  </Step>
+</Steps>
+```
+
+Voir la section [Composants](/docs/v1.0.0/components) pour tous les composants disponibles.
+
+## Organisation du contenu
+
+### Meilleures pratiques pour la structure des fichiers
+
+Organisez les fichiers logiquement pour rendre le contenu facile à trouver :
+
+```txt
+docs/v1.0.0/
+├── getting-started.mdx         # Niveau supérieur : pages essentielles
+├── installation.mdx
+├── guides/                     # Regrouper le contenu connexe
+│   ├── _category_.json
+│   ├── basics.mdx
+│   ├── advanced.mdx
+│   └── examples/              # Imbrication supplémentaire pour les sous-sujets
+│       ├── _category_.json
+│       ├── example-1.mdx
+│       └── example-2.mdx
+└── api/
+    ├── _category_.json
+    └── reference.mdx
+```
+
+**Conseils :**
+- Gardez le niveau supérieur pour les pages critiques dont les utilisateurs ont besoin en premier
+- Utilisez des dossiers pour regrouper le contenu connexe
+- Limitez l'imbrication à 2-3 niveaux maximum
+- Nommez les fichiers de manière descriptive (`authentication.mdx` pas `auth.mdx`)
+
+### Contrôle de l'ordre des pages
+
+Utilisez `sidebar_position` dans le frontmatter pour contrôler l'ordre :
+
+```mdx
+---
+title: Installation
+sidebar_position: 1
+---
+```
+
+Les nombres inférieurs apparaissent en premier. Les pages sans position sont triées par ordre alphabétique.
+
+Pour les dossiers, utilisez `_category_.json` :
+
+```json
+{
+  "label": "Démarrage",
+  "position": 1
+}
+```
+
+## Conseils de style de rédaction
+
+Une bonne documentation est claire, concise et utile. Voici quelques conseils :
+
+### Soyez clair et direct
+
+**Bon :**
+> Cliquez sur le bouton "Enregistrer" pour sauvegarder vos modifications.
+
+**Mauvais :**
+> Vous pourriez envisager de cliquer sur le bouton étiqueté "Enregistrer" si vous souhaitez conserver vos modifications dans le stockage.
+
+### Utilisez la voix active
+
+**Bon :**
+> Le système valide votre saisie.
+
+**Mauvais :**
+> Votre saisie est validée par le système.
+
+### Montrez, ne faites pas que dire
+
+Incluez des exemples avec chaque concept :
+
+```mdx
+## Utilisation des variables d'environnement
+
+Accédez aux variables d'environnement dans votre configuration :
+
+```json
+{
+  "env": {
+    "API_URL": "https://api.example.com"
+  }
+}
+```
+
+Puis référencez-les dans votre MDX :
+
+```mdx
+L'API est disponible à {process.env.API_URL}
+```
+```
+
+### Diviser le contenu long
+
+Utilisez des titres, des listes, des callouts et des composants pour créer des pauses visuelles :
+
+```mdx
+## Options de configuration
+
+Il existe plusieurs façons de configurer l'authentification :
+
+### Clés API
+
+Les clés API sont simples mais moins sécurisées.
+
+<Callout type="warning">
+  Ne commettez jamais de clés API dans le contrôle de version.
+</Callout>
+
+### OAuth 2.0
+
+OAuth offre une meilleure sécurité pour les applications destinées aux utilisateurs.
+
+<Steps>
+  <Step title="Enregistrez votre application">
+    Créez une application dans le tableau de bord du fournisseur.
+  </Step>
+  <Step title="Configurer l'URL de rappel">
+    Définissez votre URI de redirection dans les paramètres de l'application.
+  </Step>
+</Steps>
+```
+
+## Travailler avec des images
+
+### Ajout d'images
+
+Placez les images dans le dossier `public/` :
+
+```txt
+public/
+├── images/
+│   ├── screenshot.png
+│   └── diagram.svg
+```
+
+Référencez-les dans MDX :
+
+```mdx
+![Capture d'écran du tableau de bord](/images/screenshot.png)
+```
+
+### Meilleures pratiques pour les images
+
+**Utilisez un texte alternatif descriptif :**
+```mdx
+![Formulaire de connexion montrant les champs email et mot de passe](/images/login.png)
+```
+
+**Optimisez la taille des images :**
+- Utilisez le format WebP lorsque c'est possible
+- Compressez les images avant de les ajouter au dépôt
+- Gardez les images sous 500Ko
+
+**Utilisez le composant Image pour des fonctionnalités avancées :**
+```mdx
+<Image
+  src="/images/hero.png"
+  alt="Image héro"
+  caption="La vue principale du tableau de bord"
+  width={800}
+  height={400}
+/>
+```
+
+## Exemples de code
+
+### Coloration syntaxique
+
+Spécifiez le langage après les accents graves d'ouverture :
+
+````markdown
+```javascript
+const greeting = "Bonjour le monde !"
+console.log(greeting)
+```
+
+```python
+def greet():
+    print("Bonjour le monde !")
+```
+
+```bash
+npm install specra
+```
+````
+
+Les langages pris en charge incluent : javascript, typescript, python, bash, json, yaml, markdown, html, css, et bien d'autres.
+
+### Surlignage de lignes
+
+Surlignez des lignes spécifiques pour attirer l'attention :
+
+````markdown
+```javascript {2,4-6}
+function calculateTotal(items) {
+  const subtotal = items.reduce((sum, item) => sum + item.price, 0)
+  const tax = subtotal * 0.1
+  const shipping = 5.99
+  const total = subtotal + tax + shipping
+  return total
+}
+```
+````
+
+### Noms de fichiers
+
+Montrez à quel fichier le code appartient :
+
+````markdown
+```javascript title="src/utils.js"
+export function formatDate(date) {
+  return date.toLocaleDateString()
+}
+```
+````
+
+### Utilisation du composant CodeBlock
+
+Pour plus de contrôle :
+
+```mdx
+<CodeBlock
+  language="javascript"
+  title="src/app.js"
+  highlightLines={[3, 5]}
+  showLineNumbers={true}
+>
+{`function app() {
+  const config = loadConfig()
+  const server = createServer(config)
+  server.listen(3000)
+  console.log("Server running")
+}`}
+</CodeBlock>
+```
+
+## Liens et navigation
+
+### Liens internes
+
+Lien vers d'autres pages dans vos docs :
+
+```mdx
+Voir le [guide de configuration](/docs/v1.0.0/configuration/overview) pour les détails.
+```
+
+Utilisez des chemins relatifs depuis la racine du site, y compris la version.
+
+### Liens externes
+
+Les liens externes s'ouvrent automatiquement dans un nouvel onglet :
+
+```mdx
+Consultez la [documentation Next.js](https://nextjs.org/docs).
+```
+
+### Liens d'ancrage
+
+Lien vers des titres sur la même page :
+
+```mdx
+Sauter à [Installation](#installation) ci-dessous.
+```
+
+Les ancres de titre sont générées automatiquement à partir du texte du titre en minuscules avec des traits d'union.
+
+## Référence Frontmatter
+
+Chaque fichier MDX a besoin de frontmatter. Voici un exemple complet :
+
+```mdx
+---
+title: Sujets avancés
+description: Plongée profonde dans les fonctionnalités avancées de Specra
+sidebar_position: 10
+tab_group: guides
+icon: zap
+tags: [advanced, configuration, optimization]
+draft: false
+---
+
+# Votre contenu commence ici
+```
+
+**Champs requis :**
+- `title` : Titre de la page
+
+**Champs recommandés :**
+- `description` : Description SEO (150-160 caractères)
+
+**Champs optionnels :**
+- `sidebar_position` : Numéro pour l'ordre de la barre latérale
+- `tab_group` : Assigner à un groupe d'onglets
+- `icon` : Nom de l'icône Lucide
+- `tags` : Tableau de balises
+- `draft` : Masquer en production si vrai
+
+## Fonctionnalités MDX avancées
+
+### Importation de composants
+
+Bien que les composants intégrés fonctionnent automatiquement, vous pouvez importer des composants personnalisés :
+
+```mdx
+import { MyCustomComponent } from '@/components/custom'
+
+<MyCustomComponent data="example" />
+```
+
+### Utilisation d'expressions JavaScript
+
+Incorporez des expressions JavaScript :
+
+```mdx
+L'année actuelle est {new Date().getFullYear()}.
+```
+
+### Contenu conditionnel
+
+Utilisez JavaScript pour le rendu conditionnel :
+
+```mdx
+{process.env.NODE_ENV === 'development' && (
+  <Callout type="info">
+    Vous visualisez la version de développement.
+  </Callout>
+)}
+```
+
+## Gestion des versions
+
+Lorsque vous avez besoin de plusieurs versions de doc :
+
+```txt
+docs/
+├── v1.0.0/
+│   └── getting-started.mdx
+├── v2.0.0/
+│   └── getting-started.mdx
+└── next/
+    └── getting-started.mdx
+```
+
+Définissez la version active dans `specra.config.json` :
+
+```json
+{
+  "site": {
+    "activeVersion": "v2.0.0"
+  }
+}
+```
+
+Les utilisateurs peuvent changer de version avec le menu déroulant de version dans l'interface utilisateur.
+
+## Meilleures pratiques SEO
+
+### Titres et descriptions de page
+
+Incluez toujours les deux dans le frontmatter :
+
+```mdx
+---
+title: Démarrage avec Specra
+description: Apprenez comment installer et configurer Specra pour vos besoins de documentation
+---
+```
+
+### Titres descriptifs
+
+Utilisez des titres clairs et descriptifs qui incluent des mots-clés :
+
+**Bon :**
+```markdown
+## Installation de Specra avec npm
+```
+
+**Mauvais :**
+```markdown
+## Installation
+```
+
+### Contenu structuré
+
+Utilisez une hiérarchie de titres appropriée (h1 → h2 → h3). Ne sautez jamais de niveaux.

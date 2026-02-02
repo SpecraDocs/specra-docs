@@ -1,0 +1,107 @@
+---
+title: Bildkarte (Image Card)
+description: Zeigen Sie Bilder im Kartenformat mit Titeln, Beschreibungen und Links an
+sidebar_position: 11
+---
+
+Bildkarten kombinieren Bilder mit Textüberlagerungen, perfekt für Galerien, Funktionspräsentationen oder visuelle Navigation.
+
+## Verwendung
+
+```mdx
+<ImageCard
+  src="/images/feature.png"
+  alt="Feature Screenshot"
+  title="Erstaunliches Feature"
+  description="Beschreibung des Features"
+  href="/docs/v1.0.0/features"
+/>
+```
+
+## Live-Beispiele
+
+### Einfache Bildkarte
+
+<ImageCard
+  src="https://www.kindpng.com/picc/m/160-1609318_document-management-system-png-transparent-png.png"
+  alt="Dokumentation"
+  title="Dokumentationssystem"
+  description="Eine moderne Dokumentationsplattform"
+/>
+
+### Bildkarten-Raster
+
+Verwenden Sie `ImageCardGrid`, um mehrere Karten in einem responsiven Raster anzuzeigen:
+
+<ImageCardGrid cols={3}>
+  <ImageCard
+    src="https://www.kindpng.com/picc/m/160-1609318_document-management-system-png-transparent-png.png"
+    alt="Funktion 1"
+    title="Schnelle Suche"
+    description="Blitzschnelle Volltextsuche"
+  />
+  <ImageCard
+    src="https://www.kindpng.com/picc/m/160-1609318_document-management-system-png-transparent-png.png"
+    alt="Funktion 2"
+    title="MDX-Unterstützung"
+    description="Schreiben Sie mit React-Komponenten"
+    href="/docs/v1.0.0/guides/writing-content"
+  />
+  <ImageCard
+    src="https://www.kindpng.com/picc/m/160-1609318_document-management-system-png-transparent-png.png"
+    alt="Funktion 3"
+    title="Dark Mode"
+    description="Schönes dunkles Theme"
+    aspectRatio="square"
+  />
+</ImageCardGrid>
+
+## Seitenverhältnisse (Aspect Ratios)
+
+<Columns cols={{ sm: 1, md: 3 }}>
+  <Column>
+    ### Video (16:9)
+    <ImageCard
+      src="https://www.kindpng.com/picc/m/160-1609318_document-management-system-png-transparent-png.png"
+      alt="Video-Verhältnis"
+      aspectRatio="video"
+    />
+  </Column>
+  <Column>
+    ### Quadrat (1:1)
+    <ImageCard
+      src="https://www.kindpng.com/picc/m/160-1609318_document-management-system-png-transparent-png.png"
+      alt="Quadrat-Verhältnis"
+      aspectRatio="square"
+    />
+  </Column>
+  <Column>
+    ### Porträt (3:4)
+    <ImageCard
+      src="https://www.kindpng.com/picc/m/160-1609318_document-management-system-png-transparent-png.png"
+      alt="Porträt-Verhältnis"
+      aspectRatio="portrait"
+    />
+  </Column>
+</Columns>
+
+## Props
+
+### ImageCard
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `src` | `string` | erforderlich | Bildquellen-URL |
+| `alt` | `string` | erforderlich | Barrierefreier Alt-Text |
+| `title` | `string` | - | Kartentitel |
+| `description` | `string` | - | Kartenbeschreibung |
+| `href` | `string` | - | Link-URL (macht Karte anklickbar) |
+| `external` | `boolean` | `false` | Öffnet Link in neuem Tab |
+| `aspectRatio` | `"square" \| "video" \| "portrait"` | `"video"` | Bildseitenverhältnis |
+
+### ImageCardGrid
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `children` | `ReactNode` | erforderlich | ImageCard-Komponenten |
+| `cols` | `1 \| 2 \| 3 \| 4` | `3` | Anzahl der Spalten |

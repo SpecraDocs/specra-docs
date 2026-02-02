@@ -1,0 +1,78 @@
+---
+title: Tooltip (Quickinfo)
+description: Zeigen Sie kontextbezogene Informationen beim Hovern an
+sidebar_position: 16
+---
+
+Tooltips zeigen zusätzliche Informationen an, wenn Sie mit der Maus über ein Element fahren.
+
+## Verwendung
+
+```mdx
+Fahren Sie über <Tooltip content="Das ist ein Tooltip!">diesen Text</Tooltip>, um mehr zu sehen.
+```
+
+## Live-Beispiele
+
+### Einfacher Tooltip
+
+Fahren Sie über <Tooltip content="Zusätzlicher Kontext erscheint hier">diesen Text</Tooltip>, um einen Tooltip zu sehen.
+
+### Verschiedene Positionen
+
+<Tooltip content="Tooltip oben" position="top">Oben</Tooltip> | <Tooltip content="Tooltip unten" position="bottom">Unten</Tooltip> | <Tooltip content="Tooltip links" position="left">Links</Tooltip> | <Tooltip content="Tooltip rechts" position="right">Rechts</Tooltip>
+
+### Mit Icons
+
+<Tooltip content="Einstellungen und Präferenzen">
+  <Icon icon="settings" size={20} />
+</Tooltip> <Tooltip content="Hilfe erhalten">
+  <Icon icon="help-circle" size={20} />
+</Tooltip> <Tooltip content="Mehr Informationen">
+  <Icon icon="info" size={20} />
+</Tooltip>
+
+### Im Kontext
+
+Dieses Feature ist <Badge variant="success">Neu</Badge>{' '}
+<Tooltip content="Hinzugefügt in Version 2.0">
+  <Icon icon="info" size={14} />
+</Tooltip>
+
+## Props
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `children` | `ReactNode` | erforderlich | Element, das den Tooltip auslöst |
+| `content` | `string` | erforderlich | Tooltip-Textinhalt |
+| `position` | `"top" \| "bottom" \| "left" \| "right"` | `"top"` | Tooltip-Position |
+
+## Best Practices
+
+<Callout type="tip">
+- Halten Sie den Tooltip-Inhalt kurz (max. 1-2 Sätze)
+- Verwenden Sie ihn für ergänzende Informationen, nicht für kritische Inhalte
+- Stellen Sie sicher, dass das Auslöseelement für Tastaturbenutzer fokussierbar ist
+</Callout>
+
+## Häufige Muster
+
+### Hilfe-Icons
+
+Fügen Sie kleine Hilfe-Icons neben Formularbeschriftungen oder Funktionen hinzu:
+
+```mdx
+**E-Mail** <Tooltip content="Wir werden Ihre E-Mail niemals weitergeben">
+  <Icon icon="help-circle" size={14} />
+</Tooltip>
+```
+
+### Abkürzungen
+
+Erklären Sie Abkürzungen inline:
+
+```mdx
+Die <Tooltip content="Application Programming Interface">API</Tooltip> ist gut dokumentiert.
+```
+
+Die <Tooltip content="Application Programming Interface">API</Tooltip> ist gut dokumentiert.

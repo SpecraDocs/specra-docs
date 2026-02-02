@@ -1,0 +1,87 @@
+---
+title: Colonnes (Columns)
+description: Créez des mises en page réactives à plusieurs colonnes pour votre contenu
+sidebar_position: 7
+---
+
+Le composant Colonnes crée des mises en page de grille réactives pour organiser le contenu côte à côte.
+
+## Utilisation
+
+```mdx
+<Columns cols={{ sm: 1, md: 2, lg: 3 }}>
+  <Column>Contenu de la première colonne</Column>
+  <Column>Contenu de la deuxième colonne</Column>
+  <Column>Contenu de la troisième colonne</Column>
+</Columns>
+```
+
+## Exemples en direct
+
+### Deux colonnes
+
+<Columns cols={{ sm: 1, md: 2 }}>
+  <Column>
+    ### Colonne de gauche
+    Ce contenu apparaît sur le côté gauche (ou s'empile sur mobile).
+  </Column>
+  <Column>
+    ### Colonne de droite
+    Ce contenu apparaît sur le côté droit.
+  </Column>
+</Columns>
+
+### Trois colonnes
+
+<Columns cols={{ sm: 1, md: 2, lg: 3 }}>
+  <Column>
+    <Card title="Fonctionnalité 1" description="Description de la première fonctionnalité" />
+  </Column>
+  <Column>
+    <Card title="Fonctionnalité 2" description="Description de la deuxième fonctionnalité" />
+  </Column>
+  <Column>
+    <Card title="Fonctionnalité 3" description="Description de la troisième fonctionnalité" />
+  </Column>
+</Columns>
+
+### Extension de colonne (Spanning)
+
+Utilisez la prop `span` pour que les colonnes occupent plus d'espace :
+
+<Columns cols={{ sm: 1, md: 3 }}>
+  <Column span={2}>
+    ### Colonne large
+    Cette colonne s'étend sur 2 des 3 colonnes pour un contenu plus important.
+  </Column>
+  <Column>
+    ### Étroit
+    Largeur de colonne unique.
+  </Column>
+</Columns>
+
+## Props
+
+### Columns
+
+| Prop | Type | Défaut | Description |
+|------|------|--------|-------------|
+| `children` | `ReactNode` | requis | Composants de colonne |
+| `cols` | `object` | `{ sm: 1, md: 2, lg: 3 }` | Colonnes à chaque point d'arrêt |
+| `cols.sm` | `1-4` | `1` | Colonnes sur petits écrans |
+| `cols.md` | `1-4` | `2` | Colonnes sur écrans moyens |
+| `cols.lg` | `1-4` | `3` | Colonnes sur grands écrans |
+| `cols.xl` | `1-4` | - | Colonnes sur très grands écrans |
+
+### Column
+
+| Prop | Type | Défaut | Description |
+|------|------|--------|-------------|
+| `children` | `ReactNode` | requis | Contenu de la colonne |
+| `span` | `1 \| 2 \| 3 \| 4` | `1` | Nombre de colonnes à couvrir |
+
+## Comportement réactif
+
+<Callout type="tip">
+Les colonnes s'empilent automatiquement sur les appareils mobiles. Les points d'arrêt `sm`, `md`, `lg` et `xl` vous permettent de contrôler comment le contenu se redistribue à différentes tailles d'écran.
+</Callout>

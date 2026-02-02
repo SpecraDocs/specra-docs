@@ -1,0 +1,60 @@
+---
+title: Accordéon
+description: Créez des sections de contenu pliables avec les composants Accordion et AccordionItem
+sidebar_position: 1
+---
+
+Le composant Accordéon crée des sections de contenu pliables, parfait pour les FAQ, les menus extensibles ou l'organisation de grandes quantités de contenu.
+
+## Utilisation
+
+```mdx
+<Accordion>
+  <AccordionItem title="Première question" defaultOpen>
+    Ce contenu est visible par défaut grâce à `defaultOpen`.
+  </AccordionItem>
+  
+  <AccordionItem title="Deuxième question">
+    Ce contenu est replié par défaut.
+  </AccordionItem>
+</Accordion>
+```
+
+## Exemple en direct
+
+<Accordion>
+  <AccordionItem title="Qu'est-ce qu'un accordéon ?" defaultOpen>
+    Un accordéon est un modèle d'interface utilisateur qui permet aux utilisateurs de développer et de réduire des sections de contenu. Il est utile pour organiser les informations dans un format compact et scannable.
+  </AccordionItem>
+  
+  <AccordionItem title="Quand devrais-je utiliser des accordéons ?">
+    Utilisez des accordéons lorsque vous avez plusieurs sections de contenu que les utilisateurs peuvent vouloir parcourir sans tout faire défiler. Les cas d'utilisation courants incluent les FAQ, les listes de fonctionnalités et les options de configuration.
+  </AccordionItem>
+  
+  <AccordionItem title="Puis-je avoir plusieurs éléments ouverts ?">
+    Oui ! Par défaut, l'Accordéon permet à plusieurs éléments d'être ouverts simultanément. Chaque AccordionItem fonctionne indépendamment.
+  </AccordionItem>
+</Accordion>
+
+## Props
+
+### Accordion
+
+| Prop | Type | Défaut | Description |
+|------|------|--------|-------------|
+| `children` | `ReactNode` | requis | Composants AccordionItem à rendre |
+| `type` | `"single" \| "multiple"` | `"multiple"` | Si un ou plusieurs éléments peuvent être ouverts |
+
+### AccordionItem
+
+| Prop | Type | Défaut | Description |
+|------|------|--------|-------------|
+| `title` | `string` | requis | Le texte d'en-tête cliquable |
+| `children` | `ReactNode` | requis | Contenu affiché lorsqu'il est développé |
+| `defaultOpen` | `boolean` | `false` | Si l'élément démarre développé |
+
+## Conseils
+
+<Callout type="tip">
+Utilisez la prop `defaultOpen` sur le premier AccordionItem pour donner aux utilisateurs un aperçu du format du contenu.
+</Callout>

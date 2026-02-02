@@ -1,0 +1,78 @@
+---
+title: Información sobre herramientas (Tooltip)
+description: Muestre información contextual al pasar el ratón
+sidebar_position: 16
+---
+
+La información sobre herramientas muestra información adicional al pasar el ratón sobre un elemento.
+
+## Uso
+
+```mdx
+Pase el ratón sobre <Tooltip content="¡Esto es información sobre herramientas!">este texto</Tooltip> para ver más.
+```
+
+## Ejemplos en vivo
+
+### Información sobre herramientas básica
+
+Pase el ratón sobre <Tooltip content="El contexto adicional aparece aquí">este texto</Tooltip> para ver la información sobre herramientas.
+
+### Diferentes posiciones
+
+<Tooltip content="Tooltip arriba" position="top">Arriba</Tooltip> | <Tooltip content="Tooltip abajo" position="bottom">Abajo</Tooltip> | <Tooltip content="Tooltip izquierda" position="left">Izquierda</Tooltip> | <Tooltip content="Tooltip derecha" position="right">Derecha</Tooltip>
+
+### Con iconos
+
+<Tooltip content="Configuración y preferencias">
+  <Icon icon="settings" size={20} />
+</Tooltip> <Tooltip content="Obtener ayuda">
+  <Icon icon="help-circle" size={20} />
+</Tooltip> <Tooltip content="Más información">
+  <Icon icon="info" size={20} />
+</Tooltip>
+
+### En contexto
+
+Esta característica es <Badge variant="success">Nueva</Badge>{' '}
+<Tooltip content="Agregado en la versión 2.0">
+  <Icon icon="info" size={14} />
+</Tooltip>
+
+## Props
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `children` | `ReactNode` | requerido | Elemento que activa la información sobre herramientas |
+| `content` | `string` | requerido | Contenido de texto de la información sobre herramientas |
+| `position` | `"top" \| "bottom" \| "left" \| "right"` | `"top"` | Posición de la información sobre herramientas |
+
+## Mejores prácticas
+
+<Callout type="tip">
+- Mantenga el contenido de la información sobre herramientas conciso (máx. 1-2 oraciones)
+- Úselo para información complementaria, no para contenido crítico
+- Asegúrese de que el elemento activador sea enfocable para usuarios de teclado
+</Callout>
+
+## Patrones comunes
+
+### Iconos de ayuda
+
+Agregue pequeños iconos de ayuda junto a etiquetas de formulario o características:
+
+```mdx
+**Correo electrónico** <Tooltip content="Nunca compartiremos su correo electrónico">
+  <Icon icon="help-circle" size={14} />
+</Tooltip>
+```
+
+### Abreviaturas
+
+Explique las abreviaturas en línea:
+
+```mdx
+La <Tooltip content="Interfaz de Programación de Aplicaciones">API</Tooltip> está bien documentada.
+```
+
+La <Tooltip content="Interfaz de Programación de Aplicaciones">API</Tooltip> está bien documentada.

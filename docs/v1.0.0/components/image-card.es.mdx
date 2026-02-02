@@ -1,0 +1,107 @@
+---
+title: Tarjeta de imagen (Image Card)
+description: Muestre imágenes en formato de tarjeta con títulos, descripciones y enlaces
+sidebar_position: 11
+---
+
+Las tarjetas de imagen combinan imágenes con superposiciones de texto, perfectas para galerías, exhibiciones de características o navegación visual.
+
+## Uso
+
+```mdx
+<ImageCard
+  src="/images/feature.png"
+  alt="Captura de pantalla de característica"
+  title="Característica increíble"
+  description="Descripción de la característica"
+  href="/docs/v1.0.0/features"
+/>
+```
+
+## Ejemplos en vivo
+
+### Tarjeta de imagen básica
+
+<ImageCard
+  src="https://www.kindpng.com/picc/m/160-1609318_document-management-system-png-transparent-png.png"
+  alt="Documentación"
+  title="Sistema de documentación"
+  description="Una plataforma de documentación moderna"
+/>
+
+### Cuadrícula de tarjetas de imagen
+
+Use `ImageCardGrid` para mostrar varias tarjetas en una cuadrícula adaptable:
+
+<ImageCardGrid cols={3}>
+  <ImageCard
+    src="https://www.kindpng.com/picc/m/160-1609318_document-management-system-png-transparent-png.png"
+    alt="Característica 1"
+    title="Búsqueda rápida"
+    description="Búsqueda de texto completo ultrarrápida"
+  />
+  <ImageCard
+    src="https://www.kindpng.com/picc/m/160-1609318_document-management-system-png-transparent-png.png"
+    alt="Característica 2"
+    title="Soporte MDX"
+    description="Escriba con componentes React"
+    href="/docs/v1.0.0/guides/writing-content"
+  />
+  <ImageCard
+    src="https://www.kindpng.com/picc/m/160-1609318_document-management-system-png-transparent-png.png"
+    alt="Característica 3"
+    title="Modo oscuro"
+    description="Hermoso tema oscuro"
+    aspectRatio="square"
+  />
+</ImageCardGrid>
+
+## Relaciones de aspecto (Aspect Ratios)
+
+<Columns cols={{ sm: 1, md: 3 }}>
+  <Column>
+    ### Video (16:9)
+    <ImageCard
+      src="https://www.kindpng.com/picc/m/160-1609318_document-management-system-png-transparent-png.png"
+      alt="Relación de video"
+      aspectRatio="video"
+    />
+  </Column>
+  <Column>
+    ### Cuadrado (1:1)
+    <ImageCard
+      src="https://www.kindpng.com/picc/m/160-1609318_document-management-system-png-transparent-png.png"
+      alt="Relación cuadrada"
+      aspectRatio="square"
+    />
+  </Column>
+  <Column>
+    ### Retrato (3:4)
+    <ImageCard
+      src="https://www.kindpng.com/picc/m/160-1609318_document-management-system-png-transparent-png.png"
+      alt="Relación de retrato"
+      aspectRatio="portrait"
+    />
+  </Column>
+</Columns>
+
+## Props
+
+### ImageCard
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `src` | `string` | requerido | URL de origen de imagen |
+| `alt` | `string` | requerido | Texto alternativo accesible |
+| `title` | `string` | - | Título de la tarjeta |
+| `description` | `string` | - | Descripción de la tarjeta |
+| `href` | `string` | - | URL del enlace (hace que la tarjeta sea clicable) |
+| `external` | `boolean` | `false` | Abre el enlace en una nueva pestaña |
+| `aspectRatio` | `"square" \| "video" \| "portrait"` | `"video"` | Relación de aspecto de imagen |
+
+### ImageCardGrid
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `children` | `ReactNode` | requerido | Componentes ImageCard |
+| `cols` | `1 \| 2 \| 3 \| 4` | `3` | Número de columnas |

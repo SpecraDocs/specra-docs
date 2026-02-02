@@ -1,0 +1,374 @@
+---
+title: Documentación de API
+description: Guía completa para documentar APIs REST en Specra
+icon: book-open
+sidebar_position: 1
+---
+
+Specra proporciona un sistema potente pero flexible para documentar APIs REST. Ya sea que tenga 5 puntos finales o 500, lo tenemos cubierto.
+
+## Dos enfoques
+
+### 1. Documentación generada automáticamente
+
+Perfecto para APIs grandes o cuando ya tiene especificaciones.
+
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 not-prose my-6">
+  <div className="border border-border rounded-lg p-4">
+    <div className="text-2xl mb-2">📋</div>
+    <h4 className="font-semibold mb-1">Formato Specra</h4>
+    <p className="text-sm text-muted-foreground">Formato JSON simple</p>
+  </div>
+  <div className="border border-border rounded-lg p-4">
+    <div className="text-2xl mb-2">🔧</div>
+    <h4 className="font-semibold mb-1">OpenAPI 3.x</h4>
+    <p className="text-sm text-muted-foreground">Estándar de la industria</p>
+  </div>
+  <div className="border border-border rounded-lg p-4">
+    <div className="text-2xl mb-2">📮</div>
+    <h4 className="font-semibold mb-1">Postman v2.x</h4>
+    <p className="text-sm text-muted-foreground">Exportar desde Postman</p>
+  </div>
+</div>
+
+Simplemente cree o exporte su archivo de especificación y referéncielo:
+
+```mdx
+<ApiReference spec="/api-specs/my-api.json" />
+```
+
+El sistema **detecta automáticamente** el formato y genera una documentación hermosa e interactiva.
+
+**Ejemplos:**
+- [Formato Specra (JSONPlaceholder) →](/docs/v1.0.0/api-test)
+- [Formato OpenAPI 3.0 →](/docs/v1.0.0/api-openapi)
+- [Colección Postman →](/docs/v1.0.0/api-postman)
+
+[Aprender más sobre formatos →](/docs/v1.0.0/api-formats)
+
+---
+
+### 2. Componentes MDX manuales
+
+Perfecto para APIs pequeñas o cuando necesita diseños personalizados.
+
+Use componentes individuales para crear su documentación:
+
+```mdx
+<ApiEndpoint
+  method="GET"
+  path="/api/users/:id"
+  summary="Obtener usuario por ID"
+>
+  <ApiParams params={[...]} />
+  <ApiResponse status={200} example={{...}} />
+  <ApiPlayground method="GET" path="/api/users/123" />
+</ApiEndpoint>
+```
+
+**Ejemplo:**
+- [Ejemplo de componente manual →](/docs/v1.0.0/api-example)
+
+---
+
+## Inicio rápido
+
+### Generado automáticamente (Recomendado)
+
+1. **Cree su archivo de especificación** (Specra, OpenAPI o Postman)
+2. **Colóquelo en** `/public/api-specs/my-api.json`
+3. **Añada a su MDX**:
+
+```mdx
+---
+title: Referencia de API
+---
+
+# Mi Documentación de API
+
+<ApiReference spec="/api-specs/my-api.json" />
+```
+
+¡Eso es todo! Ahora tiene:
+- ✅ Documentación de punto final generada automáticamente
+- ✅ Playground de API interactivo
+- ✅ Interfaz de usuario de acordeón plegable
+- ✅ Ejemplos con resaltado de sintaxis
+- ✅ Esquemas de solicitud/respuesta
+
+### Componentes manuales
+
+1. **Cree un archivo MDX** en `docs/`
+2. **Use componentes de API**:
+
+```mdx
+---
+title: Referencia de API
+---
+
+# Mi API
+
+<ApiEndpoint method="GET" path="/users" summary="Listar usuarios">
+  <ApiParams
+    title="Parámetros de consulta"
+    params={[
+      { name: "page", type: "number", description: "Número de página" }
+    ]}
+  />
+
+  <ApiResponse
+    status={200}
+    description="Éxito"
+    example={[{ id: 1, name: "John" }]}
+  />
+
+  <ApiPlayground
+    method="GET"
+    path="/users"
+    baseUrl="https://api.example.com"
+  />
+</ApiEndpoint>
+```
+
+## Componentes disponibles
+
+### `<ApiReference>`
+
+Generar documentos automáticamente desde archivos de especificación.
+
+```tsx
+<ApiReference
+  spec="/api-specs/my-api.json"  // Ruta al archivo de especificación
+  parser="auto"                   // auto | specra | openapi | postman
+  showPlayground={true}           // Mostrar playground interactivo
+/>
+```
+
+### `<ApiEndpoint>`
+
+Documentar un solo punto final (estilo acordeón).
+
+```tsx
+<ApiEndpoint
+  method="GET"              // GET | POST | PUT | PATCH | DELETE
+  path="/api/users/:id"     // Ruta de API
+  summary="Obtener usuario por ID"  // Descripción corta
+  defaultOpen={false}       // ¿Empezar expandido?
+>
+  {/* Componentes hijos */}
+</ApiEndpoint>
+```
+
+### `<ApiParams>`
+
+Mostrar parámetros (ruta, consulta, cuerpo).
+
+```tsx
+<ApiParams
+  title="Parámetros de ruta"
+  params={[
+    {
+      name: "id",
+      type: "string",
+      required: true,
+      description: "ID de usuario",
+      example: "user_123"
+    }
+  ]}
+/>
+```
+
+### `<ApiResponse>`
+
+Mostrar ejemplos de respuesta.
+
+```tsx
+<ApiResponse
+  status={200}
+  description="Usuario encontrado"
+  example={{
+    id: "user_123",
+    name: "John Doe",
+    email: "john@example.com"
+  }}
+/>
+```
+
+### `<ApiPlayground>`
+
+Pruebas de API interactivas.
+
+```tsx
+<ApiPlayground
+  method="GET"
+  path="/users/:id"
+  baseUrl="https://api.example.com"
+  headers={{ "Authorization": "Bearer ..." }}
+  pathParams={[
+    { name: "id", type: "string", example: "user_123" }
+  ]}
+  defaultBody='{"key": "value"}'
+/>
+```
+
+## Características
+
+### Playground interactivo
+
+Cada punto final incluye un área de juegos integrada donde los usuarios pueden:
+- ✅ Editar parámetros de ruta
+- ✅ Modificar encabezados de solicitud
+- ✅ Actualizar cuerpo de solicitud
+- ✅ Enviar solicitudes de API reales
+- ✅ Ver respuestas formateadas
+
+### Interfaz de usuario de acordeón
+
+Los puntos finales son plegables por defecto, lo que facilita:
+- Explorar muchos puntos finales rápidamente
+- Expandir solo lo que necesita
+- Mantener la página limpia y organizada
+
+### Resaltado de sintaxis
+
+Todos los ejemplos de código incluyen:
+- Resaltado de sintaxis JSON
+- Números de línea
+- Botón de copia
+- Soporte de modo oscuro
+
+### Autenticación
+
+Documente sus requisitos de autenticación:
+- Tokens Bearer
+- Claves de API
+- Autenticación básica
+- Encabezados personalizados
+
+## Soporte de formato
+
+| Formato | Versión | Caso de uso |
+|--------|---------|-------------|
+| **Specra** | 1.0 | Formato simple y personalizado para cualquier API |
+| **OpenAPI** | 3.x, Swagger 2.0 | Estándar de la industria, generación de código |
+| **Postman** | Colección v2.x | Usuarios de Postman, exportación rápida |
+
+[Comparar formatos →](/docs/v1.0.0/api-formats)
+
+## Ejemplos
+
+### API completa (Generada automáticamente)
+
+Usando JSONPlaceholder como un ejemplo de trabajo real:
+
+[Ver ejemplo en vivo →](/docs/v1.0.0/api-test)
+
+### Especificación OpenAPI
+
+Documentación de API de grado empresarial:
+
+[Ver ejemplo OpenAPI →](/docs/v1.0.0/api-openapi)
+
+### Colección Postman
+
+Exportado directamente desde Postman:
+
+[Ver ejemplo Postman →](/docs/v1.0.0/api-postman)
+
+### Componentes manuales
+
+Hecho a mano para necesidades personalizadas:
+
+[Ver ejemplo manual →](/docs/v1.0.0/api-example)
+
+## Mejores prácticas
+
+### 1. Elija el enfoque correcto
+
+**Use generado automáticamente** cuando:
+- Tenga > 10 puntos finales
+- Ya tenga un archivo de especificación
+- Quiera consistencia
+- Necesite generación de código
+
+**Use componentes manuales** cuando:
+- Tenga < 10 puntos finales
+- Necesite diseños personalizados
+- Quiera control total
+- Esté documentando gradualmente
+
+### 2. Proporcione ejemplos
+
+Incluya siempre ejemplos realistas:
+- Cuerpos de solicitud con datos reales
+- Ejemplos de respuesta que coincidan con la realidad
+- Casos extremos y errores
+- Ejemplos de autenticación
+
+### 3. Manténgalo actualizado
+
+**Para documentos generados automáticamente:**
+- Regenere especificaciones cuando cambie el código
+- Re-exporte colecciones de Postman regularmente
+- Versione sus archivos de especificación
+
+**Para documentos manuales:**
+- Revise cuando cambie la API
+- Pruebe el playground regularmente
+- Actualice los ejemplos
+
+### 4. Organizar por característica
+
+Agrupe puntos finales relacionados:
+
+```mdx
+## Gestión de usuarios
+
+<ApiReference spec="/api-specs/users.json" />
+
+## Catálogo de productos
+
+<ApiReference spec="/api-specs/products.json" />
+
+## Pedidos
+
+<ApiReference spec="/api-specs/orders.json" />
+```
+
+### 5. Añadir contexto
+
+Mejore con texto explicativo:
+
+```mdx
+## Autenticación
+
+Todos los puntos finales requieren un token JWT válido.
+
+<Callout type="info">
+Obtenga su clave de API desde el [panel de desarrollador](https://example.com/dashboard).
+</Callout>
+
+<ApiReference spec="/api-specs/my-api.json" />
+```
+
+## Próximos pasos
+
+¿Listo para documentar su API?
+
+1. **Elija su formato** - [Comparar formatos →](/docs/v1.0.0/api-formats)
+2. **Ver ejemplos** - [Ver ejemplos →](/docs/v1.0.0/api-test)
+3. **Empezar a construir** - Cree su primer archivo de especificación
+4. **Ir a vivo** - Despliegue su documentación
+
+<Callout type="success" title="Victoria rápida">
+¿Tiene una colección de Postman? ¡Expórtela y habrá terminado en 2 minutos!
+</Callout>
+
+## Recursos
+
+- [Guía de formatos soportados](/docs/v1.0.0/api-formats)
+- [Ejemplo de formato Specra](/docs/v1.0.0/api-test)
+- [Ejemplo OpenAPI](/docs/v1.0.0/api-openapi)
+- [Ejemplo Postman](/docs/v1.0.0/api-postman)
+- [Ejemplo de componentes manuales](/docs/v1.0.0/api-example)
+- [Documentos técnicos del analizador](/API_PARSERS.md)

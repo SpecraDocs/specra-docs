@@ -1,0 +1,92 @@
+---
+title: Pestañas (Tabs)
+description: Organice el contenido en secciones con pestañas
+sidebar_position: 15
+---
+
+Las pestañas organizan el contenido en paneles intercambiables, perfectos para mostrar alternativas como diferentes administradores de paquetes o ejemplos de lenguaje.
+
+## Uso
+
+```mdx
+<Tabs defaultValue="npm">
+  <Tab label="npm">
+    contenido npm aquí
+  </Tab>
+
+  <Tab label="yarn">
+    contenido yarn aquí
+  </Tab>
+
+  <Tab label="pnpm">
+    contenido pnpm aquí
+  </Tab>
+</Tabs>
+```
+
+## Ejemplos en vivo
+
+### Selección de administrador de paquetes
+
+<Tabs defaultValue="npm">
+  <Tab label="npm">
+```bash
+npm install my-package
+```
+  </Tab>
+
+  <Tab label="yarn">
+```bash
+yarn add my-package
+```
+  </Tab>
+
+  <Tab label="pnpm">
+```bash
+pnpm add my-package
+```
+  </Tab>
+</Tabs>
+
+### Ejemplos de código
+
+<Tabs defaultValue="JavaScript">
+  <Tab label="JavaScript">
+```javascript
+function greet(name) {
+  return `¡Hola, ${name}!`;
+}
+```
+  </Tab>
+
+  <Tab label="TypeScript">
+```typescript
+function greet(name: string): string {
+  return `¡Hola, ${name}!`;
+}
+```
+  </Tab>
+
+  <Tab label="Python">
+```python
+def greet(name):
+    return f"¡Hola, {name}!"
+```
+  </Tab>
+</Tabs>
+
+## Props
+
+### Tabs
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `children` | `ReactNode` | requerido | Componentes Tab |
+| `defaultValue` | `string` | - | Etiqueta de la pestaña seleccionada inicialmente (predeterminado a la primera pestaña) |
+
+### Tab
+
+| Propiedad | Tipo | Predeterminado | Descripción |
+|-----------|------|----------------|-------------|
+| `label` | `string` | requerido | Etiqueta del botón de pestaña |
+| `children` | `ReactNode` | requerido | Contenido mostrado cuando la pestaña está activa |

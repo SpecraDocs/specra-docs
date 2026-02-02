@@ -1,0 +1,88 @@
+---
+title: Schritte (Steps)
+description: Erstellen Sie Schritt-für-Schritt-Anleitungen und Tutorials
+sidebar_position: 14
+---
+
+Die Steps-Komponente erstellt nummerierte Schritt-für-Schritt-Anleitungen, perfekt für Tutorials und Leitfäden.
+
+## Verwendung
+
+```mdx
+<Steps>
+  <Step title="Erster Schritt">
+    Beschreibung des ersten Schritts.
+  </Step>
+  
+  <Step title="Zweiter Schritt">
+    Beschreibung des zweiten Schritts.
+  </Step>
+</Steps>
+```
+
+## Live-Beispiel
+
+<Steps>
+  <Step title="Abhängigkeiten installieren">
+    Installieren Sie zuerst die erforderlichen npm-Pakete:
+    
+```bash
+npm install next react react-dom
+```
+  </Step>
+  
+  <Step title="Konfiguration erstellen">
+    Erstellen Sie eine Konfigurationsdatei in Ihrem Projektstammverzeichnis:
+    
+```javascript
+// next.config.js
+module.exports = {
+  reactStrictMode: true,
+}
+```
+  </Step>
+  
+  <Step title="Entwicklungsserver starten">
+    Führen Sie den Entwicklungsserver aus:
+    
+```bash
+npm run dev
+```
+    
+    Ihre Website läuft jetzt unter `http://localhost:3000`!
+  </Step>
+  
+  <Step title="In Produktion bereitstellen">
+    Wenn Sie bereit sind, bauen und deployen Sie Ihre Anwendung:
+    
+```bash
+npm run build
+npm start
+```
+  </Step>
+</Steps>
+
+## Props
+
+### Steps
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `children` | `ReactNode` | erforderlich | Schritt-Komponenten |
+
+### Step
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `title` | `string` | erforderlich | Schritt-Titel/Überschrift |
+| `children` | `ReactNode` | erforderlich | Schritt-Inhalt |
+
+## Funktionen
+
+- **Automatische Nummerierung** - Schritte werden automatisch mit CSS-Zählern nummeriert
+- **Visuelle Zeitlinie** - Eine Verbindungslinie zeigt den Fortschritt durch die Schritte
+- **Rich Content** - Jeder Schritt unterstützt vollständigen MDX-Inhalt einschließlich Codeblöcken
+
+<Callout type="tip">
+Schritte eignen sich hervorragend für Installationsanleitungen, Tutorials und jeden sequenziellen Prozess, dem Benutzer folgen müssen.
+</Callout>

@@ -1,0 +1,78 @@
+---
+title: Infobulle (Tooltip)
+description: Affichez des informations contextuelles au survol
+sidebar_position: 16
+---
+
+Les infobulles affichent des informations supplémentaires lors du survol d'un élément.
+
+## Utilisation
+
+```mdx
+Survolez <Tooltip content="Ceci est une infobulle !">ce texte</Tooltip> pour en voir plus.
+```
+
+## Exemples en direct
+
+### Infobulle basique
+
+Survolez <Tooltip content="Le contexte supplémentaire apparaît ici">ce texte</Tooltip> pour voir une infobulle.
+
+### Différentes positions
+
+<Tooltip content="Infobulle en haut" position="top">Haut</Tooltip> | <Tooltip content="Infobulle en bas" position="bottom">Bas</Tooltip> | <Tooltip content="Infobulle à gauche" position="left">Gauche</Tooltip> | <Tooltip content="Infobulle à droite" position="right">Droite</Tooltip>
+
+### Avec icônes
+
+<Tooltip content="Paramètres et préférences">
+  <Icon icon="settings" size={20} />
+</Tooltip> <Tooltip content="Obtenir de l'aide">
+  <Icon icon="help-circle" size={20} />
+</Tooltip> <Tooltip content="Plus d'informations">
+  <Icon icon="info" size={20} />
+</Tooltip>
+
+### En contexte
+
+Cette fonctionnalité est <Badge variant="success">Nouvelle</Badge>{' '}
+<Tooltip content="Ajouté dans la version 2.0">
+  <Icon icon="info" size={14} />
+</Tooltip>
+
+## Props
+
+| Prop | Type | Défaut | Description |
+|------|------|--------|-------------|
+| `children` | `ReactNode` | requis | Élément qui déclenche l'infobulle |
+| `content` | `string` | requis | Contenu texte de l'infobulle |
+| `position` | `"top" \| "bottom" \| "left" \| "right"` | `"top"` | Position de l'infobulle |
+
+## Meilleures pratiques
+
+<Callout type="tip">
+- Gardez le contenu de l'infobulle concis (1-2 phrases max)
+- Utilisez pour des informations supplémentaires, pas pour du contenu critique
+- Assurez-vous que l'élément déclencheur est accessible au clavier
+</Callout>
+
+## Modèles courants
+
+### Icônes d'aide
+
+Ajoutez de petites icônes d'aide à côté des étiquettes de formulaire ou des fonctionnalités :
+
+```mdx
+**Email** <Tooltip content="Nous ne partagerons jamais votre email">
+  <Icon icon="help-circle" size={14} />
+</Tooltip>
+```
+
+### Abréviations
+
+Expliquez les abréviations en ligne :
+
+```mdx
+L'<Tooltip content="Interface de Programmation d'Application">API</Tooltip> est bien documentée.
+```
+
+L'<Tooltip content="Interface de Programmation d'Application">API</Tooltip> est bien documentée.

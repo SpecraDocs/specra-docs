@@ -1,0 +1,86 @@
+---
+title: Vidéo
+description: Intégrez des vidéos à partir de fichiers locaux, YouTube ou Vimeo
+sidebar_position: 17
+---
+
+Le composant Vidéo intègre des vidéos à partir de fichiers locaux ou de plateformes populaires telles que YouTube et Vimeo.
+
+## Utilisation
+
+### Vidéo YouTube
+
+```mdx
+<Video 
+  src="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+  caption="Exemple de vidéo"
+/>
+```
+
+### Vidéo locale
+
+```mdx
+<Video 
+  src="/videos/demo.mp4"
+  caption="Démo produit"
+  controls
+  poster="/videos/poster.jpg"
+/>
+```
+
+## Exemples en direct
+
+### Intégration YouTube
+
+<Video 
+  src="https://youtu.be/puRFmqfVlLk"
+  caption="Exemple d'intégration vidéo YouTube"
+  muted
+  autoplay
+/>
+
+## Props
+
+| Prop | Type | Défaut | Description |
+|------|------|--------|-------------|
+| `src` | `string` | requis | URL de la vidéo (YouTube, Vimeo ou chemin local) |
+| `caption` | `string` | - | Légende sous la vidéo |
+| `autoplay` | `boolean` | `false` | Lecture automatique au chargement |
+| `loop` | `boolean` | `false` | Lecture en boucle |
+| `muted` | `boolean` | `false` | Couper le son de la vidéo |
+| `controls` | `boolean` | `true` | Afficher les contrôles vidéo |
+| `poster` | `string` | - | URL de l'image de poster (vidéos locales uniquement) |
+
+## Plateformes prises en charge
+
+### YouTube
+
+Prend en charge divers formats d'URL YouTube :
+- `https://www.youtube.com/watch?v=VIDEO_ID`
+- `https://youtu.be/VIDEO_ID`
+
+### Vimeo
+
+Prend en charge les URL Vimeo :
+- `https://vimeo.com/VIDEO_ID`
+
+### Fichiers locaux
+
+Prend en charge les formats vidéo standard :
+- MP4 (`.mp4`)
+- WebM (`.webm`)
+- Ogg (`.ogg`)
+
+## Conseils
+
+<Callout type="warning">
+La lecture automatique est souvent bloquée par les navigateurs à moins que la vidéo ne soit également mise en sourdine. Pour les vidéos à lecture automatique, utilisez à la fois `autoplay` et `muted` :
+
+```mdx
+<Video src="/videos/animation.mp4" autoplay muted loop />
+```
+</Callout>
+
+<Callout type="tip">
+Utilisez la prop `poster` pour les vidéos locales afin d'afficher une image d'aperçu avant le chargement de la vidéo.
+</Callout>

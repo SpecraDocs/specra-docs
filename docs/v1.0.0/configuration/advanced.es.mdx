@@ -1,0 +1,581 @@
+---
+title: Configuración Avanzada
+description: Configure análisis, búsqueda, características, pie de página, banner y variables de entorno
+sidebar_position: 5
+icon: sliders
+tab_group: guides
+---
+
+# Configuración Avanzada
+
+Más allá de lo básico, Specra ofrece características potentes como análisis, búsqueda, pies de página personalizados, banners y variables de entorno. Esta guía cubre todas las opciones de configuración avanzada.
+
+## Análisis
+
+Rastree cómo los usuarios interactúan con su documentación.
+
+### Google Analytics
+
+```json
+{
+  "analytics": {
+    "googleAnalytics": "G-XXXXXXXXXX"
+  }
+}
+```
+
+Obtenga su ID de medición de [Google Analytics](https://analytics.google.com).
+
+### Google Tag Manager
+
+```json
+{
+  "analytics": {
+    "googleTagManager": "GTM-XXXXXXX"
+  }
+}
+```
+
+Más flexible que Google Analytics, permite un seguimiento personalizado sin cambios de código.
+
+### Plausible Analytics
+
+Alternativa compatible con la privacidad a Google Analytics:
+
+```json
+{
+  "analytics": {
+    "plausible": "docs.example.com"
+  }
+}
+```
+
+Regístrese en [plausible.io](https://plausible.io).
+
+### Análisis Múltiples
+
+Use varios proveedores simultáneamente:
+
+```json
+{
+  "analytics": {
+    "googleAnalytics": "G-XXXXXXXXXX",
+    "plausible": "docs.example.com"
+  }
+}
+```
+
+## Configuración de Búsqueda
+
+Habilite una búsqueda potente para su documentación.
+
+### Configuración Básica de Búsqueda
+
+```json
+{
+  "search": {
+    "enabled": true,
+    "placeholder": "Buscar documentación...",
+    "provider": "meilisearch"
+  }
+}
+```
+
+### MeiliSearch
+
+Búsqueda con todas las funciones con tolerancia a errores tipográficos:
+
+```json
+{
+  "search": {
+    "enabled": true,
+    "provider": "meilisearch",
+    "meilisearch": {
+      "host": "https://search.example.com",
+      "apiKey": "su-clave-de-busqueda",
+      "indexName": "docs"
+    }
+  }
+}
+```
+
+Consulte [Configuración de Búsqueda](/docs/v1.0.0/search-setup) para la configuración completa de MeiliSearch.
+
+### Búsqueda Local
+
+Búsqueda simple sin dependencias externas:
+
+```json
+{
+  "search": {
+    "enabled": true,
+    "provider": "local",
+    "placeholder": "Buscar..."
+  }
+}
+```
+
+**Pros:**
+- No requiere configuración
+- Funciona sin conexión
+- Gratis
+
+**Contras:**
+- Menos potente que MeiliSearch
+- Sin tolerancia a errores tipográficos
+- Más lento para sitios grandes
+
+## Configuración del Pie de Página
+
+Personalice el pie de página de su documentación.
+
+### Pie de Página Básico
+
+```json
+{
+  "footer": {
+    "copyright": "© 2024 Mi Empresa. Todos los derechos reservados."
+  }
+}
+```
+
+### Pie de Página Completo
+
+```json
+{
+  "footer": {
+    "copyright": "© 2024 Acme Corp. Todos los derechos reservados.",
+    "customContent": "<p>¿Necesita ayuda? <a href='/support'>Contactar soporte</a></p>",
+    "links": [
+      {
+        "title": "Producto",
+        "items": [
+          { "label": "Características", "href": "/features" },
+          { "label": "Precios", "href": "/pricing" },
+          { "label": "Registro de cambios", "href": "/changelog" }
+        ]
+      },
+      {
+        "title": "Recursos",
+        "items": [
+          { "label": "Documentación", "href": "/docs" },
+          { "label": "Referencia API", "href": "/api" },
+          { "label": "Ejemplos", "href": "/examples" }
+        ]
+      },
+      {
+        "title": "Empresa",
+        "items": [
+          { "label": "Acerca de", "href": "/about" },
+          { "label": "Blog", "href": "/blog" },
+          { "label": "Carreras", "href": "/careers" }
+        ]
+      }
+    ],
+    "branding": {
+      "showBranding": true,
+      "logo": "/brand-logo.svg",
+      "title": "Desarrollado por Specra",
+      "url": "https://specra.dev"
+    }
+  }
+}
+```
+
+### Opciones del Pie de Página
+
+**copyright**
+- Aviso de derechos de autor mostrado en la parte inferior
+- Admite HTML
+
+**customContent**
+- HTML personalizado insertado en el pie de página
+- Úselo para mensajes o enlaces adicionales
+
+**links**
+- Columnas de enlaces organizadas
+- Cada columna tiene un título y elementos
+- Los elementos tienen etiqueta y href
+
+**branding**
+- Muestra la marca "Desarrollado por"
+- Personalice el logotipo, el título y la URL
+- Establezca `showBranding: false` para ocultar
+
+## Configuración del Banner
+
+Muestre mensajes importantes en la parte superior de su sitio.
+
+### Banner Básico
+
+```json
+{
+  "banner": {
+    "enabled": true,
+    "message": "📢 ¡La versión 2.0 ya está disponible!",
+    "type": "info"
+  }
+}
+```
+
+### Opciones del Banner
+
+```json
+{
+  "banner": {
+    "enabled": true,
+    "message": "⚠️ Mantenimiento programado el domingo a las 2 AM UTC",
+    "type": "warning",
+    "dismissible": true
+  }
+}
+```
+
+**Propiedades:**
+
+| Propiedad | Tipo | Descripción |
+|-----------|------|-------------|
+| `enabled` | boolean | Mostrar u ocultar banner |
+| `message` | string | Texto del banner (admite emojis y HTML) |
+| `type` | string | Estilo: `info`, `warning`, `success`, `error` |
+| `dismissible` | boolean | Permitir a los usuarios descartar el banner |
+
+### Tipos de Banners
+
+**Info (azul):**
+```json
+{
+  "banner": {
+    "message": "📢 Nueva característica: ¡El modo oscuro está aquí!",
+    "type": "info"
+  }
+}
+```
+
+**Advertencia (amarillo):**
+```json
+{
+  "banner": {
+    "message": "⚠️ La API v1 quedará obsoleta el 1 de enero de 2025",
+    "type": "warning"
+  }
+}
+```
+
+**Éxito (verde):**
+```json
+{
+  "banner": {
+    "message": "✅ Todos los sistemas operativos",
+    "type": "success"
+  }
+}
+```
+
+**Error (rojo):**
+```json
+{
+  "banner": {
+    "message": "🚨 Actualización de seguridad crítica disponible",
+    "type": "error"
+  }
+}
+```
+
+## Configuración de Características
+
+Habilite o deshabilite varias características de documentación.
+
+```json
+{
+  "features": {
+    "editUrl": "https://github.com/username/repo/edit/main/docs",
+    "showLastUpdated": true,
+    "showReadingTime": true,
+    "showAuthors": false,
+    "showTags": true,
+    "versioning": true,
+    "i18n": false
+  }
+}
+```
+
+### Opciones de Características
+
+**editUrl**
+- Enlace para editar la fuente de la página
+- Aparece en la parte inferior de cada página
+- Use GitHub, GitLab o cualquier URL de alojamiento de Git
+- Establezca en `false` para deshabilitar
+
+**showLastUpdated**
+- Mostrar cuándo se modificó la página por última vez
+- Usa marcas de tiempo de commit de git
+- Aparece en la parte inferior de la página
+
+**showReadingTime**
+- Estimación del tiempo de lectura (palabras por minuto)
+- Muestra "5 min de lectura" en la parte superior de la página
+
+**showAuthors**
+- Mostrar autores de la página
+- Requiere información del autor en el frontmatter
+
+**showTags**
+- Mostrar etiquetas en las páginas
+- Requiere etiquetas en el frontmatter
+
+**versioning**
+- Habilitar control de versiones de documentación
+- Admite múltiples versiones de doc (v1.0.0, v2.0.0)
+
+**i18n**
+- Habilitar internacionalización
+- Admite múltiples idiomas
+
+## Enlaces Sociales
+
+Agregue enlaces de redes sociales a su encabezado.
+
+```json
+{
+  "social": {
+    "github": "https://github.com/username/repo",
+    "twitter": "https://twitter.com/username",
+    "discord": "https://discord.gg/invite",
+    "linkedin": "https://linkedin.com/company/name",
+    "youtube": "https://youtube.com/@channel"
+  }
+}
+```
+
+### Enlaces Sociales Personalizados
+
+Agregue enlaces a plataformas no integradas:
+
+```json
+{
+  "social": {
+    "github": "https://github.com/username",
+    "custom": [
+      {
+        "label": "Slack",
+        "url": "https://slack.com/invite",
+        "icon": "slack"
+      },
+      {
+        "label": "Sitio web",
+        "url": "https://example.com",
+        "icon": "globe"
+      }
+    ]
+  }
+}
+```
+
+## Variables de Entorno
+
+Use variables de entorno en su configuración y contenido MDX.
+
+### En Configuración
+
+```json
+{
+  "env": {
+    "API_BASE_URL": "https://api.example.com",
+    "API_VERSION": "v1",
+    "CDN_URL": "https://cdn.example.com",
+    "SUPPORT_EMAIL": "support@example.com"
+  }
+}
+```
+
+Acceso en MDX:
+
+```mdx
+Punto final de API: {process.env.API_BASE_URL}
+Versión actual: {process.env.API_VERSION}
+```
+
+### Desde Archivos .env
+
+Establecer valores a través de archivos de entorno:
+
+```bash
+# .env.local
+API_BASE_URL=https://api.example.com
+MEILISEARCH_HOST=https://search.example.com
+MEILISEARCH_API_KEY=your-key
+```
+
+Referencia en configuración:
+
+```json
+{
+  "env": {
+    "API_BASE_URL": "${API_BASE_URL}"
+  },
+  "search": {
+    "meilisearch": {
+      "host": "${MEILISEARCH_HOST}",
+      "apiKey": "${MEILISEARCH_API_KEY}"
+    }
+  }
+}
+```
+
+<Callout type="warning">
+Nunca confirme claves confidenciales en el control de versiones. Use variables de entorno y agregue `.env.local` a `.gitignore`.
+</Callout>
+
+### Variables Públicas vs Privadas
+
+**Privado (solo servidor):**
+```
+MEILISEARCH_API_KEY=secret-key
+DATABASE_URL=postgres://...
+```
+
+**Público (expuesto al navegador):**
+```
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+NEXT_PUBLIC_API_URL=https://api.example.com
+```
+
+Prefije con `NEXT_PUBLIC_` para que las variables estén disponibles en el navegador.
+
+## Configuración del Tema
+
+Personalice la apariencia visual.
+
+```json
+{
+  "theme": {
+    "defaultMode": "system",
+    "respectPrefersColorScheme": true,
+    "primaryColor": "#3b82f6",
+    "customCss": "/custom.css"
+  }
+}
+```
+
+**defaultMode**
+- `"system"` - Coincidir con la preferencia del sistema operativo
+- `"light"` - Siempre modo claro
+- `"dark"` - Siempre modo oscuro
+
+**respectPrefersColorScheme**
+- Respetar la preferencia de esquema de color del sistema operativo
+- Establezca en `false` para ignorar la configuración del sistema operativo
+
+**primaryColor**
+- Color principal de la marca (código hexadecimal)
+- Usado para enlaces, botones, acentos
+
+**customCss**
+- Ruta al archivo CSS personalizado
+- Agregue en la carpeta `public/`
+
+Consulte [Personalización](/docs/v1.0.0/customization) para obtener una guía detallada de temas.
+
+## Ejemplo Completo
+
+Aquí hay una configuración de Specra completamente configurada:
+
+```json
+{
+  "site": {
+    "title": "Documentación Acme",
+    "description": "Docs completos para la plataforma Acme",
+    "url": "https://docs.acme.com"
+  },
+  "theme": {
+    "defaultMode": "system",
+    "primaryColor": "#6366f1"
+  },
+  "navigation": {
+    "showSidebar": true,
+    "showTableOfContents": true,
+    "tocPosition": "right",
+    "tabGroups": [
+      { "id": "guides", "label": "Guías", "icon": "book-open" },
+      { "id": "api", "label": "API", "icon": "zap" }
+    ]
+  },
+  "search": {
+    "enabled": true,
+    "provider": "meilisearch",
+    "meilisearch": {
+      "host": "${MEILISEARCH_HOST}",
+      "apiKey": "${MEILISEARCH_API_KEY}",
+      "indexName": "docs"
+    }
+  },
+  "analytics": {
+    "googleAnalytics": "G-XXXXXXXXXX",
+    "plausible": "docs.acme.com"
+  },
+  "social": {
+    "github": "https://github.com/acme/platform",
+    "twitter": "https://twitter.com/acme",
+    "discord": "https://discord.gg/acme"
+  },
+  "footer": {
+    "copyright": "© 2024 Acme Corp. Todos los derechos reservados.",
+    "links": [
+      {
+        "title": "Producto",
+        "items": [
+          { "label": "Características", "href": "/features" },
+          { "label": "Precios", "href": "/pricing" }
+        ]
+      }
+    ]
+  },
+  "banner": {
+    "enabled": true,
+    "message": "📢 ¡La versión 2.0 ya está disponible!",
+    "type": "info",
+    "dismissible": true
+  },
+  "features": {
+    "editUrl": "https://github.com/acme/platform/edit/main/docs",
+    "showLastUpdated": true,
+    "showReadingTime": true,
+    "showTags": true,
+    "versioning": true
+  },
+  "deployment": {
+    "target": "vercel"
+  }
+}
+```
+
+## Próximos pasos
+
+<CardGrid cols={2}>
+  <Card
+    icon="search"
+    title="Configuración de Búsqueda"
+    description="Configure MeiliSearch para sus docs"
+    href="/docs/v1.0.0/search-setup"
+  />
+  <Card
+    icon="palette"
+    title="Personalización"
+    description="Tema y estilo de su documentación"
+    href="/docs/v1.0.0/customization"
+  />
+  <Card
+    icon="rocket"
+    title="Implementación"
+    description="Desplegar a producción"
+    href="/docs/v1.0.0/deployment/overview"
+  />
+  <Card
+    icon="arrow-left"
+    title="Descripción general de la configuración"
+    description="Volver a la descripción general de la configuración"
+    href="/docs/v1.0.0/configuration/overview"
+  />
+</CardGrid>

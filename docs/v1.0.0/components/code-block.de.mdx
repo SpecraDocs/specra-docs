@@ -1,0 +1,103 @@
+---
+title: Code-Block
+description: Zeigen Sie syntaxhervorgehobenen Code mit Zeilennummern und Kopierfunktion an
+sidebar_position: 6
+---
+
+Code-Blöcke zeigen syntaxhervorgehobenen Code mit Zeilennummern, einer Kopiertaste und optionalen Dateinamen-Headern an.
+
+## Verwendung
+
+Code-Blöcke werden automatisch erstellt, wenn gefensterte Code-Blöcke mit einem Sprachspezifizierer verwendet werden:
+
+````mdx
+```javascript
+const greeting = "Hallo, Welt!";
+console.log(greeting);
+```
+````
+
+## Live-Beispiele
+
+### JavaScript
+
+```javascript
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+console.log(fibonacci(10)); // 55
+```
+
+### TypeScript
+
+```typescript
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+function greetUser(user: User): string {
+  return `Hallo, ${user.name}!`;
+}
+```
+
+### Python
+
+```python
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+```
+
+### Bash
+
+```bash
+# Abhängigkeiten installieren
+npm install
+
+# Entwicklungsserver starten
+npm run dev
+```
+
+### JSON
+
+```json
+{
+  "name": "my-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "react": "^19.0.0",
+    "next": "^16.0.0"
+  }
+}
+```
+
+## Funktionen
+
+<Callout type="info">
+Code-Blöcke enthalten automatische Syntaxhervorhebung für viele Sprachen, einschließlich JavaScript, TypeScript, Python, Bash, JSON, CSS und mehr.
+</Callout>
+
+- **Syntaxhervorhebung** - Automatische Spracherkennung und Hervorhebung
+- **Zeilennummern** - Einfache Referenz für bestimmte Zeilen
+- **Kopiertaste** - Code-Kopieren mit einem Klick
+- **Dateinamen-Header** - Optionale Dateinamenanzeige
+
+## Unterstützte Sprachen
+
+Häufige Sprachen sind:
+- `javascript`, `typescript`, `jsx`, `tsx`
+- `python`, `ruby`, `go`, `rust`
+- `bash`, `shell`, `powershell`
+- `html`, `css`, `scss`
+- `json`, `yaml`, `toml`
+- `sql`, `graphql`
+- `markdown`, `mdx`

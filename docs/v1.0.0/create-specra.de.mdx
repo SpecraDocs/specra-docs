@@ -1,0 +1,323 @@
+---
+title: create-specra
+description: Erstellen Sie eine neue Specra-Dokumentationsseite in Sekunden
+sidebar_position: 1
+icon: terminal
+tab_group: guides
+---
+
+# create-specra
+
+`create-specra` ist das offizielle CLI-Tool zum Erstellen neuer Specra-Dokumentationsseiten. Es richtet alles, was Sie benötigen, in Sekunden ein: Projektstruktur, Abhängigkeiten, Konfiguration und Beispielinhalte.
+
+## Schnellstart
+
+Der schnellste Weg, eine neue Dokumentationsseite zu erstellen:
+
+<Tabs defaultValue="npm">
+  <Tab label="npm">
+```bash
+npx create-specra@latest my-docs
+```
+  </Tab>
+  <Tab label="yarn">
+```bash
+yarn create specra my-docs
+```
+  </Tab>
+  <Tab label="pnpm">
+```bash
+pnpm create specra my-docs
+```
+  </Tab>
+</Tabs>
+
+Dies erstellt ein neues Verzeichnis namens `my-docs` mit allem konfiguriert und einsatzbereit.
+
+## Was erstellt wird
+
+Wenn Sie `create-specra` ausführen, erhalten Sie folgendes:
+
+```txt
+my-docs/
+├── app/
+│   ├── layout.tsx              # Root-Layout mit Specra-Setup
+│   ├── page.tsx                # Landing-Page
+│   ├── globals.css             # Globale Stile
+│   └── docs/
+│       └── [...slug]/
+│           └── page.tsx        # Dokumentationsseiten-Renderer
+├── docs/
+│   └── v1.0.0/
+│       ├── about.mdx           # Beispiel-Über-Seite
+│       ├── getting-started.mdx # Beispiel-Erste-Schritte-Anleitung
+│       └── components/         # Komponenten-Beispiele
+├── public/
+│   ├── icon-light-32x32.png   # Favicon (heller Modus)
+│   └── icon-dark-32x32.png    # Favicon (dunkler Modus)
+├── specra.config.json          # Specra-Konfiguration
+├── package.json                # Abhängigkeiten und Skripte
+├── next.config.mjs             # Next.js-Konfiguration
+├── tailwind.config.ts          # Tailwind-CSS-Konfig
+├── tsconfig.json               # TypeScript-Konfig
+├── .gitignore
+└── README.md
+```
+
+## Interaktives Setup
+
+Wenn Sie `create-specra` ausführen, werden Sie möglicherweise aufgefordert zu:
+
+**Projektname** (falls nicht als Argument angegeben)
+```bash
+npx create-specra@latest
+# Aufforderung: What is your project named?
+```
+
+**Bevorzugter Paketmanager** (falls mehrere erkannt werden)
+```bash
+# Wird fragen: Which package manager do you want to use?
+# Optionen: npm, yarn, pnpm
+```
+
+Das CLI erkennt, was auf Ihrem System verfügbar ist, und schlägt die beste Option vor.
+
+## Befehlsoptionen
+
+### Grundlegende Verwendung
+
+```bash
+npx create-specra@latest [project-name] [options]
+```
+
+### Beispiele
+
+**Mit einem bestimmten Namen erstellen:**
+```bash
+npx create-specra@latest my-awesome-docs
+```
+
+**Im aktuellen Verzeichnis erstellen:**
+```bash
+npx create-specra@latest .
+```
+
+**Einen bestimmten Paketmanager verwenden:**
+```bash
+npx create-specra@latest my-docs --use-npm
+npx create-specra@latest my-docs --use-yarn
+npx create-specra@latest my-docs --use-pnpm
+```
+
+## Was als Nächstes passiert
+
+Nachdem das Scaffolding abgeschlossen ist, befolgen Sie diese Schritte:
+
+<Steps>
+  <Step title="Navigieren Sie zu Ihrem Projekt">
+```bash
+cd my-docs
+```
+  </Step>
+
+  <Step title="Abhängigkeiten installieren">
+    Das CLI installiert Abhängigkeiten nicht automatisch. Führen Sie aus:
+
+<Tabs defaultValue="npm">
+  <Tab label="npm">
+```bash
+npm install
+```
+  </Tab>
+  <Tab label="yarn">
+```bash
+yarn install
+```
+  </Tab>
+  <Tab label="pnpm">
+```bash
+pnpm install
+```
+  </Tab>
+</Tabs>
+  </Step>
+
+  <Step title="Starten Sie den Entwicklungsserver">
+<Tabs defaultValue="npm">
+  <Tab label="npm">
+```bash
+npm run dev
+```
+  </Tab>
+  <Tab label="yarn">
+```bash
+yarn dev
+```
+  </Tab>
+  <Tab label="pnpm">
+```bash
+pnpm dev
+```
+  </Tab>
+</Tabs>
+
+    Öffnen Sie [http://localhost:3000](http://localhost:3000), um Ihre Seite zu sehen.
+  </Step>
+</Steps>
+
+## Standardkonfiguration
+
+Die generierte `specra.config.json` enthält sinnvolle Standardwerte:
+
+```json
+{
+  "site": {
+    "title": "My Documentation",
+    "description": "Documentation site built with Specra",
+    "url": "https://example.com",
+    "baseUrl": "/",
+    "activeVersion": "v1.0.0"
+  },
+  "theme": {
+    "defaultMode": "system",
+    "respectPrefersColorScheme": true
+  },
+  "navigation": {
+    "showSidebar": true,
+    "collapsibleSidebar": true,
+    "showBreadcrumbs": true,
+    "showTableOfContents": true,
+    "tocPosition": "right"
+  },
+  "features": {
+    "showLastUpdated": true,
+    "showReadingTime": true,
+    "versioning": true
+  },
+  "deployment": {
+    "target": "vercel"
+  }
+}
+```
+
+Sie können jede dieser Einstellungen anpassen. Siehe [Konfiguration](/docs/v1.0.0/configuration/overview) für alle verfügbaren Optionen.
+
+## Beispielinhalte
+
+Das erstellte Projekt enthält Beispieldokumentation, die Ihnen den Einstieg erleichtert:
+
+**Über-Seite** - Beispiel einer einfachen Informationsseite
+**Erste Schritte** - Zeigt, wie man Tutorials mit Schritten strukturiert
+**Komponenten-Beispiele** - Demonstriert alle verfügbaren MDX-Komponenten
+
+Fühlen Sie sich frei, diese Seiten zu löschen oder zu ändern. Sie sind nur dazu da, Ihnen zu zeigen, was möglich ist.
+
+## Verfügbare Skripte
+
+Die generierte `package.json` enthält diese Skripte:
+
+| Skript | Befehl | Beschreibung |
+|--------|---------|-------------|
+| `dev` | `next dev` | Startet Entwicklungsserver mit Hot Reload |
+| `build` | `next build` | Build für Produktion (Vercel, Node.js-Hosting) |
+| `start` | `next start` | Startet Produktionsserver (nach `build`) |
+| `build:export` | `next build && next export` | Build statische Seite (GitHub Pages, Netlify) |
+| `lint` | `next lint` | Führt ESLint aus, um Codequalität zu prüfen |
+
+## Specra aktualisieren
+
+So aktualisieren Sie auf die neueste Version von Specra in Ihrem Projekt:
+
+<Tabs defaultValue="npm">
+  <Tab label="npm">
+```bash
+npm install specra@latest
+```
+  </Tab>
+  <Tab label="yarn">
+```bash
+yarn upgrade specra@latest
+```
+  </Tab>
+  <Tab label="pnpm">
+```bash
+pnpm update specra@latest
+```
+  </Tab>
+</Tabs>
+
+<Callout type="info">
+Überprüfen Sie das [Changelog](https://github.com/yourusername/specra/releases) auf Breaking Changes, bevor Sie Hauptversionen aktualisieren.
+</Callout>
+
+## Fehlerbehebung
+
+### Befehl nicht gefunden
+
+Wenn Sie "command not found" Fehler erhalten:
+
+**Node.js-Version prüfen:**
+```bash
+node --version
+# Sollte 18.0.0 oder höher sein
+```
+
+**Mit vollem npx-Pfad versuchen:**
+```bash
+npx create-specra@latest my-docs
+```
+
+### Berechtigungsfehler
+
+Unter Linux/macOS müssen Sie möglicherweise npm-Berechtigungen anpassen:
+
+```bash
+sudo chown -R $USER ~/.npm
+```
+
+Oder verwenden Sie einen Node-Versionsmanager wie [nvm](https://github.com/nvm-sh/nvm).
+
+### Installation schlägt fehl
+
+Wenn die Installation von Abhängigkeiten fehlschlägt:
+
+1. Löschen Sie `node_modules` und die Lock-Datei
+2. Paketmanager-Cache leeren
+3. Versuchen Sie es erneut
+
+```bash
+rm -rf node_modules package-lock.json
+npm cache clean --force
+npm install
+```
+
+## Nächste Schritte
+
+Jetzt, da Sie eine Specra-Seite eingerichtet haben:
+
+<CardGrid cols={2}>
+  <Card
+    icon="book"
+    title="Schreiben Sie Ihre erste Seite"
+    description="Lernen Sie, wie man Dokumentation erstellt und organisiert"
+    href="/docs/v1.0.0/getting-started"
+  />
+  <Card
+    icon="settings"
+    title="Konfigurieren Sie Ihre Seite"
+    description="Passen Sie Branding, Navigation und Funktionen an"
+    href="/docs/v1.0.0/configuration/overview"
+  />
+  <Card
+    icon="palette"
+    title="Komponenten erkunden"
+    description="Entdecken Sie alle verfügbaren MDX-Komponenten"
+    href="/docs/v1.0.0/components"
+  />
+  <Card
+    icon="rocket"
+    title="In Produktion bereitstellen"
+    description="Versenden Sie Ihre Dokumente nach Vercel, GitHub Pages oder Netlify"
+    href="/docs/v1.0.0/deployment/overview"
+  />
+</CardGrid>

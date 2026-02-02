@@ -1,0 +1,503 @@
+---
+title: Déployer sur GitHub Pages
+description: Déployez votre documentation Specra sur GitHub Pages pour un hébergement statique gratuit
+sidebar_position: 3
+icon: github
+tab_group: guides
+---
+
+# Déployer sur GitHub Pages
+
+GitHub Pages offre un hébergement gratuit pour les sites statiques, ce qui le rend parfait pour la documentation open source. Déployez directement depuis votre dépôt avec GitHub Actions.
+
+## Pourquoi GitHub Pages ?
+
+- **Hébergement gratuit** - Aucun coût pour les dépôts publics
+- **Domaines personnalisés** - Utilisez votre propre domaine
+- **HTTPS inclus** - Certificats SSL automatiques
+- **Basé sur Git** - Déployez depuis votre dépôt
+- **Contrôle de version** - Historique complet de vos docs
+- **Confiance de la communauté** - Plateforme familière pour les développeurs
+
+## Prérequis
+
+- Dépôt GitHub (public ou privé)
+- Projet de documentation Specra
+- Git installé localement
+
+## Configuration
+
+D'abord, configurez Specra pour l'export statique.
+
+### Sans domaine personnalisé
+
+Pour les URL comme `username.github.io/repo-name` :
+
+```json
+{
+  "deployment": {
+    "target": "github-pages",
+    "basePath": "repo-name",
+    "customDomain": false
+  }
+}
+```
+
+<Callout type="warning" title="Important">
+Le `basePath` doit correspondre exactement au nom de votre dépôt. GitHub Pages sert depuis `username.github.io/repo-name`, donc toutes les ressources ont besoin de ce préfixe.
+</Callout>
+
+### Avec domaine personnalisé
+
+Pour les domaines personnalisés comme `docs.example.com` :
+
+```json
+{
+  "deployment": {
+    "target": "custom-domain-static",
+    "basePath": "",
+    "customDomain": true
+  }
+}
+```
+
+Créez également `public/CNAME` avec votre domaine :
+
+```txt
+docs.example.com
+```
+
+## Méthodes de déploiement
+
+Choisissez votre méthode de déploiement préférée :
+
+### Méthode 1 : GitHub Actions (Recommandé)
+
+Déploiement automatique à chaque push sur main.
+
+<Steps>
+  <Step title="Créer le fichier de workflow">
+    Créez `.github/workflows/deploy.yml` :
+
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build:export
+        env:
+          NODE_ENV: production
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+  </Step>
+
+  <Step title="Activer GitHub Pages">
+    1. Allez dans les paramètres du dépôt → Pages
+    2. Source : **GitHub Actions**
+    3. Enregistrer
+
+    Pas besoin de sélectionner une branche - le workflow gère le déploiement.
+  </Step>
+
+  <Step title="Pousser et déployer">
+```bash
+git add .
+git commit -m "Add GitHub Pages deployment"
+git push
+```
+
+Votre site se déploie automatiquement ! Vérifiez l'onglet Actions pour la progression.
+  </Step>
+</Steps>
+
+### Méthode 2 : Déploiement manuel
+
+Déployez manuellement en utilisant le paquet `gh-pages`.
+
+<Steps>
+  <Step title="Installer gh-pages">
+```bash
+npm install --save-dev gh-pages
+```
+  </Step>
+
+  <Step title="Ajouter le script de déploiement">
+    Mettez à jour `package.json` :
+
+```json
+{
+  "scripts": {
+    "deploy": "npm run build:export && gh-pages -d out"
+  }
+}
+```
+  </Step>
+
+  <Step title="Déployer">
+```bash
+npm run deploy
+```
+
+Cela construit votre site et pousse le dossier `out` vers la branche `gh-pages`.
+  </Step>
+
+  <Step title="Activer GitHub Pages">
+    1. Allez dans les paramètres → Pages
+    2. Source : Deploy from a branch
+    3. Branche : `gh-pages` / `/ (root)`
+    4. Enregistrer
+  </Step>
+</Steps>
+
+## Configuration de domaine personnalisé
+
+Utilisez votre propre domaine avec GitHub Pages :
+
+<Steps>
+  <Step title="Ajouter le fichier CNAME">
+    Créez `public/CNAME` :
+
+```
+docs.example.com
+```
+
+Mise à jour de la config :
+
+```json
+{
+  "deployment": {
+    "target": "custom-domain-static",
+    "customDomain": true,
+    "basePath": ""
+  }
+}
+```
+  </Step>
+
+  <Step title="Configurer le DNS">
+    Ajoutez des enregistrements DNS chez votre fournisseur de domaine :
+
+**Pour sous-domaine (docs.example.com) :**
+```
+Type: CNAME
+Nom: docs
+Valeur: username.github.io
+```
+
+**Pour domaine apex (example.com) :**
+```
+Type: A
+Nom: @
+Valeur: 185.199.108.153
+Valeur: 185.199.109.153
+Valeur: 185.199.110.153
+Valeur: 185.199.111.153
+```
+
+<Callout type="tip">
+Utilisez un sous-domaine comme `docs.example.com` - c'est plus simple que la configuration de domaine apex.
+</Callout>
+  </Step>
+
+  <Step title="Activer HTTPS">
+    Après la propagation DNS (peut prendre jusqu'à 24 heures) :
+
+1. Allez dans Paramètres → Pages
+2. Cochez "Enforce HTTPS"
+3. GitHub provisionne automatiquement un certificat SSL
+  </Step>
+</Steps>
+
+## GitHub Actions avancées
+
+### Avec indexation de recherche
+
+Indexez vos docs dans MeiliSearch pendant le déploiement :
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build:export
+
+      - name: Index search
+        run: npm run index:search
+        env:
+          MEILISEARCH_HOST: ${{ secrets.MEILISEARCH_HOST }}
+          MEILISEARCH_API_KEY: ${{ secrets.MEILISEARCH_MASTER_KEY }}
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+```
+
+Ajoutez des secrets dans Paramètres → Secrets and variables → Actions.
+
+### Déployer sur Tag
+
+Déployez uniquement lorsque vous créez un tag de version :
+
+```yaml
+on:
+  push:
+    tags:
+      - 'v*'
+```
+
+Créez et poussez un tag pour déployer :
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+### Environnements multiples
+
+Déployez différentes branches sur différents sites GitHub Pages :
+
+```yaml
+on:
+  push:
+    branches:
+      - main
+      - staging
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # ... étapes de build ...
+
+      - name: Deploy to production
+        if: github.ref == 'refs/heads/main'
+        uses: actions/deploy-pages@v4
+
+      - name: Deploy to staging
+        if: github.ref == 'refs/heads/staging'
+        # Déployer sur un autre repo ou branche
+```
+
+## Dépannage
+
+### Erreurs 404 sur les routes
+
+Les exports statiques ne prennent pas en charge le routage dynamique de la même manière. Assurez-vous que toutes les routes sont pré-rendues.
+
+**Solution :** Ajoutez un 404.html qui redirige vers l'index :
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="refresh" content="0;url=/" />
+  </head>
+  <body>
+    Redirection...
+  </body>
+</html>
+```
+
+### Les ressources ne chargent pas
+
+Vérifiez votre configuration `basePath` :
+
+```bash
+# Voir votre site
+open https://username.github.io/repo-name
+
+# Vérifier si les ressources se chargent depuis
+https://username.github.io/repo-name/_next/...
+```
+
+Si les ressources renvoient 404, vérifiez :
+- `basePath` dans la config correspond exactement au nom du repo
+- Vous utilisez `npm run build:export` et non `npm run build`
+
+### Le domaine personnalisé ne fonctionne pas
+
+**Vérifier la propagation DNS :**
+```bash
+dig docs.example.com
+# Devrait montrer CNAME vers username.github.io
+```
+
+**Vérifier le fichier CNAME :**
+- Doit être dans le dossier `public/`
+- Contient uniquement votre domaine, pas de protocole
+- Pas de barre oblique finale
+
+**Problèmes courants :**
+- DNS pas encore propagé (attendez jusqu'à 24 heures)
+- Fichier CNAME manquant ou incorrect
+- Échec de la vérification du domaine dans les paramètres GitHub
+
+### Échec du build dans Actions
+
+**Voir les journaux :**
+1. Allez dans l'onglet Actions
+2. Cliquez sur le workflow échoué
+3. Développez l'étape de build pour voir les erreurs
+
+**Corrections courantes :**
+- Augmenter la version de Node dans le workflow
+- Vider le cache npm : `npm ci --cache .npm`
+- Vérifier les dépendances manquantes
+
+## Conseils de performance
+
+### Activer la mise en cache
+
+Mettez en cache node_modules pour des builds plus rapides :
+
+```yaml
+- name: Setup Node
+  uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'npm'
+```
+
+### Optimiser les images
+
+Pré-optimisez les images avant de commiter :
+
+```bash
+npm install -D imagemin-cli
+
+# Optimiser toutes les images
+npx imagemin public/images/* --out-dir=public/images
+```
+
+### Réduire la taille du bundle
+
+Vérifiez ce qui est dans votre bundle :
+
+```bash
+npm install -D @next/bundle-analyzer
+
+ANALYZE=true npm run build:export
+```
+
+## Limites
+
+GitHub Pages a quelques limites :
+
+- **Taille du dépôt :** 1 Go recommandé
+- **Taille du site :** 1 Go site publié
+- **Bande passante :** 100 Go/mois limite douce
+- **Builds :** 10 par heure
+
+Ces limites sont généreuses pour les sites de documentation.
+
+## Migration depuis d'autres plateformes
+
+### Depuis Vercel
+
+1. Mettez à jour la section `deployment` de `specra.config.json`
+2. Exécutez `npm run build:export` localement pour tester
+3. Configurez le workflow GitHub Actions
+4. Poussez pour déclencher le déploiement
+
+### Depuis Netlify
+
+Même processus que Vercel. La sortie statique fonctionne sur les deux plateformes.
+
+## Meilleures pratiques
+
+**Utiliser GitHub Actions** - Déploiement automatique à chaque push
+
+**Versionner vos docs** - Utilisez des tags git pour les versions de documentation
+
+**Tester localement** - Exécutez `npm run build:export && npx serve out` avant de pousser
+
+**Surveiller les builds** - Configurez des notifications pour les déploiements échoués
+
+**Utiliser un domaine personnalisé** - Apparence professionnelle et URL stables
+
+**Activer HTTPS** - Toujours appliquer HTTPS pour la sécurité
+
+## Prochaines étapes
+
+<CardGrid cols={2}>
+  <Card
+    icon="triangle"
+    title="Vercel"
+    description="Déployer sur Vercel pour des fonctionnalités dynamiques"
+    href="/docs/v1.0.0/deployment/vercel"
+  />
+  <Card
+    icon="globe"
+    title="Netlify"
+    description="Hébergement statique alternatif"
+    href="/docs/v1.0.0/deployment/netlify"
+  />
+  <Card
+    icon="arrow-left"
+    title="Aperçu du déploiement"
+    description="Voir toutes les options de déploiement"
+    href="/docs/v1.0.0/deployment/overview"
+  />
+  <Card
+    icon="settings"
+    title="Configuration"
+    description="Configurer les paramètres de déploiement"
+    href="/docs/v1.0.0/configuration/overview"
+  />
+</CardGrid>

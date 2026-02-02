@@ -1,0 +1,260 @@
+---
+title: Tab-Gruppen
+description: Organisieren Sie Ihre Dokumentation in Tabs für eine bessere Navigation und Struktur
+icon: notebook-tabs
+tab_group: guides
+---
+
+Tab-Gruppen ermöglichen es Ihnen, Ihre Dokumentation in verschiedene Bereiche zu organisieren, die über Tabs oben auf Ihren Dokumentationsseiten zugänglich sind. Dies ist besonders nützlich, um verschiedene Arten von Inhalten wie SDK-Docs, API-Referenzen und Anleitungen zu trennen.
+
+## Übersicht
+
+Tab-Gruppen bieten eine sticky Navigationsleiste, die:
+- Sich unter dem Header befindet
+- Seitenleisteninhalte basierend auf dem aktiven Tab filtert
+- Über die Seitennavigation hinweg bestehen bleibt
+- Icons von Lucide React unterstützt
+- Die automatisch generierte Seitenleistenstruktur beibehält
+
+## Konfiguration
+
+Definieren Sie Tab-Gruppen in Ihrer `specra.config.json`:
+
+```json
+{
+  "navigation": {
+    "tabGroups": [
+      {
+        "id": "sdk",
+        "label": "SDK Dokumentation",
+        "icon": "code"
+      },
+      {
+        "id": "api",
+        "label": "API Referenz",
+        "icon": "zap"
+      },
+      {
+        "id": "guides",
+        "label": "Anleitungen",
+        "icon": "book-open"
+      }
+    ]
+  }
+}
+```
+
+### Tab-Gruppen-Eigenschaften
+
+| Eigenschaft | Typ | Erforderlich | Beschreibung |
+|-------------|-----|--------------|--------------|
+| `id` | string | Ja | Eindeutiger Bezeichner für die Tab-Gruppe |
+| `label` | string | Ja | Anzeigetext für den Tab |
+| `icon` | string | Nein | Lucide-Icon-Name (z.B. "code", "zap", "book-open") |
+
+## Inhalte zu Tabs zuweisen
+
+Es gibt zwei Möglichkeiten, Inhalte Tab-Gruppen zuzuweisen:
+
+### 1. Zuweisung auf Dateiebene
+
+Fügen Sie `tab_group` zum Frontmatter Ihrer MDX-Dateien hinzu:
+
+```mdx
+---
+title: Erste Schritte
+description: Schnellstartanleitung
+tab_group: guides
+---
+
+# Erste Schritte
+
+Ihr Inhalt hier...
+```
+
+### 2. Zuweisung auf Ordnerebene
+
+Fügen Sie `tab_group` zu Ihrer `_category_.json`-Datei hinzu, um alle Dateien in diesem Ordner zuzuweisen:
+
+```json
+{
+  "label": "Komponenten",
+  "position": 2,
+  "collapsible": true,
+  "collapsed": false,
+  "icon": "grid",
+  "tab_group": "sdk"
+}
+```
+
+Alle Dateien in diesem Ordner erben automatisch die `sdk` Tab-Gruppe.
+
+## Verhalten und Regeln
+
+### Standard-Tab-Zuweisung
+
+Dateien ohne angegebene `tab_group` erscheinen automatisch in der **ersten Tab-Gruppe**, die in Ihrer Konfiguration definiert ist.
+
+### Priorität
+
+`tab_group` auf Dateiebene im Frontmatter hat Vorrang vor der Zuweisung auf Ordnerebene aus `_category_.json`.
+
+### Tab-Persistenz
+
+Der aktive Tab bleibt bestehen, wenn:
+- Zwischen Seiten innerhalb derselben Tab-Gruppe navigiert wird
+- Tabs manuell gewechselt werden
+- Links zu Seiten in verschiedenen Tab-Gruppen angeklickt werden (Tab wechselt automatisch)
+
+### Initiale Tab-Auswahl
+
+Wenn Sie auf einer Seite landen:
+- Der Tab wechselt automatisch passend zur Gruppe der Seite
+- Beim Neuladen der Seite spiegelt der Tab die Gruppe der aktuellen Seite wider
+- Manuelle Tab-Auswahl bleibt erhalten, wenn innerhalb derselben Gruppe navigiert wird
+
+## Best Practices
+
+### 1. Logische Gruppierung
+
+Gruppieren Sie verwandte Inhalte zusammen:
+- **SDK/Bibliotheks-Docs**: Installation, Konfiguration, API-Referenz
+- **API-Docs**: REST-Endpunkte, GraphQL-Schemas, Webhooks
+- **Anleitungen**: Tutorials, How-tos, Best Practices
+
+### 2. Konsistente Benennung
+
+Verwenden Sie klare, prägnante Labels:
+- ✅ "SDK Dokumentation", "API Referenz", "Anleitungen"
+- ❌ "Docs1", "Abschnitt A", "Sonstiges"
+
+### 3. Aussagekräftige Icons
+
+Wählen Sie Icons, die den Inhalt repräsentieren:
+- `code` für SDK/Bibliotheksdokumentation
+- `zap` für API-Referenzen
+- `book-open` für Anleitungen und Tutorials
+- `rocket` für Erste-Schritte-Inhalte
+
+### 4. Tab-Anzahl begrenzen
+
+Halten Sie die Anzahl der Tabs überschaubar:
+- **Empfohlen**: 2-4 Tabs
+- **Maximum**: 5-6 Tabs
+- Zu viele Tabs können Benutzer überfordern
+
+## Beispiele
+
+### Beispiel 1: Einfache SDK + API Aufteilung
+
+```json
+{
+  "navigation": {
+    "tabGroups": [
+      {
+        "id": "sdk",
+        "label": "SDK",
+        "icon": "code"
+      },
+      {
+        "id": "api",
+        "label": "API",
+        "icon": "zap"
+      }
+    ]
+  }
+}
+```
+
+### Beispiel 2: Umfassende Dokumentation
+
+```json
+{
+  "navigation": {
+    "tabGroups": [
+      {
+        "id": "getting-started",
+        "label": "Erste Schritte",
+        "icon": "rocket"
+      },
+      {
+        "id": "sdk",
+        "label": "SDK Referenz",
+        "icon": "code"
+      },
+      {
+        "id": "api",
+        "label": "API Referenz",
+        "icon": "server"
+      },
+      {
+        "id": "guides",
+        "label": "Anleitungen",
+        "icon": "book-open"
+      }
+    ]
+  }
+}
+```
+
+## Erweiterte Nutzung
+
+### Verschachtelte Ordner
+
+Tab-Gruppen funktionieren nahtlos mit verschachtelten Ordnerstrukturen:
+
+```txt
+docs/v1.0.0/
+├── components/              # tab_group: sdk
+│   ├── _category_.json
+│   ├── button.mdx
+│   └── input.mdx
+├── api/                     # tab_group: api
+│   ├── _category_.json
+│   ├── authentication.mdx
+│   └── endpoints.mdx
+└── guides/                  # tab_group: guides
+    ├── _category_.json
+    └── quickstart.mdx       # Kann mit Dateiebene tab_group überschreiben
+```
+
+### Gemischte Tab-Gruppen im selben Ordner
+
+Sie können Dateien im selben Ordner haben, die zu verschiedenen Tabs gehören:
+
+```txt
+docs/v1.0.0/
+├── _category_.json          # Standard: tab_group: sdk
+├── overview.mdx             # Erbt: sdk
+├── api-overview.mdx         # Override: tab_group: api
+└── tutorial.mdx             # Override: tab_group: guides
+```
+
+## Fehlerbehebung
+
+### Tab wird nicht angezeigt
+
+**Problem**: Tab-Gruppe definiert, aber nicht sichtbar
+
+**Lösungen**:
+- Stellen Sie sicher, dass mindestens eine Datei dieser Tab-Gruppe zugewiesen ist
+- Überprüfen Sie, ob die Tab-Gruppen-`id` in Konfiguration und Frontmatter exakt übereinstimmt
+- Verifizieren Sie, dass `navigation.tabGroups` in `specra.config.json` definiert ist
+
+### Inhalt erscheint im falschen Tab
+
+**Problem**: Seite erscheint unter falschem Tab
+
+**Lösungen**:
+- Überprüfen Sie das Frontmatter auf Dateiebene auf `tab_group` Override
+- Verifizieren Sie, dass `_category_.json` auf Ordnerebene die korrekte `tab_group` hat
+- Denken Sie daran: Frontmatter hat Vorrang vor `_category_.json`
+
+### Tab bleibt nicht bestehen
+
+**Problem**: Tab wird beim Navigieren zurückgesetzt
+
+**Lösungen**:
+- Dies ist das erwartete Verhalten, wenn zu einer Seite in einer anderen Tab-Gruppe navigiert wird
+- Der Tab wechselt automatisch passend zur Gruppe der aktuellen Seite
+- Manuelle Auswahl bleibt nur bestehen, wenn innerhalb derselben Tab-Gruppe navigiert wird

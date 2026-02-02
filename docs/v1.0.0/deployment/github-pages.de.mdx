@@ -1,0 +1,503 @@
+---
+title: Auf GitHub Pages bereitstellen
+description: Stellen Sie Ihre Specra-Dokumentation kostenlos auf GitHub Pages bereit
+sidebar_position: 3
+icon: github
+tab_group: guides
+---
+
+# Auf GitHub Pages bereitstellen
+
+GitHub Pages bietet kostenloses Hosting für statische Websites und ist damit perfekt für Open-Source-Dokumentation geeignet. Stellen Sie direkt aus Ihrem Repository mit GitHub Actions bereit.
+
+## Warum GitHub Pages?
+
+- **Kostenloses Hosting** - Keine Kosten für öffentliche Repositories
+- **Benutzerdefinierte Domains** - Verwenden Sie Ihre eigene Domain
+- **HTTPS inklusive** - Automatische SSL-Zertifikate
+- **Git-basiert** - Bereitstellung aus Ihrem Repository
+- **Versionskontrolle** - Vollständige Historie Ihrer Docs
+- **Community-Vertrauen** - Vertraute Plattform für Entwickler
+
+## Voraussetzungen
+
+- GitHub-Repository (öffentlich oder privat)
+- Specra-Dokumentationsprojekt
+- Git lokal installiert
+
+## Konfiguration
+
+Konfigurieren Sie Specra zunächst für den statischen Export.
+
+### Ohne benutzerdefinierte Domain
+
+Für URLs wie `username.github.io/repo-name`:
+
+```json
+{
+  "deployment": {
+    "target": "github-pages",
+    "basePath": "repo-name",
+    "customDomain": false
+  }
+}
+```
+
+<Callout type="warning" title="Wichtig">
+Der `basePath` muss exakt mit Ihrem Repository-Namen übereinstimmen. GitHub Pages stellt von `username.github.io/repo-name` bereit, daher benötigen alle Assets dieses Präfix.
+</Callout>
+
+### Mit benutzerdefinierter Domain
+
+Für benutzerdefinierte Domains wie `docs.example.com`:
+
+```json
+{
+  "deployment": {
+    "target": "custom-domain-static",
+    "basePath": "",
+    "customDomain": true
+  }
+}
+```
+
+Erstellen Sie auch `public/CNAME` mit Ihrer Domain:
+
+```txt
+docs.example.com
+```
+
+## Bereitstellungsmethoden
+
+Wählen Sie Ihre bevorzugte Bereitstellungsmethode:
+
+### Methode 1: GitHub Actions (Empfohlen)
+
+Automatische Bereitstellung bei jedem Push zu main.
+
+<Steps>
+  <Step title="Workflow-Datei erstellen">
+    Erstellen Sie `.github/workflows/deploy.yml`:
+
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build:export
+        env:
+          NODE_ENV: production
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+  </Step>
+
+  <Step title="GitHub Pages aktivieren">
+    1. Gehen Sie zu Repository Settings → Pages
+    2. Source: **GitHub Actions**
+    3. Speichern
+
+    Es muss kein Branch ausgewählt werden – der Workflow übernimmt die Bereitstellung.
+  </Step>
+
+  <Step title="Pushen und Bereitstellen">
+```bash
+git add .
+git commit -m "Add GitHub Pages deployment"
+git push
+```
+
+lhre Seite wird automatisch bereitgestellt! Überprüfen Sie den Actions-Tab auf Fortschritt.
+  </Step>
+</Steps>
+
+### Methode 2: Manuelle Bereitstellung
+
+Manuell bereitstellen mit dem `gh-pages` Paket.
+
+<Steps>
+  <Step title="gh-pages installieren">
+```bash
+npm install --save-dev gh-pages
+```
+  </Step>
+
+  <Step title="Deploy-Skript hinzufügen">
+    Aktualisieren Sie `package.json`:
+
+```json
+{
+  "scripts": {
+    "deploy": "npm run build:export && gh-pages -d out"
+  }
+}
+```
+  </Step>
+
+  <Step title="Bereitstellen">
+```bash
+npm run deploy
+```
+
+Dies baut Ihre Seite und pusht den `out`-Ordner zum `gh-pages`-Branch.
+  </Step>
+
+  <Step title="GitHub Pages aktivieren">
+    1. Gehen Sie zu Settings → Pages
+    2. Source: Deploy from a branch
+    3. Branch: `gh-pages` / `/ (root)`
+    4. Speichern
+  </Step>
+</Steps>
+
+## Benutzerdefinierte Domain-Einrichtung
+
+Verwenden Sie Ihre eigene Domain mit GitHub Pages:
+
+<Steps>
+  <Step title="CNAME-Datei hinzufügen">
+    Erstellen Sie `public/CNAME`:
+
+```
+docs.example.com
+```
+
+Konfiguration aktualisieren:
+
+```json
+{
+  "deployment": {
+    "target": "custom-domain-static",
+    "customDomain": true,
+    "basePath": ""
+  }
+}
+```
+  </Step>
+
+  <Step title="DNS konfigurieren">
+    Fügen Sie DNS-Einträge bei Ihrem Domain-Provider hinzu:
+
+**Für Subdomain (docs.example.com):**
+```
+Typ: CNAME
+Name: docs
+Wert: username.github.io
+```
+
+**Für Apex-Domain (example.com):**
+```
+Typ: A
+Name: @
+Wert: 185.199.108.153
+Wert: 185.199.109.153
+Wert: 185.199.110.153
+Wert: 185.199.111.153
+```
+
+<Callout type="tip">
+Verwenden Sie eine Subdomain wie `docs.example.com` – es ist einfacher als das Setup der Apex-Domain.
+</Callout>
+  </Step>
+
+  <Step title="HTTPS aktivieren">
+    Nachdem DNS propagiert wurde (kann bis zu 24 Stunden dauern):
+
+1. Gehen Sie zu Settings → Pages
+2. Aktivieren Sie "Enforce HTTPS"
+3. GitHub stellt automatisch ein SSL-Zertifikat bereit
+  </Step>
+</Steps>
+
+## Erweiterte GitHub Actions
+
+### Mit Suchindexierung
+
+Indexieren Sie Ihre Docs in MeiliSearch während der Bereitstellung:
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build:export
+
+      - name: Index search
+        run: npm run index:search
+        env:
+          MEILISEARCH_HOST: ${{ secrets.MEILISEARCH_HOST }}
+          MEILISEARCH_API_KEY: ${{ secrets.MEILISEARCH_MASTER_KEY }}
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+```
+
+Fügen Sie Secrets unter Settings → Secrets and variables → Actions hinzu.
+
+### Bei Tag bereitstellen
+
+Nur bereitstellen, wenn Sie ein Release-Tag erstellen:
+
+```yaml
+on:
+  push:
+    tags:
+      - 'v*'
+```
+
+Erstellen und pushen Sie ein Tag zum Bereitstellen:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+### Mehrere Umgebungen
+
+Verschiedene Branches auf verschiedenen GitHub Pages-Seiten bereitstellen:
+
+```yaml
+on:
+  push:
+    branches:
+      - main
+      - staging
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # ... build steps ...
+
+      - name: Deploy to production
+        if: github.ref == 'refs/heads/main'
+        uses: actions/deploy-pages@v4
+
+      - name: Deploy to staging
+        if: github.ref == 'refs/heads/staging'
+        # Auf ein anderes Repo oder Branch bereitstellen
+```
+
+## Fehlerbehebung
+
+### 404-Fehler bei Routen
+
+Statische Exporte unterstützen dynamisches Routing nicht auf die gleiche Weise. Stellen Sie sicher, dass alle Routen vorgerendert sind.
+
+**Lösung:** Fügen Sie eine 404.html hinzu, die auf index umleitet:
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="refresh" content="0;url=/" />
+  </head>
+  <body>
+    Redirecting...
+  </body>
+</html>
+```
+
+### Assets laden nicht
+
+Überprüfen Sie Ihre `basePath`-Konfiguration:
+
+```bash
+# Ihre Seite anzeigen
+open https://username.github.io/repo-name
+
+# Überprüfen, ob Assets geladen werden von
+https://username.github.io/repo-name/_next/...
+```
+
+Wenn Assets 404 zurückgeben, verifizieren Sie:
+- `basePath` in der Konfiguration stimmt exakt mit dem Repo-Namen überein
+- Sie verwenden `npm run build:export` nicht `npm run build`
+
+### Benutzerdefinierte Domain funktioniert nicht
+
+**DNS-Verbreitung überprüfen:**
+```bash
+dig docs.example.com
+# Sollte CNAME zu username.github.io anzeigen
+```
+
+**CNAME-Datei überprüfen:**
+- Muss im `public/` Ordner sein
+- Enthält nur Ihre Domain, kein Protokoll
+- Kein nachgestellter Schrägstrich
+
+**Häufige Probleme:**
+- DNS noch nicht propagiert (warten Sie bis zu 24 Stunden)
+- CNAME-Datei fehlt oder falsch
+- Domainverifizierung in GitHub-Einstellungen fehlgeschlagen
+
+### Build schlägt in Actions fehl
+
+**Logs anzeigen:**
+1. Gehen Sie zum Actions-Tab
+2. Klicken Sie auf den fehlgeschlagenen Workflow
+3. Erweitern Sie den Build-Schritt, um Fehler zu sehen
+
+**Häufige Lösungen:**
+- Node-Version im Workflow erhöhen
+- npm-Cache leeren: `npm ci --cache .npm`
+- Auf fehlende Abhängigkeiten prüfen
+
+## Leistungs-Tipps
+
+### Caching aktivieren
+
+Cachen Sie node_modules für schnellere Builds:
+
+```yaml
+- name: Setup Node
+  uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'npm'
+```
+
+### Bilder optimieren
+
+Optimieren Sie Bilder vor dem Committen:
+
+```bash
+npm install -D imagemin-cli
+
+# Alle Bilder optimieren
+npx imagemin public/images/* --out-dir=public/images
+```
+
+### Bundle-Größe reduzieren
+
+Überprüfen Sie, was in Ihrem Bundle enthalten ist:
+
+```bash
+npm install -D @next/bundle-analyzer
+
+ANALYZE=true npm run build:export
+```
+
+## Limits
+
+GitHub Pages hat einige Limits:
+
+- **Repository-Größe:** 1GB empfohlen
+- **Seitengröße:** 1GB veröffentlichte Seite
+- **Bandbreite:** 100GB/Monat Soft-Limit
+- **Builds:** 10 pro Stunde
+
+Diese Limits sind für Dokumentationsseiten großzügig.
+
+## Migration von anderen Plattformen
+
+### Von Vercel
+
+1. Aktualisieren Sie den `deployment`-Abschnitt in `specra.config.json`
+2. Führen Sie `npm run build:export` lokal zum Testen aus
+3. Richten Sie den GitHub Actions-Workflow ein
+4. Pushen, um die Bereitstellung auszulösen
+
+### Von Netlify
+
+Gleicher Prozess wie Vercel. Die statische Ausgabe funktioniert auf beiden Plattformen.
+
+## Best Practices
+
+**GitHub Actions verwenden** - Automatische Bereitstellung bei jedem Push
+
+**Versionieren Sie Ihre Docs** - Verwenden Sie Git-Tags für Dokumentationsversionen
+
+**Lokal testen** - Führen Sie `npm run build:export && npx serve out` vor dem Pushen aus
+
+**Builds überwachen** - Richten Sie Benachrichtigungen für fehlgeschlagene Bereitstellungen ein
+
+**Benutzerdefinierte Domain verwenden** - Professionelles Erscheinungsbild und stabile URLs
+
+**HTTPS aktivieren** - Immer HTTPS aus Sicherheitsgründen erzwingen
+
+## Nächste Schritte
+
+<CardGrid cols={2}>
+  <Card
+    icon="triangle"
+    title="Vercel"
+    description="Auf Vercel für dynamische Features bereitstellen"
+    href="/docs/v1.0.0/deployment/vercel"
+  />
+  <Card
+    icon="globe"
+    title="Netlify"
+    description="Alternative statische Hosting-Plattform"
+    href="/docs/v1.0.0/deployment/netlify"
+  />
+  <Card
+    icon="arrow-left"
+    title="Bereitstellungsübersicht"
+    description="Alle Bereitstellungsoptionen ansehen"
+    href="/docs/v1.0.0/deployment/overview"
+  />
+  <Card
+    icon="settings"
+    title="Konfiguration"
+    description="Bereitstellungseinstellungen konfigurieren"
+    href="/docs/v1.0.0/configuration/overview"
+  />
+</CardGrid>

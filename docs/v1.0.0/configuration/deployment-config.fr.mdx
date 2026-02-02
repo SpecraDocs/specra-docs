@@ -1,0 +1,400 @@
+---
+title: Configuration de déploiement
+description: Configurez les paramètres de déploiement pour différentes plateformes d'hébergement
+sidebar_position: 4
+icon: rocket
+tab_group: guides
+---
+
+# Configuration de déploiement
+
+La section `deployment` indique à Specra comment construire votre documentation pour différentes plateformes d'hébergement. Cela garantit que les ressources se chargent correctement et que votre site fonctionne où que vous le déployiez.
+
+## Pourquoi la configuration de déploiement est importante
+
+Différentes plateformes servent votre site à partir d'URL différentes :
+
+- **Vercel :** `votre-site.vercel.app` (sert depuis la racine `/`)
+- **GitHub Pages (sans domaine personnalisé) :** `nom-utilisateur.github.io/nom-repo` (sert depuis `/nom-repo/`)
+- **Netlify :** `votre-site.netlify.app` (sert depuis la racine `/`)
+
+Specra a besoin de connaître votre cible de déploiement pour configurer correctement les chemins des ressources.
+
+## Configuration de base
+
+```json
+{
+  "deployment": {
+    "target": "vercel"
+  }
+}
+```
+
+C'est tout ce dont vous avez besoin pour la plupart des déploiements. Specra gère le reste automatiquement.
+
+## Configuration complète
+
+```json
+{
+  "deployment": {
+    "target": "vercel",
+    "basePath": "",
+    "customDomain": false
+  }
+}
+```
+
+## Options de configuration
+
+### target
+
+**Type :** `string`
+**Défaut :** `"vercel"`
+
+Votre plateforme de déploiement. Cela détermine quel processus de build Specra utilise.
+
+**Cibles disponibles :**
+
+```json
+{
+  "deployment": {
+    "target": "vercel"
+  }
+}
+```
+
+**Options :**
+- `"vercel"` - Vercel, Railway, Render, ou tout hébergement Node.js
+- `"github-pages"` - GitHub Pages sans domaine personnalisé
+- `"static"` - Hébergement statique (Netlify, Cloudflare Pages)
+- `"custom-domain-static"` - GitHub Pages avec domaine personnalisé
+
+### basePath
+
+**Type :** `string`
+**Défaut :** `""`
+
+Chemin de base pour votre site. Nécessaire uniquement pour GitHub Pages sans domaine personnalisé.
+
+```json
+{
+  "deployment": {
+    "target": "github-pages",
+    "basePath": "mon-repo"
+  }
+}
+```
+
+**Quand utiliser basePath :**
+
+✅ **GitHub Pages sans domaine personnalisé**
+```
+URL: nom-utilisateur.github.io/mon-repo
+Config: "basePath": "mon-repo"
+```
+
+❌ **GitHub Pages avec domaine personnalisé**
+```
+URL: docs.example.com
+Config: "basePath": ""
+```
+
+❌ **Vercel, Netlify, etc.**
+```
+URL: votre-site.vercel.app
+Config: "basePath": ""
+```
+
+<Callout type="warning">
+Le basePath doit correspondre exactement au nom de votre dépôt. S'ils ne correspondent pas, les ressources renverront des erreurs 404.
+</Callout>
+
+### customDomain
+
+**Type :** `boolean`
+**Défaut :** `false`
+
+Définissez à `true` lors de l'utilisation d'un domaine personnalisé avec GitHub Pages.
+
+```json
+{
+  "deployment": {
+    "target": "github-pages",
+    "customDomain": true,
+    "basePath": ""
+  }
+}
+```
+
+Cela indique à Specra de servir les ressources depuis la racine `/` au lieu de `/nom-repo/`.
+
+## Configurations spécifiques à la plateforme
+
+### Vercel
+
+La configuration par défaut fonctionne parfaitement :
+
+```json
+{
+  "deployment": {
+    "target": "vercel"
+  }
+}
+```
+
+**Commande de build :** `npm run build`
+**Sortie :** Répertoire `.next`
+**Aucun basePath nécessaire**
+
+### GitHub Pages (Sans domaine personnalisé)
+
+Pour `nom-utilisateur.github.io/nom-repo` :
+
+```json
+{
+  "deployment": {
+    "target": "github-pages",
+    "basePath": "nom-repo",
+    "customDomain": false
+  }
+}
+```
+
+**Commande de build :** `npm run build:export`
+**Sortie :** Répertoire `out`
+**Les ressources se chargent depuis :** `/nom-repo/_next/...`
+
+### GitHub Pages (Avec domaine personnalisé)
+
+Pour `docs.example.com` :
+
+```json
+{
+  "deployment": {
+    "target": "custom-domain-static",
+    "basePath": "",
+    "customDomain": true
+  }
+}
+```
+
+Ajoutez également `public/CNAME` :
+```
+docs.example.com
+```
+
+**Commande de build :** `npm run build:export`
+**Sortie :** Répertoire `out`
+**Les ressources se chargent depuis :** `/_next/...`
+
+### Netlify
+
+```json
+{
+  "deployment": {
+    "target": "static"
+  }
+}
+```
+
+**Commande de build :** `npm run build:export`
+**Sortie :** Répertoire `out`
+**Aucun basePath nécessaire**
+
+### Cloudflare Pages
+
+Même chose que Netlify :
+
+```json
+{
+  "deployment": {
+    "target": "static"
+  }
+}
+```
+
+## Comment ça marche
+
+### Modes de build
+
+Specra a deux modes de build :
+
+**1. Autonome (Hébergement Node.js)**
+- Utilisé pour : Vercel, Railway, Render
+- Commande : `npm run build`
+- Sortie : Répertoire `.next`
+- S'exécute comme un serveur Node.js
+- Prend en charge les fonctionnalités dynamiques
+
+**2. Export statique (Hébergement statique)**
+- Utilisé pour : GitHub Pages, Netlify, Cloudflare Pages
+- Commande : `npm run build:export`
+- Sortie : Répertoire `out`
+- Fichiers HTML/CSS/JS purs
+- Aucun serveur requis
+
+Le `deployment.target` détermine quel mode utiliser.
+
+### Résolution du chemin des ressources
+
+Specra utilise l'utilitaire `getAssetPath()` pour gérer les URL des ressources :
+
+```typescript
+// S'ajuste automatiquement en fonction de la configuration de déploiement
+getAssetPath('/images/logo.png')
+
+// Vercel : /images/logo.png
+// GitHub Pages (sans domaine personnalisé) : /nom-repo/images/logo.png
+// GitHub Pages (domaine personnalisé) : /images/logo.png
+```
+
+Vous n'avez pas à vous en soucier - Specra le gère automatiquement en fonction de votre configuration.
+
+## Changer de plateforme
+
+### De Vercel à GitHub Pages
+
+1. Mettre à jour la configuration :
+```json
+{
+  "deployment": {
+    "target": "github-pages",
+    "basePath": "votre-nom-repo"
+  }
+}
+```
+
+2. Changer la commande de build :
+```bash
+npm run build:export  # au lieu de npm run build
+```
+
+3. Déployer le dossier `out/` au lieu de `.next/`
+
+### De GitHub Pages à Netlify
+
+1. Mettre à jour la configuration :
+```json
+{
+  "deployment": {
+    "target": "static",
+    "basePath": ""
+  }
+}
+```
+
+2. Continuer à utiliser `npm run build:export`
+
+3. Netlify sert depuis la racine, donc supprimer basePath
+
+## Tester localement
+
+### Tester l'export statique
+
+```bash
+npm run build:export
+npx serve out
+```
+
+Ouvrez l'URL affichée (généralement `http://localhost:3000`). Vérifiez :
+- Les pages se chargent correctement
+- Les images apparaissent
+- Les liens fonctionnent
+- La navigation fonctionne
+
+### Tester avec basePath
+
+Si vous utilisez basePath, testez localement avec un serveur qui le respecte :
+
+```bash
+npm run build:export
+npx serve out -s -p 3000
+```
+
+Ensuite, visitez `http://localhost:3000/votre-nom-repo` pour simuler GitHub Pages.
+
+## Dépannage
+
+### Les ressources renvoient 404
+
+**Vérifiez que le basePath correspond au nom du repo :**
+```json
+{
+  "deployment": {
+    "basePath": "nom-repo-exact"  // Doit correspondre exactement
+  }
+}
+```
+
+**Vérifiez que vous utilisez la bonne commande de build :**
+- GitHub Pages : `npm run build:export` (pas `npm run build`)
+- Vercel : `npm run build` (pas `npm run build:export`)
+
+### Page blanche après le déploiement
+
+**Vérifiez que la cible est correcte :**
+- GitHub Pages a besoin de `"target": "github-pages"`
+- Netlify a besoin de `"target": "static"`
+- Vercel a besoin de `"target": "vercel"`
+
+**Vérifiez que les paramètres de déploiement correspondent à la configuration :**
+- Le répertoire de sortie doit correspondre au mode de build
+- La commande de build doit correspondre à la cible
+
+### Domaine personnalisé ne fonctionne pas
+
+**Assurez-vous que customDomain est true :**
+```json
+{
+  "deployment": {
+    "customDomain": true,
+    "basePath": ""
+  }
+}
+```
+
+**Vérifiez que le fichier CNAME existe :**
+- Doit être dans `public/CNAME`
+- Contient uniquement votre domaine
+- Pas de protocole, pas de barre oblique finale
+
+## Meilleures pratiques
+
+**Garder la config dans le contrôle de version** - Commitez `specra.config.json` pour que les déploiements soient cohérents
+
+**Tester localement avant de déployer** - Utilisez `npx serve out` pour tester les exports statiques
+
+**Utiliser des configs spécifiques à l'environnement** - Différentes configurations pour le staging et la production si nécessaire
+
+**Documenter votre installation** - Ajoutez des instructions de déploiement à votre README
+
+**Vérifier après avoir changé de plateforme** - Testez que tout fonctionne lors du changement de cibles de déploiement
+
+## Prochaines étapes
+
+<CardGrid cols={2}>
+  <Card
+    icon="triangle"
+    title="Déployer sur Vercel"
+    description="Déploiement Vercel étape par étape"
+    href="/docs/v1.0.0/deployment/vercel"
+  />
+  <Card
+    icon="github"
+    title="Déployer sur GitHub Pages"
+    description="GitHub Pages avec Actions"
+    href="/docs/v1.0.0/deployment/github-pages"
+  />
+  <Card
+    icon="globe"
+    title="Déployer sur Netlify"
+    description="Guide de déploiement Netlify"
+    href="/docs/v1.0.0/deployment/netlify"
+  />
+  <Card
+    icon="arrow-left"
+    title="Aperçu du déploiement"
+    description="Toutes les options de déploiement"
+    href="/docs/v1.0.0/deployment/overview"
+  />
+</CardGrid>
