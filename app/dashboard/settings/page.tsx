@@ -1,9 +1,23 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
+import { prisma } from "@/lib/db"
+import { ApiTokenManager } from "./api-tokens"
 
 export default async function SettingsPage() {
   const session = await auth()
   if (!session?.user?.id) redirect("/auth/login")
+
+  const tokens = await prisma.apiToken.findMany({
+    where: { userId: session.user.id },
+    select: {
+      id: true,
+      name: true,
+      lastUsed: true,
+      expiresAt: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: "desc" },
+  })
 
   return (
     <div className="space-y-8">
@@ -30,6 +44,9 @@ export default async function SettingsPage() {
           </div>
         </div>
       </div>
+
+      {/* API Tokens */}
+      <ApiTokenManager initialTokens={tokens} />
 
       {/* Danger Zone */}
       <div className="rounded-lg border border-destructive/30 bg-card p-6 space-y-4">

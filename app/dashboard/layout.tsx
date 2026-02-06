@@ -1,10 +1,21 @@
 import Link from "next/link"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
-import { LayoutDashboard, CreditCard, Settings, ArrowLeft } from "lucide-react"
+import {
+  LayoutDashboard,
+  CreditCard,
+  Settings,
+  ArrowLeft,
+  FolderGit2,
+  BarChart3,
+  Building2,
+} from "lucide-react"
 
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+  { href: "/dashboard/projects", label: "Projects", icon: FolderGit2 },
+  { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/dashboard/organizations", label: "Organizations", icon: Building2 },
   { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ]

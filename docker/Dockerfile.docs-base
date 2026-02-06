@@ -1,0 +1,19 @@
+FROM node:22-alpine
+
+WORKDIR /app
+
+# Install minimal dependencies for serving
+RUN npm init -y && npm install next@^16.1.0 react@^19.2.3 react-dom@^19.2.3
+
+# Copy the standalone server entry
+COPY serve.js /app/serve.js
+
+# Docs content will be bind-mounted at /data
+VOLUME ["/data"]
+
+EXPOSE 3000
+
+ENV NODE_ENV=production
+ENV PORT=3000
+
+CMD ["node", "serve.js"]

@@ -1,0 +1,14 @@
+{
+	admin localhost:2019
+	auto_https disable_redirects
+}
+
+# Wildcard cert for docs subdomains
+*.docs.specra.dev {
+	tls {
+		dns cloudflare {env.CF_API_TOKEN}
+	}
+
+	# Dynamic routing handled via Caddy admin API
+	respond "Project not found" 404
+}

@@ -14,6 +14,15 @@ export default auth((req) => {
     }
   }
 
+  // Protect admin routes
+  if (pathname.startsWith("/admin")) {
+    if (!isLoggedIn) {
+      const loginUrl = new URL("/auth/login", req.nextUrl.origin)
+      loginUrl.searchParams.set("callbackUrl", pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+  }
+
   // Redirect logged-in users away from auth pages
   if (pathname.startsWith("/auth/") && isLoggedIn) {
     return NextResponse.redirect(new URL("/dashboard", req.nextUrl.origin))
@@ -23,5 +32,5 @@ export default auth((req) => {
 })
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/auth/:path*"],
+  matcher: ["/dashboard/:path*", "/auth/:path*", "/admin/:path*"],
 }

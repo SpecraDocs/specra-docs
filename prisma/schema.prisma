@@ -16,13 +16,18 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
+  role          UserRole  @default(USER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts      Account[]
-  sessions      Session[]
-  subscriptions Subscription[]
-  payments      Payment[]
+  accounts            Account[]
+  sessions            Session[]
+  subscriptions       Subscription[]
+  payments            Payment[]
+  organizationMembers OrganizationMember[]
+  projects            Project[]
+  apiTokens           ApiToken[]
+  auditLogs           AuditLog[]
 }
 
 model Account {
@@ -127,7 +132,188 @@ model Payment {
   @@index([providerTxId])
 }
 
+// ─── Organization Models ────────────────────────────────────────────────────
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members     OrganizationMember[]
+  invitations OrgInvitation[]
+  projects    Project[]
+  auditLogs   AuditLog[]
+}
+
+model OrganizationMember {
+  id        String   @id @default(cuid())
+  userId    String
+  orgId     String
+  role      OrgRole  @default(MEMBER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, orgId])
+  @@index([orgId])
+}
+
+model OrgInvitation {
+  id        String           @id @default(cuid())
+  orgId     String
+  email     String
+  role      OrgRole          @default(MEMBER)
+  token     String           @unique @default(cuid())
+  status    InvitationStatus @default(PENDING)
+  expiresAt DateTime
+  createdAt DateTime         @default(now())
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId])
+  @@index([email])
+}
+
+// ─── Project & Deployment Models ────────────────────────────────────────────
+
+model Project {
+  id             String   @id @default(cuid())
+  name           String
+  slug           String   @unique
+  subdomain      String   @unique
+  customDomain   String?  @unique
+  userId         String
+  orgId          String?
+  githubRepo     String?
+  githubBranch   String?  @default("main")
+  githubInstallId Int?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization    Organization?     @relation(fields: [orgId], references: [id], onDelete: SetNull)
+  deployments     Deployment[]
+  analyticsEvents AnalyticsEvent[]
+
+  @@index([userId])
+  @@index([orgId])
+}
+
+model Deployment {
+  id          String           @id @default(cuid())
+  projectId   String
+  status      DeploymentStatus @default(QUEUED)
+  containerId String?
+  port        Int?
+  buildLogs   String?          @db.Text
+  trigger     DeployTrigger    @default(MANUAL)
+  commitSha   String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([status])
+}
+
+// ─── Analytics Models ───────────────────────────────────────────────────────
+
+model AnalyticsEvent {
+  id          String   @id @default(cuid())
+  projectId   String
+  sessionId   String
+  path        String
+  referrer    String?
+  browser     String?
+  os          String?
+  device      String?
+  country     String?
+  region      String?
+  city        String?
+  ipHash      String?
+  scrollDepth Int?
+  duration    Int?     // seconds
+  createdAt   DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
+  @@index([projectId, sessionId])
+  @@index([projectId, path])
+}
+
+// ─── API & Audit Models ────────────────────────────────────────────────────
+
+model ApiToken {
+  id        String    @id @default(cuid())
+  userId    String
+  name      String
+  tokenHash String    @unique
+  lastUsed  DateTime?
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  orgId     String?
+  action    String
+  target    String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user         User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  organization Organization? @relation(fields: [orgId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([orgId])
+  @@index([createdAt])
+}
+
 // ─── Enums ──────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum OrgRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+}
+
+enum DeploymentStatus {
+  QUEUED
+  BUILDING
+  DEPLOYING
+  RUNNING
+  STOPPED
+  FAILED
+}
+
+enum DeployTrigger {
+  MANUAL
+  CLI
+  GITHUB
+}
 
 enum SubscriptionStatus {
   ACTIVE
