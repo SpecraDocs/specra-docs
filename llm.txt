@@ -5,9 +5,9 @@ specra-docs is the official documentation website for Specra. It serves as both 
 
 ## Key Information
 - Project Name: specra-docs
-- Type: Documentation Website / Next.js Application
-- Purpose: Document Specra framework and demonstrate its features
-- URL: https://specra.vercel.app
+- Type: Documentation Website + SaaS Platform / Next.js Application
+- Purpose: Document Specra framework, demonstrate its features, and offer paid SaaS tiers
+- URL: https://specra-docs.com (self-hosted with Caddy)
 - Repository: https://github.com/dalmasonto/specra-docs
 - Built With: Specra (dogfooding)
 
@@ -20,10 +20,15 @@ specra-docs is the official documentation website for Specra. It serves as both 
 ## Technology Stack
 - Next.js 16.1.0 (App Router)
 - React 19.2.3
-- Specra 0.1.7 (the SDK this project documents)
+- Specra 0.1.11 (the SDK this project documents)
 - Tailwind CSS 4.1.9
 - TypeScript 5
-- Deployed on Vercel
+- Auth.js v5 (next-auth@beta) - Authentication (GitHub OAuth + credentials)
+- Prisma v7 + PostgreSQL - Database ORM
+- Stripe (Checkout + Webhooks + Customer Portal) - International payments (USD)
+- M-Pesa Daraja API (STK Push) - Kenya payments (KES)
+- bcryptjs - Password hashing
+- Deployed self-hosted with Caddy reverse proxy
 
 ## Project Structure
 ```
@@ -33,29 +38,44 @@ specra-docs/
 │   ├── page.tsx           # Landing page
 │   ├── globals.css        # Global styles
 │   ├── not-found.tsx      # 404 page
-│   ├── api/              # API routes
-│   └── docs/             # Documentation routes
-│       └── [version]/
-│           └── [...slug]/
-│               └── page.tsx
+│   ├── auth/              # Auth pages
+│   │   ├── login/page.tsx
+│   │   └── register/page.tsx
+│   ├── pricing/page.tsx   # Public pricing page (4 tiers, USD/KES)
+│   ├── dashboard/         # Authenticated dashboard
+│   │   ├── layout.tsx     # Sidebar layout + auth guard
+│   │   ├── page.tsx       # Overview
+│   │   ├── billing/       # Subscription & payment history
+│   │   └── settings/      # Account settings
+│   ├── api/
+│   │   ├── auth/[...nextauth]/route.ts  # Auth.js handler
+│   │   ├── auth/register/route.ts       # User registration
+│   │   ├── stripe/checkout/route.ts     # Stripe Checkout
+│   │   ├── stripe/portal/route.ts       # Customer Portal
+│   │   ├── webhooks/stripe/route.ts     # Stripe webhooks
+│   │   └── mpesa/                       # M-Pesa endpoints
+│   │       ├── stkpush/route.ts
+│   │       ├── callback/route.ts
+│   │       └── status/route.ts
+│   └── docs/              # Documentation routes
+│       └── [version]/[...slug]/page.tsx
+├── lib/                   # Shared utilities
+│   ├── db.ts              # Prisma client singleton
+│   ├── auth-utils.ts      # Auth helpers
+│   ├── stripe.ts          # Stripe client + plan pricing
+│   └── mpesa.ts           # M-Pesa Daraja client
+├── prisma/
+│   ├── schema.prisma      # DB schema (User, Plan, Subscription, Payment...)
+│   └── prisma.config.ts   # Prisma v7 datasource config
+├── auth.ts                # Auth.js v5 configuration
+├── middleware.ts           # Route protection
 ├── docs/                  # MDX documentation content
 │   └── v1.0.0/
-│       ├── getting-started/
-│       ├── configuration/
-│       ├── components/
-│       ├── api/
-│       └── guides/
 ├── public/                # Static assets
-│   ├── logo.svg
-│   └── images/
-├── scripts/              # Build and utility scripts
-│   ├── generate-redirects.mjs
-│   ├── generate-static-redirects.mjs
-│   ├── index-search.ts
-│   └── test-search.ts
-├── specra.config.json    # Specra configuration
-├── next.config.mjs       # Next.js configuration
-├── tailwind.config.ts    # Tailwind configuration
+├── scripts/               # Build and utility scripts
+├── specra.config.json     # Specra configuration
+├── next.config.mjs        # Next.js configuration
+├── .env.local             # Environment variables (DB, Auth, Stripe, M-Pesa)
 └── package.json
 ```
 
@@ -69,6 +89,17 @@ specra-docs/
 - Search functionality (MeiliSearch, currently disabled)
 - Social links (GitHub, Twitter, Discord)
 - Custom footer with links
+
+### SaaS / Payment Features (added Feb 2026)
+- 4 pricing tiers: Free, Starter ($19/mo), Pro ($49/mo), Enterprise ($149/mo)
+- Dual payment providers: Stripe (international, USD) + M-Pesa (Kenya, KES)
+- Annual billing discounts (save ~20%)
+- Auth: GitHub OAuth + email/password via Auth.js v5
+- User dashboard: plan overview, billing management, payment history
+- Stripe Customer Portal: manage subscription, update payment method
+- M-Pesa STK Push: phone-prompted payments for Kenyan users
+- Webhook-driven subscription lifecycle (auto-activate, cancel, handle failures)
+- Route protection middleware (dashboard requires authentication)
 
 ## Documentation Content Structure
 ```
@@ -103,10 +134,12 @@ docs/v1.0.0/
 - `test:search`: Test search functionality
 
 ## Deployment Options
-1. **Vercel (Default)**: `npm run build` - Server-side rendering
-2. **GitHub Pages**: `npm run build:export` - Static site export
-3. **Netlify**: Compatible with standard build
-4. **Self-hosted**: Any Node.js hosting
+1. **Self-hosted with Caddy (Production)**: `yarn build && yarn start` - Required for payment system
+   - Caddy reverse proxies to localhost:3000
+   - Supports API routes, Auth.js, webhooks
+2. **GitHub Pages**: `npm run build:export` - Static site export (NO payment features)
+3. **Vercel**: `npm run build` - Server-side rendering
+4. **Netlify**: Compatible with standard build
 
 ## Static Export Configuration
 For GitHub Pages deployment:
@@ -128,7 +161,13 @@ For GitHub Pages deployment:
 ## Key Pages
 1. **Landing Page** (app/page.tsx): Custom hero and features showcase
 2. **Documentation** (docs/v1.0.0/*): All MDX content
-3. **404 Page** (app/not-found.tsx): Custom not found page
+3. **Pricing** (app/pricing/page.tsx): 4 tier cards, monthly/annual toggle, USD/KES
+4. **Login** (app/auth/login/page.tsx): GitHub OAuth + email/password
+5. **Register** (app/auth/register/page.tsx): Account creation
+6. **Dashboard** (app/dashboard/page.tsx): Plan overview, status, payment method
+7. **Billing** (app/dashboard/billing/page.tsx): Subscription details, payment history
+8. **Settings** (app/dashboard/settings/page.tsx): Account settings
+9. **404 Page** (app/not-found.tsx): Custom not found page
 
 ## Scripts Overview
 
@@ -218,16 +257,51 @@ This site demonstrates how to:
 5. **Examples**: See working code snippets
 6. **Reference Implementation**: Study how a real Specra site is built
 
+## Payment System Architecture
+
+### Database (Prisma v7 + PostgreSQL)
+- Schema: prisma/schema.prisma (7 models, 5 enums)
+- Config: prisma/prisma.config.ts (Prisma v7 requires this for datasource URL)
+- Models: User, Account, Session, VerificationToken, Plan, Subscription, Payment
+- Client singleton: lib/db.ts
+
+### Authentication (Auth.js v5)
+- Config: auth.ts (GitHub OAuth + credentials providers, JWT sessions, Prisma adapter)
+- API: app/api/auth/[...nextauth]/route.ts
+- Registration: app/api/auth/register/route.ts (bcrypt hashing)
+- Middleware: middleware.ts (protects /dashboard/*, redirects auth pages if logged in)
+
+### Stripe (International, USD)
+- Client: lib/stripe.ts (API version 2026-01-28.clover)
+- Checkout: app/api/stripe/checkout/route.ts
+- Portal: app/api/stripe/portal/route.ts
+- Webhooks: app/api/webhooks/stripe/route.ts
+  - checkout.session.completed, customer.subscription.updated/deleted, invoice.payment_failed
+
+### M-Pesa Daraja (Kenya, KES)
+- Client: lib/mpesa.ts (OAuth, STK Push, status query, phone normalization)
+- STK Push: app/api/mpesa/stkpush/route.ts
+- Callback: app/api/mpesa/callback/route.ts
+- Status: app/api/mpesa/status/route.ts
+
+### Environment Variables (.env.local)
+DATABASE_URL, AUTH_SECRET, AUTH_GITHUB_ID, AUTH_GITHUB_SECRET,
+STRIPE_SECRET_KEY, NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, STRIPE_WEBHOOK_SECRET,
+MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET, MPESA_SHORTCODE, MPESA_PASSKEY,
+MPESA_CALLBACK_URL, MPESA_ENV, NEXT_PUBLIC_APP_URL
+
 ## Development Dependencies
 - @tailwindcss/postcss: PostCSS plugin
 - @tailwindcss/typography: Typography utilities
+- prisma: Database ORM CLI (dev dependency)
+- @types/bcryptjs: Type definitions
 - tsx: TypeScript execution for scripts
 - TypeScript types for Node, React
 
 ## Deployment Status
-- Production: https://specra.vercel.app
-- Platform: Vercel
-- Auto-deploy: On push to main branch
+- Production: https://specra-docs.com
+- Platform: Self-hosted server with Caddy reverse proxy
+- Build mode: standalone (Next.js server at localhost:3000)
 - Status: Live and active
 
 ## Why This Exists

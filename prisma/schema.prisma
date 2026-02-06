@@ -1,0 +1,160 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Auth.js Required Models ────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  subscriptions Subscription[]
+  payments      Payment[]
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// ─── Billing Models ─────────────────────────────────────────────────────────
+
+model Plan {
+  id                     String  @id @default(cuid())
+  name                   String
+  slug                   String  @unique
+  stripePriceIdMonthly   String?
+  stripePriceIdAnnual    String?
+  priceUsd               Int     // cents
+  priceUsdAnnual         Int?    // cents per month when billed annually
+  priceKes               Int     // KES
+  priceKesAnnual         Int?    // KES per month when billed annually
+  features               Json    @default("{}")
+  active                 Boolean @default(true)
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  userId               String
+  planId               String
+  stripeSubscriptionId String?
+  stripeCustomerId     String?
+  status               SubscriptionStatus @default(ACTIVE)
+  paymentProvider      PaymentProvider    @default(STRIPE)
+  interval             BillingInterval    @default(MONTHLY)
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan     Plan      @relation(fields: [planId], references: [id])
+  payments Payment[]
+
+  @@index([userId])
+  @@index([stripeSubscriptionId])
+}
+
+model Payment {
+  id             String          @id @default(cuid())
+  userId         String
+  subscriptionId String?
+  amount         Int             // smallest currency unit
+  currency       Currency        @default(USD)
+  provider       PaymentProvider @default(STRIPE)
+  providerTxId   String?
+  status         PaymentStatus   @default(PENDING)
+
+  createdAt DateTime @default(now())
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id])
+
+  @@index([userId])
+  @@index([providerTxId])
+}
+
+// ─── Enums ──────────────────────────────────────────────────────────────────
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+  TRIALING
+  INCOMPLETE
+}
+
+enum PaymentProvider {
+  STRIPE
+  MPESA
+}
+
+enum BillingInterval {
+  MONTHLY
+  ANNUAL
+}
+
+enum Currency {
+  USD
+  KES
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}

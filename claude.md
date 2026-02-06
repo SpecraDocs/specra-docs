@@ -54,7 +54,7 @@ Framework Layer:
 └── TypeScript 5
 
 Documentation Layer:
-├── Specra 0.1.7 (the SDK itself!)
+├── Specra 0.1.11 (the SDK itself!)
 └── MDX (via Specra's MDX processor)
 
 Styling:
@@ -62,12 +62,20 @@ Styling:
 ├── @tailwindcss/typography (for prose)
 └── PostCSS
 
+Payment & Auth Layer (SaaS):
+├── Auth.js v5 (next-auth@beta) - GitHub OAuth + credentials
+├── Prisma v7 + PostgreSQL - Database ORM
+├── Stripe (Checkout + Webhooks + Customer Portal) - International payments
+├── M-Pesa Daraja API (STK Push) - Kenya payments (KES)
+└── bcryptjs - Password hashing
+
 Optional Features:
 ├── MeiliSearch (search, currently disabled)
 └── Analytics (Google Analytics, Plausible - ready to use)
 
 Build & Deploy:
-├── Vercel (hosting)
+├── Self-hosted server with Caddy reverse proxy (production)
+├── Next.js standalone mode (not static export)
 ├── tsx (script execution)
 └── ESLint (linting)
 ```
@@ -79,8 +87,7 @@ specra-docs/
 ├── app/                          # Next.js App Router
 │   ├── layout.tsx                # Root layout
 │   │   └── Uses specra/app/layout with custom wrapper
-│   ├── page.tsx                  # Landing page (8KB custom code)
-│   │   └── Hero, features, CTA sections
+│   ├── page.tsx                  # Landing page (hero, features, CTA)
 │   ├── globals.css               # Global styles (imports specra styles)
 │   ├── not-found.tsx             # Custom 404 page
 │   │
@@ -89,59 +96,77 @@ specra-docs/
 │   │       └── [...slug]/
 │   │           └── page.tsx      # Re-exports specra/app/docs-page
 │   │
+│   ├── auth/                     # Authentication pages
+│   │   ├── login/page.tsx        # Login (GitHub OAuth + email/password)
+│   │   └── register/page.tsx     # Registration
+│   │
+│   ├── pricing/                  # Public pricing page
+│   │   └── page.tsx              # 4 tiers, monthly/annual, USD/KES toggle
+│   │
+│   ├── dashboard/                # Authenticated user dashboard
+│   │   ├── layout.tsx            # Dashboard sidebar layout + auth guard
+│   │   ├── page.tsx              # Overview (plan, status, payment method)
+│   │   ├── billing/
+│   │   │   ├── page.tsx          # Subscription & payment history
+│   │   │   └── manage-button.tsx # Stripe portal button (client component)
+│   │   └── settings/
+│   │       └── page.tsx          # Account settings
+│   │
 │   └── api/                      # API routes
-│       └── (potential API endpoints)
+│       ├── auth/
+│       │   ├── [...nextauth]/route.ts  # Auth.js handler
+│       │   └── register/route.ts       # User registration
+│       ├── stripe/
+│       │   ├── checkout/route.ts       # Create Stripe Checkout session
+│       │   └── portal/route.ts         # Create Customer Portal session
+│       ├── webhooks/
+│       │   └── stripe/route.ts         # Stripe webhook handler
+│       └── mpesa/
+│           ├── stkpush/route.ts        # M-Pesa STK Push
+│           ├── callback/route.ts       # M-Pesa payment callback
+│           └── status/route.ts         # Query transaction status
+│
+├── lib/                          # Shared utilities (payment system)
+│   ├── db.ts                     # Prisma client singleton
+│   ├── auth-utils.ts             # Auth helpers (getCurrentUser, getUserSubscription)
+│   ├── stripe.ts                 # Stripe client + plan pricing constants
+│   └── mpesa.ts                  # M-Pesa Daraja client (OAuth, STK Push, query)
+│
+├── prisma/                       # Database schema
+│   ├── schema.prisma             # 7 models, 5 enums (User, Plan, Subscription, Payment...)
+│   └── prisma.config.ts          # Prisma v7 config (datasource URL)
+│
+├── auth.ts                       # Auth.js v5 configuration
+├── middleware.ts                  # Route protection (dashboard requires auth)
 │
 ├── docs/                         # Documentation content (MDX)
 │   └── v1.0.0/                   # Version 1.0.0 docs
 │       ├── getting-started/
-│       │   ├── introduction.mdx
-│       │   ├── installation.mdx
-│       │   └── quick-start.mdx
 │       ├── configuration/
-│       │   ├── overview.mdx
-│       │   ├── site-config.mdx
-│       │   ├── theme-config.mdx
-│       │   └── navigation.mdx
 │       ├── components/
-│       │   ├── overview.mdx
-│       │   ├── callout.mdx
-│       │   ├── code-block.mdx
-│       │   └── tabs.mdx
 │       ├── api/
-│       │   ├── configuration.mdx
-│       │   ├── components.mdx
-│       │   └── utilities.mdx
 │       ├── guides/
-│       │   ├── versioning.mdx
-│       │   ├── deployment.mdx
-│       │   ├── search.mdx
-│       │   └── customization.mdx
 │       └── examples/
-│           └── use-cases.mdx
 │
 ├── public/                       # Static assets
-│   ├── icon-light-32x32.png     # Favicon (light mode)
-│   ├── icon-dark-32x32.png      # Favicon (dark mode)
-│   ├── logo.svg                 # Site logo
-│   └── images/                  # Documentation images
-│       └── screenshots/
+│   ├── icon-light-32x32.png
+│   ├── icon-dark-32x32.png
+│   ├── logo.svg
+│   └── images/
 │
 ├── scripts/                      # Build and utility scripts
-│   ├── generate-redirects.mjs   # Generate redirect rules
-│   ├── generate-static-redirects.mjs  # For static export
-│   ├── index-search.ts          # Index content in MeiliSearch
-│   └── test-search.ts           # Test search functionality
+│   ├── generate-redirects.mjs
+│   ├── generate-static-redirects.mjs
+│   ├── index-search.ts
+│   └── test-search.ts
 │
-├── specra.config.json            # Specra configuration (115 lines)
+├── specra.config.json            # Specra configuration
 ├── next.config.mjs               # Next.js config (1 line - simple!)
-├── tailwind.config.ts            # Tailwind configuration
 ├── tsconfig.json                 # TypeScript configuration
 ├── postcss.config.mjs            # PostCSS configuration
 ├── package.json                  # Dependencies and scripts
-├── redirects.json                # Redirect rules
-├── UPDATED_STRUCTURE.md          # Structure documentation
-└── README.md                     # Project readme
+├── .env.local                    # Environment variables (DB, Auth, Stripe, M-Pesa)
+└── redirects.json                # Redirect rules
 ```
 
 ## Key Files Explained
@@ -423,17 +448,18 @@ npm run dev
 # Starts local development server at http://localhost:3000
 ```
 
-### 2. Production Build (Default - Vercel)
+### 2. Production Build (Server Mode — Required for Payment System)
 ```bash
 npm run build
 # → npm run generate:redirects && NEXT_BUILD_MODE=default next build
 #
 # 1. Generates redirect rules
-# 2. Builds with server-side rendering (SSR)
-# 3. Optimized for Vercel deployment
+# 2. Builds with output: "standalone" (supports API routes, Auth.js, webhooks)
+# 3. Run with: npm start (or PM2/systemd)
+# 4. Caddy reverse proxies to localhost:3000
 ```
 
-### 3. Static Export (GitHub Pages)
+### 3. Static Export (GitHub Pages — No payment features)
 ```bash
 npm run build:export
 # → npm run generate:redirects &&
@@ -446,6 +472,7 @@ npm run build:export
 # 2. Sets base path for subdirectory hosting
 # 3. Exports to static HTML (out/)
 # 4. Creates static redirect files
+# NOTE: No API routes, no auth, no payment features in this mode
 ```
 
 ### 4. Search Indexing
@@ -836,6 +863,92 @@ tabGroup: tutorials
 2. **Monitor**: Check for broken links
 3. **Search**: Re-index after major content changes
 4. **Performance**: Monitor build times
+
+## Payment System (SaaS Billing)
+
+specra-docs includes a full SaaS billing system with 4 pricing tiers, dual payment providers (Stripe + M-Pesa), and an authenticated user dashboard. This was added in February 2026.
+
+### Pricing Tiers
+
+| Tier | USD/mo | USD/mo (annual) | KES/mo |
+|------|--------|-----------------|--------|
+| Free | $0 | $0 | Free |
+| Starter | $19 | $15 | KES 2,450 |
+| Pro | $49 | $39 | KES 6,300 |
+| Enterprise | $149 | $129 | KES 19,200 |
+
+### Authentication (Auth.js v5)
+- **Providers**: GitHub OAuth + email/password (credentials)
+- **Session strategy**: JWT
+- **Adapter**: Prisma (stores users, accounts, sessions in PostgreSQL)
+- **Config**: `auth.ts` at project root
+- **API route**: `app/api/auth/[...nextauth]/route.ts`
+- **Registration**: `app/api/auth/register/route.ts` (bcrypt password hashing)
+- **Middleware**: `middleware.ts` protects `/dashboard/*` routes, redirects logged-in users from `/auth/*`
+
+### Database (Prisma v7 + PostgreSQL)
+**Schema**: `prisma/schema.prisma`
+
+Models:
+- **User** - Auth.js user with optional password field
+- **Account** - OAuth provider accounts (Auth.js required)
+- **Session** - User sessions (Auth.js required)
+- **VerificationToken** - Email verification (Auth.js required)
+- **Plan** - Pricing tiers with Stripe price IDs, USD/KES amounts
+- **Subscription** - User subscriptions (status, provider, billing interval, period)
+- **Payment** - Payment records (amount, currency, provider, transaction ID)
+
+Enums: `SubscriptionStatus`, `PaymentProvider`, `BillingInterval`, `Currency`, `PaymentStatus`
+
+**IMPORTANT Prisma v7 notes**:
+- `url` in datasource block is REMOVED from schema.prisma
+- Connection URL configured in `prisma/prisma.config.ts` via `defineConfig({ datasource: { url } })`
+- `datasourceUrl` constructor option is removed from PrismaClient — use plain `new PrismaClient()`
+- Client singleton in `lib/db.ts`
+
+### Stripe Integration
+- **Client**: `lib/stripe.ts` — Stripe SDK singleton, API version `2026-01-28.clover`
+- **Checkout**: `app/api/stripe/checkout/route.ts` — Creates Stripe Checkout sessions with plan metadata
+- **Portal**: `app/api/stripe/portal/route.ts` — Customer Portal for subscription management
+- **Webhooks**: `app/api/webhooks/stripe/route.ts` — Handles 4 events:
+  - `checkout.session.completed` → creates Subscription + Payment records
+  - `customer.subscription.updated` → syncs status and period
+  - `customer.subscription.deleted` → marks as cancelled
+  - `invoice.payment_failed` → marks as past_due, records failed payment
+
+**IMPORTANT Stripe API (2026-01-28.clover) notes**:
+- `current_period_start/end` moved from `Subscription` to `SubscriptionItem` — access via `subscription.items.data[0].current_period_start`
+- `Invoice.subscription` replaced by `invoice.parent.subscription_details.subscription`
+- `Invoice.payment_intent` removed — use `invoice.id` or `payment_settings`
+
+### M-Pesa Daraja Integration
+- **Client**: `lib/mpesa.ts` — OAuth token, STK Push, status query, phone normalization
+- **STK Push**: `app/api/mpesa/stkpush/route.ts` — Initiates payment via phone prompt
+- **Callback**: `app/api/mpesa/callback/route.ts` — Receives M-Pesa payment confirmations
+- **Status**: `app/api/mpesa/status/route.ts` — Polls transaction status as fallback
+- Supports sandbox and production environments via `MPESA_ENV`
+
+### UI Pages
+- **Pricing** (`app/pricing/page.tsx`): 4 tier cards, monthly/annual toggle, USD/KES currency switch, full feature comparison table
+- **Login** (`app/auth/login/page.tsx`): GitHub OAuth + email/password form
+- **Register** (`app/auth/register/page.tsx`): GitHub OAuth + registration form, auto-signs in after creation
+- **Dashboard** (`app/dashboard/page.tsx`): Overview cards (current plan, status, payment method)
+- **Billing** (`app/dashboard/billing/page.tsx`): Subscription details, Stripe portal button, payment history table
+- **Settings** (`app/dashboard/settings/page.tsx`): Profile info, danger zone
+
+### Build Mode
+- The payment system requires **server mode** (`yarn build` / `NEXT_BUILD_MODE=default`) — NOT static export
+- API routes and Auth.js middleware need a running Next.js server
+- Production deployment: Caddy reverse proxy → `localhost:3000` (Next.js server)
+- `build:export` remains available for users who don't need billing (self-hosted docs)
+
+### Environment Variables (`.env.local`)
+```
+DATABASE_URL, AUTH_SECRET, AUTH_GITHUB_ID, AUTH_GITHUB_SECRET,
+STRIPE_SECRET_KEY, NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, STRIPE_WEBHOOK_SECRET,
+MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET, MPESA_SHORTCODE, MPESA_PASSKEY,
+MPESA_CALLBACK_URL, MPESA_ENV, NEXT_PUBLIC_APP_URL
+```
 
 ## Why This Project Matters
 

@@ -23,6 +23,9 @@ export default function HomePage() {
             <Link href={docsUrl} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Documentation
             </Link>
+            <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Pricing
+            </Link>
             {
               config?.social?.github ? (
                 <Link href={config.social.github} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
