@@ -138,8 +138,8 @@
     "CDN_URL": "https://cdn.example.com"
   },
   "deployment": {
-    "target": "github-pages",
-    "basePath": "specra-docs",
-    "customDomain": false
+    "target": "static",
+    "basePath": "/",
+    "customDomain": true
   }
 }

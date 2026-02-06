@@ -8,7 +8,7 @@ export default function HomePage() {
   const config = getConfig()
 
   const activeVersion = config.site.activeVersion || "v4.0.0"
-  const docsUrl = `/docs/${activeVersion}/about`
+  const docsUrl = `/docs/${activeVersion}/en/about`
 
   return (
     <div className="min-h-screen bg-background">
