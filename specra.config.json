@@ -129,7 +129,7 @@
         "es": "Español",
         "fr": "Français"
       },
-      "prefixDefault": false
+      "prefixDefault": true
     }
   },
   "env": {

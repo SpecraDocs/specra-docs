@@ -229,6 +229,42 @@ jobs:
           publish_dir: ./out
 ```
 
+### Manual Server Deployment (SCP)
+
+If you prefer to deploy the static export to your own server manually:
+
+1. Build the static export:
+
+```bash
+npm run build:export
+```
+
+2. Zip the output directory:
+
+```bash
+zip -r out.zip out/
+```
+
+3. Copy the zip to your server:
+
+```bash
+scp out.zip user@your-server:/path/to/destination/
+```
+
+4. SSH into the server and extract:
+
+```bash
+ssh user@your-server
+cd /path/to/destination
+unzip -o out.zip # or unzip -o out.zip -d specra
+```
+
+You can combine steps 2-3 into a single command:
+
+```bash
+zip -r out.zip out/ && scp out.zip user@your-server:/path/to/destination/
+```
+
 ## Need Help?
 
 - Check the [documentation](https://specra.dev/docs)
