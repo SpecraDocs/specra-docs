@@ -41,13 +41,13 @@
     ]
   },
   "social": {
-    "github": "https://github.com/dalmasonto/specra-docs",
-    "twitter": "https://twitter.com/dalmasonto",
-    "discord": "https://discord.com/invite/dalmasonto",
+    "github": "https://github.com/SpecraDocs/specra-docs",
+    "twitter": "https://twitter.com/SpecraDocs",
+    "discord": "https://discord.com/invite/SpecraDocs",
     "custom": [
       {
         "label": "Website",
-        "url": "https://craftfolio.com/dalmasonto"
+        "url": "https://specra-docs.com"
       }
     ]
   },
@@ -86,7 +86,7 @@
         "items": [
           {
             "label": "GitHub",
-            "href": "https://github.com/dalmasonto/specra-docs"
+            "href": "https://github.com/SpecraDocs"
           },
           {
             "label": "Discord",
@@ -109,7 +109,7 @@
     "dismissible": true
   },
   "features": {
-    "editUrl": "https://github.com/dalmasonto/specra-docs/edit/main/docs",
+    "editUrl": "https://github.com/SpecraDocs/specra-docs/edit/main/docs",
     "showLastUpdated": true,
     "showReadingTime": true,
     "showAuthors": false,
