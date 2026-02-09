@@ -32,7 +32,17 @@ export async function GET(req: NextRequest) {
         name: true,
         email: true,
         role: true,
+        status: true,
         createdAt: true,
+        sessions: {
+          where: {
+            expires: { gt: new Date() },
+          },
+          select: {
+            expires: true,
+          },
+          take: 1,
+        },
         _count: { select: { subscriptions: true, projects: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -42,8 +52,17 @@ export async function GET(req: NextRequest) {
     prisma.user.count({ where }),
   ])
 
+  // Mark primary admin user and session status
+  const primaryAdminEmail = process.env.ADMIN_EMAIL
+  const usersWithFlags = users.map((user) => ({
+    ...user,
+    isPrimaryAdmin: primaryAdminEmail ? user.email === primaryAdminEmail : false,
+    isOnline: user.sessions.length > 0,
+    sessions: undefined, // Remove sessions array from response
+  }))
+
   return NextResponse.json({
-    users,
+    users: usersWithFlags,
     pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
   })
 }

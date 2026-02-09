@@ -43,17 +43,84 @@ export async function PATCH(
   }
 
   const { userId } = await params
-  const { role } = await req.json()
+  const { role, status } = await req.json()
 
-  if (!role || !["USER", "ADMIN"].includes(role)) {
+  // Validate inputs
+  if (role && !["USER", "ADMIN"].includes(role)) {
     return NextResponse.json({ error: "Invalid role" }, { status: 400 })
   }
 
+  if (status && !["ACTIVE", "BLOCKED"].includes(status)) {
+    return NextResponse.json({ error: "Invalid status" }, { status: 400 })
+  }
+
+  // Get the user being modified
+  const targetUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { email: true, role: true, status: true },
+  })
+
+  if (!targetUser) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 })
+  }
+
+  const primaryAdminEmail = process.env.ADMIN_EMAIL
+
+  // Prevent blocking the primary admin
+  if (
+    primaryAdminEmail &&
+    targetUser.email === primaryAdminEmail &&
+    status === "BLOCKED"
+  ) {
+    return NextResponse.json(
+      { error: "Cannot block primary admin user" },
+      { status: 403 }
+    )
+  }
+
+  // Prevent downgrading the primary admin from .env
+  if (
+    primaryAdminEmail &&
+    targetUser.email === primaryAdminEmail &&
+    role === "USER"
+  ) {
+    return NextResponse.json(
+      { error: "Cannot downgrade primary admin user" },
+      { status: 403 }
+    )
+  }
+
+  // If downgrading from ADMIN to USER, ensure at least one admin remains
+  if (role && targetUser.role === "ADMIN" && role === "USER") {
+    const adminCount = await prisma.user.count({
+      where: { role: "ADMIN", status: "ACTIVE" },
+    })
+
+    if (adminCount <= 1) {
+      return NextResponse.json(
+        { error: "Cannot remove last admin. At least one admin must exist." },
+        { status: 403 }
+      )
+    }
+  }
+
+  // Prepare update data
+  const updateData: { role?: string; status?: string } = {}
+  if (role) updateData.role = role
+  if (status) updateData.status = status
+
   const user = await prisma.user.update({
     where: { id: userId },
-    data: { role },
-    select: { id: true, name: true, email: true, role: true },
+    data: updateData,
+    select: { id: true, name: true, email: true, role: true, status: true },
   })
+
+  // If blocking user, invalidate all their sessions
+  if (status === "BLOCKED") {
+    await prisma.session.deleteMany({
+      where: { userId },
+    })
+  }
 
   return NextResponse.json(user)
 }

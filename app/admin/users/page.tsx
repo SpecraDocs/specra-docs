@@ -1,14 +1,17 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, Shield, User } from "lucide-react"
+import { Search, Shield, User, X, Ban, CheckCircle } from "lucide-react"
 
 interface UserData {
   id: string
   name: string | null
   email: string
   role: string
+  status: string
   createdAt: string
+  isPrimaryAdmin: boolean
+  isOnline: boolean
   _count: { subscriptions: number; projects: number }
 }
 
@@ -51,7 +54,12 @@ export default function AdminUsersPage() {
     loadUsers(1, search)
   }
 
-  async function toggleRole(userId: string, currentRole: string) {
+  function clearSearch() {
+    setSearch("")
+    loadUsers(1, "")
+  }
+
+  async function toggleRole(userId: string, currentRole: string, userEmail: string) {
     const newRole = currentRole === "ADMIN" ? "USER" : "ADMIN"
     if (
       !confirm(
@@ -70,6 +78,45 @@ export default function AdminUsersPage() {
       setUsers(
         users.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
       )
+    } else {
+      const error = await res.json()
+      alert(error.error || "Failed to change user role")
+    }
+  }
+
+  async function toggleUserStatus(userId: string, currentStatus: string) {
+    const newStatus = currentStatus === "ACTIVE" ? "BLOCKED" : "ACTIVE"
+    const action = newStatus === "BLOCKED" ? "block" : "unblock"
+
+    if (
+      !confirm(
+        `Are you sure you want to ${action} this user? ${
+          newStatus === "BLOCKED"
+            ? "This will invalidate all their active sessions."
+            : ""
+        }`
+      )
+    )
+      return
+
+    const res = await fetch(`/api/admin/users/${userId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus }),
+    })
+
+    if (res.ok) {
+      const updatedUser = await res.json()
+      setUsers(
+        users.map((u) =>
+          u.id === userId
+            ? { ...u, status: newStatus, isOnline: newStatus === "BLOCKED" ? false : u.isOnline }
+            : u
+        )
+      )
+    } else {
+      const error = await res.json()
+      alert(error.error || `Failed to ${action} user`)
     }
   }
 
@@ -100,6 +147,16 @@ export default function AdminUsersPage() {
         >
           Search
         </button>
+        {search && (
+          <button
+            type="button"
+            onClick={clearSearch}
+            className="rounded-md border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors flex items-center gap-2"
+          >
+            <X className="h-4 w-4" />
+            Clear
+          </button>
+        )}
       </form>
 
       {/* Users Table */}
@@ -112,6 +169,9 @@ export default function AdminUsersPage() {
               </th>
               <th className="text-left px-4 py-3 font-medium text-muted-foreground">
                 Role
+              </th>
+              <th className="text-left px-4 py-3 font-medium text-muted-foreground">
+                Status
               </th>
               <th className="text-left px-4 py-3 font-medium text-muted-foreground">
                 Projects
@@ -128,7 +188,7 @@ export default function AdminUsersPage() {
             {loading ? (
               <tr>
                 <td
-                  colSpan={5}
+                  colSpan={6}
                   className="text-center py-8 text-muted-foreground"
                 >
                   Loading...
@@ -137,7 +197,7 @@ export default function AdminUsersPage() {
             ) : users.length === 0 ? (
               <tr>
                 <td
-                  colSpan={5}
+                  colSpan={6}
                   className="text-center py-8 text-muted-foreground"
                 >
                   No users found.
@@ -147,27 +207,60 @@ export default function AdminUsersPage() {
               users.map((user) => (
                 <tr key={user.id} className="hover:bg-accent/30">
                   <td className="px-4 py-3">
-                    <p className="font-medium text-foreground">
-                      {user.name || "—"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {user.email}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <div>
+                        <p className="font-medium text-foreground">
+                          {user.name || "—"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {user.email}
+                        </p>
+                      </div>
+                      {user.isOnline && (
+                        <div className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`inline-flex items-center gap-1 text-xs rounded-full px-2 py-0.5 ${
+                          user.role === "ADMIN"
+                            ? "bg-destructive/10 text-destructive border border-destructive/30"
+                            : "bg-accent text-muted-foreground border border-border"
+                        }`}
+                      >
+                        {user.role === "ADMIN" ? (
+                          <Shield className="h-3 w-3" />
+                        ) : (
+                          <User className="h-3 w-3" />
+                        )}
+                        {user.role}
+                      </span>
+                      {user.isPrimaryAdmin && (
+                        <span className="text-xs text-muted-foreground italic">
+                          (Primary)
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex items-center gap-1 text-xs rounded-full px-2 py-0.5 ${
-                        user.role === "ADMIN"
-                          ? "bg-destructive/10 text-destructive border border-destructive/30"
-                          : "bg-accent text-muted-foreground border border-border"
+                        user.status === "ACTIVE"
+                          ? "bg-green-500/10 text-green-600 border border-green-500/30"
+                          : "bg-red-500/10 text-red-600 border border-red-500/30"
                       }`}
                     >
-                      {user.role === "ADMIN" ? (
-                        <Shield className="h-3 w-3" />
+                      {user.status === "ACTIVE" ? (
+                        <CheckCircle className="h-3 w-3" />
                       ) : (
-                        <User className="h-3 w-3" />
+                        <Ban className="h-3 w-3" />
                       )}
-                      {user.role}
+                      {user.status}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
@@ -177,14 +270,35 @@ export default function AdminUsersPage() {
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button
-                      onClick={() => toggleRole(user.id, user.role)}
-                      className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {user.role === "ADMIN"
-                        ? "Remove Admin"
-                        : "Make Admin"}
-                    </button>
+                    <div className="flex items-center justify-end gap-2">
+                      {user.isPrimaryAdmin ? (
+                        <span className="text-xs text-muted-foreground italic">
+                          Protected
+                        </span>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => toggleRole(user.id, user.role, user.email)}
+                            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            {user.role === "ADMIN"
+                              ? "Remove Admin"
+                              : "Make Admin"}
+                          </button>
+                          <span className="text-muted-foreground">|</span>
+                          <button
+                            onClick={() => toggleUserStatus(user.id, user.status)}
+                            className={`text-xs transition-colors ${
+                              user.status === "ACTIVE"
+                                ? "text-red-600 hover:text-red-700"
+                                : "text-green-600 hover:text-green-700"
+                            }`}
+                          >
+                            {user.status === "ACTIVE" ? "Block" : "Unblock"}
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))
