@@ -38,6 +38,9 @@ export async function generateMetadata(): Promise<Metadata> {
       title: config.site.title,
       description: config.site.description,
     },
+    other: {
+      "llms-txt": "/llms.txt",
+    },
   }
 }
 
