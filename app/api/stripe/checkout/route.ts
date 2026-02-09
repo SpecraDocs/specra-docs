@@ -13,6 +13,20 @@ export async function POST(req: Request) {
 
     const { planId, interval, couponCode, billingAddress, taxRate, taxAmount } = await req.json()
 
+    // Check for existing active subscription
+    const activeSub = await prisma.subscription.findFirst({
+      where: {
+        userId: session.user.id,
+        status: { in: ["ACTIVE", "TRIALING"] },
+      },
+    })
+    if (activeSub) {
+      return NextResponse.json(
+        { error: "You already have an active subscription. Please cancel it first or manage it from your dashboard." },
+        { status: 409 }
+      )
+    }
+
     let plan = await prisma.plan.findUnique({ where: { id: planId } })
     if (!plan) {
       plan = await prisma.plan.findUnique({ where: { slug: planId } })

@@ -3,6 +3,7 @@ import { headers } from "next/headers"
 import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/db"
 import { createAndSendInvoice } from "@/lib/invoices"
+import { sendRenewalReminderEmail, sendPaymentFailedEmail } from "@/lib/email"
 import type Stripe from "stripe"
 
 export async function POST(req: Request) {
@@ -53,6 +54,16 @@ export async function POST(req: Request) {
       case "invoice.payment_failed": {
         const invoice = event.data.object as Stripe.Invoice
         await handlePaymentFailed(invoice)
+        break
+      }
+      case "invoice.payment_succeeded": {
+        const invoice = event.data.object as Stripe.Invoice
+        await handleInvoicePaymentSucceeded(invoice)
+        break
+      }
+      case "invoice.upcoming": {
+        const invoice = event.data.object as Stripe.Invoice
+        await handleInvoiceUpcoming(invoice)
         break
       }
     }
@@ -186,6 +197,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
 
   const dbSub = await prisma.subscription.findFirst({
     where: { stripeSubscriptionId: subscriptionId },
+    include: { user: true, plan: true },
   })
 
   if (!dbSub) return
@@ -209,4 +221,86 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
       status: "FAILED",
     },
   })
+
+  // Send payment failure email
+  sendPaymentFailedEmail({
+    to: dbSub.user.email,
+    userName: dbSub.user.name || dbSub.user.email,
+    planName: dbSub.plan.name,
+    amount: ((invoice.amount_due ?? 0) / 100).toFixed(2),
+    currency: "USD",
+  }).catch((err) => console.error("Failed to send payment failure email:", err))
+}
+
+async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
+  // Skip initial subscription creation — already handled by checkout.session.completed
+  if (invoice.billing_reason === "subscription_create") return
+
+  const subscriptionId =
+    invoice.parent?.subscription_details?.subscription as string | null
+  if (!subscriptionId) return
+
+  const dbSub = await prisma.subscription.findFirst({
+    where: { stripeSubscriptionId: subscriptionId },
+  })
+
+  if (!dbSub) return
+
+  // Retrieve the Stripe subscription to get updated period dates
+  const stripeSubscription = await stripe.subscriptions.retrieve(subscriptionId)
+  const period = getSubscriptionPeriod(stripeSubscription)
+
+  await prisma.subscription.update({
+    where: { id: dbSub.id },
+    data: {
+      status: "ACTIVE",
+      currentPeriodStart: period.start,
+      currentPeriodEnd: period.end,
+    },
+  })
+
+  const payment = await prisma.payment.create({
+    data: {
+      userId: dbSub.userId,
+      subscriptionId: dbSub.id,
+      amount: invoice.amount_paid ?? 0,
+      currency: "USD",
+      provider: "STRIPE",
+      providerTxId: invoice.id,
+      status: "COMPLETED",
+    },
+  })
+
+  // Trigger invoice generation (non-blocking)
+  createAndSendInvoice(payment.id).catch((err) =>
+    console.error("Invoice generation failed for renewal:", err)
+  )
+}
+
+async function handleInvoiceUpcoming(invoice: Stripe.Invoice) {
+  const subscriptionId =
+    invoice.parent?.subscription_details?.subscription as string | null
+  if (!subscriptionId) return
+
+  const dbSub = await prisma.subscription.findFirst({
+    where: { stripeSubscriptionId: subscriptionId },
+    include: { user: true, plan: true },
+  })
+
+  if (!dbSub) return
+
+  const renewalDate = dbSub.currentPeriodEnd.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })
+
+  sendRenewalReminderEmail({
+    to: dbSub.user.email,
+    userName: dbSub.user.name || dbSub.user.email,
+    planName: dbSub.plan.name,
+    renewalDate,
+    amount: ((invoice.amount_due ?? 0) / 100).toFixed(2),
+    currency: "USD",
+  }).catch((err) => console.error("Failed to send renewal reminder email:", err))
 }

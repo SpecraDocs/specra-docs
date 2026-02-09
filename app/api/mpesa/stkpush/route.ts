@@ -21,6 +21,20 @@ export async function POST(req: Request) {
       )
     }
 
+    // Check for existing active subscription
+    const activeSub = await prisma.subscription.findFirst({
+      where: {
+        userId: session.user.id,
+        status: { in: ["ACTIVE", "TRIALING"] },
+      },
+    })
+    if (activeSub) {
+      return NextResponse.json(
+        { error: "You already have an active subscription. Please cancel it first or manage it from your dashboard." },
+        { status: 409 }
+      )
+    }
+
     let plan = await prisma.plan.findUnique({ where: { id: planId } })
     if (!plan) {
       plan = await prisma.plan.findUnique({ where: { slug: planId } })
@@ -108,6 +122,27 @@ export async function POST(req: Request) {
         status: "PENDING",
         couponCode: couponCode?.toUpperCase() || null,
         taxAmount: totals.taxAmount || null,
+      },
+    })
+
+    // Create an INCOMPLETE subscription so the callback can activate it
+    const now = new Date()
+    const periodEnd = new Date(now)
+    if (interval === "annual") {
+      periodEnd.setFullYear(periodEnd.getFullYear() + 1)
+    } else {
+      periodEnd.setMonth(periodEnd.getMonth() + 1)
+    }
+
+    await prisma.subscription.create({
+      data: {
+        userId: session.user.id,
+        planId: plan.id,
+        status: "INCOMPLETE",
+        paymentProvider: "MPESA",
+        interval: interval === "annual" ? "ANNUAL" : "MONTHLY",
+        currentPeriodStart: now,
+        currentPeriodEnd: periodEnd,
       },
     })
 
