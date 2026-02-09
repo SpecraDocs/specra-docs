@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/db"
+import { validateCoupon } from "@/lib/coupons"
 
 export async function POST(req: Request) {
   try {
@@ -10,7 +11,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { planId, interval } = await req.json()
+    const { planId, interval, couponCode, billingAddress, taxRate, taxAmount } = await req.json()
 
     const plan = await prisma.plan.findUnique({ where: { id: planId } })
     if (!plan) {
@@ -29,6 +30,30 @@ export async function POST(req: Request) {
       )
     }
 
+    // Save/update billing address if provided
+    if (billingAddress && billingAddress.address && billingAddress.city && billingAddress.country) {
+      await prisma.billingAddress.upsert({
+        where: { userId: session.user.id },
+        update: {
+          address: billingAddress.address,
+          city: billingAddress.city,
+          state: billingAddress.state || null,
+          country: billingAddress.country,
+          postalCode: billingAddress.postalCode || null,
+          taxPin: billingAddress.taxPin || null,
+        },
+        create: {
+          userId: session.user.id,
+          address: billingAddress.address,
+          city: billingAddress.city,
+          state: billingAddress.state || null,
+          country: billingAddress.country,
+          postalCode: billingAddress.postalCode || null,
+          taxPin: billingAddress.taxPin || null,
+        },
+      })
+    }
+
     // Check if user already has a Stripe customer ID
     const existingSub = await prisma.subscription.findFirst({
       where: { userId: session.user.id, stripeCustomerId: { not: null } },
@@ -44,7 +69,25 @@ export async function POST(req: Request) {
         userId: session.user.id,
         planId: plan.id,
         interval,
+        couponCode: couponCode || "",
+        taxRate: String(taxRate || 0),
+        taxAmount: String(taxAmount || 0),
+        country: billingAddress?.country || "",
       },
+    }
+
+    // Validate and apply coupon via Stripe promotion code
+    if (couponCode) {
+      const planPrice = interval === "annual"
+        ? (plan.priceUsdAnnual ?? plan.priceUsd)
+        : plan.priceUsd
+
+      const couponResult = await validateCoupon(couponCode, plan.slug, planPrice, "USD")
+      if (couponResult.valid && couponResult.coupon.stripePromotionCodeId) {
+        checkoutParams.discounts = [
+          { promotion_code: couponResult.coupon.stripePromotionCodeId },
+        ]
+      }
     }
 
     if (existingSub?.stripeCustomerId) {

@@ -9,12 +9,16 @@ import {
   Server,
   BarChart3,
   User,
+  Crown,
+  Tag,
 } from "lucide-react"
 
 const adminNavItems = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/users", label: "Users", icon: Users },
+  { href: "/admin/subscriptions", label: "Subscriptions", icon: Crown },
   { href: "/admin/payments", label: "Payments", icon: CreditCard },
+  { href: "/admin/coupons", label: "Coupons", icon: Tag },
   { href: "/admin/deployments", label: "Deployments", icon: Server },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
 ]

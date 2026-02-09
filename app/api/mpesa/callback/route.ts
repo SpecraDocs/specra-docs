@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
+import { createAndSendInvoice } from "@/lib/invoices"
 
 interface MpesaCallbackItem {
   Name: string
@@ -53,8 +54,6 @@ export async function POST(req: Request) {
       })
 
       // Find the plan from the pending payment context
-      // The plan info should be stored when initiating STK push
-      // For now, activate subscription based on the payment
       const existingPendingSub = await prisma.subscription.findFirst({
         where: {
           userId: payment.userId,
@@ -93,6 +92,11 @@ export async function POST(req: Request) {
           data: { subscriptionId: existingPendingSub.id },
         })
       }
+
+      // Trigger invoice generation (non-blocking)
+      createAndSendInvoice(payment.id).catch((err) =>
+        console.error("Invoice generation failed:", err)
+      )
     } else {
       // Payment failed
       await prisma.payment.update({

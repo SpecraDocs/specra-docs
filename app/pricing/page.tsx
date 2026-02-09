@@ -164,8 +164,7 @@ export default function PricingPage() {
   function handleSelectPlan(slug: string) {
     if (slug === "free") return
     if (slug === "enterprise") return
-    // Redirect to auth, plan selection will happen after
-    window.location.href = `/auth/register?plan=${slug}&interval=${interval}&currency=${currency}`
+    window.location.href = `/checkout?plan=${slug}&interval=${interval}&currency=${currency}`
   }
 
   return (

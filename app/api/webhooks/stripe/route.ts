@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { headers } from "next/headers"
 import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/db"
+import { createAndSendInvoice } from "@/lib/invoices"
 import type Stripe from "stripe"
 
 export async function POST(req: Request) {
@@ -85,6 +86,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.userId
   const planId = session.metadata?.planId
   const interval = session.metadata?.interval as "monthly" | "annual"
+  const couponCode = session.metadata?.couponCode || null
+  const taxRate = session.metadata?.taxRate ? parseFloat(session.metadata.taxRate) : 0
+  const taxAmount = session.metadata?.taxAmount ? parseInt(session.metadata.taxAmount) : 0
 
   if (!userId || !planId) {
     console.error("Missing metadata in checkout session")
@@ -117,7 +121,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     },
   })
 
-  await prisma.payment.create({
+  const payment = await prisma.payment.create({
     data: {
       userId,
       amount: session.amount_total ?? 0,
@@ -125,8 +129,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       provider: "STRIPE",
       providerTxId: session.payment_intent as string,
       status: "COMPLETED",
+      couponCode: couponCode || null,
+      taxAmount: taxAmount || null,
     },
   })
+
+  // Trigger invoice generation (non-blocking)
+  createAndSendInvoice(payment.id).catch((err) =>
+    console.error("Invoice generation failed:", err)
+  )
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { stkPush } from "@/lib/mpesa"
 import { prisma } from "@/lib/db"
+import { validateCoupon, applyCoupon } from "@/lib/coupons"
+import { calculateOrderTotal } from "@/lib/tax"
 
 export async function POST(req: Request) {
   try {
@@ -10,7 +12,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { phoneNumber, planId, interval } = await req.json()
+    const { phoneNumber, planId, interval, couponCode, billingAddress } = await req.json()
 
     if (!phoneNumber) {
       return NextResponse.json(
@@ -24,12 +26,58 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Plan not found" }, { status: 404 })
     }
 
-    const amount =
+    // Save/update billing address if provided
+    if (billingAddress && billingAddress.address && billingAddress.city && billingAddress.country) {
+      await prisma.billingAddress.upsert({
+        where: { userId: session.user.id },
+        update: {
+          address: billingAddress.address,
+          city: billingAddress.city,
+          state: billingAddress.state || null,
+          country: billingAddress.country,
+          postalCode: billingAddress.postalCode || null,
+          taxPin: billingAddress.taxPin || null,
+        },
+        create: {
+          userId: session.user.id,
+          address: billingAddress.address,
+          city: billingAddress.city,
+          state: billingAddress.state || null,
+          country: billingAddress.country,
+          postalCode: billingAddress.postalCode || null,
+          taxPin: billingAddress.taxPin || null,
+        },
+      })
+    }
+
+    let baseAmount =
       interval === "annual" ? (plan.priceKesAnnual ?? plan.priceKes) : plan.priceKes
+
+    let discount = 0
+    let couponId: string | undefined
+
+    // Validate and apply coupon
+    if (couponCode) {
+      const result = await validateCoupon(couponCode, plan.slug, baseAmount, "KES")
+      if (result.valid) {
+        discount = result.discount
+        couponId = result.coupon.id
+      }
+    }
+
+    // Calculate tax
+    const country = billingAddress?.country || "KE"
+    const totals = await calculateOrderTotal({
+      planPrice: baseAmount,
+      discount,
+      country,
+    })
+
+    const finalAmount = totals.total
 
     const result = await stkPush(
       phoneNumber,
-      amount,
+      finalAmount,
       `SPECRA-${plan.slug.toUpperCase()}`,
       `Specra ${plan.name} subscription`
     )
@@ -41,15 +89,22 @@ export async function POST(req: Request) {
       )
     }
 
-    // Create a pending payment record
+    // Increment coupon usage
+    if (couponId) {
+      await applyCoupon(couponId)
+    }
+
+    // Create a pending payment record with coupon and tax info
     await prisma.payment.create({
       data: {
         userId: session.user.id,
-        amount,
+        amount: finalAmount,
         currency: "KES",
         provider: "MPESA",
         providerTxId: result.CheckoutRequestID,
         status: "PENDING",
+        couponCode: couponCode?.toUpperCase() || null,
+        taxAmount: totals.taxAmount || null,
       },
     })
 
