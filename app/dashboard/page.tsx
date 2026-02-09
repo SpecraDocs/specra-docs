@@ -1,6 +1,7 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { getUserSubscription } from "@/lib/auth-utils"
+import { isAdmin } from "@/lib/permissions"
 import Link from "next/link"
 
 export default async function DashboardPage() {
@@ -8,6 +9,7 @@ export default async function DashboardPage() {
   if (!session?.user?.id) redirect("/auth/login")
 
   const subscription = await getUserSubscription(session.user.id)
+  const userIsAdmin = await isAdmin(session.user.id)
 
   return (
     <div className="space-y-8">
@@ -23,19 +25,32 @@ export default async function DashboardPage() {
         <div className="rounded-lg border border-border bg-card p-6">
           <h3 className="text-sm font-medium text-muted-foreground">Current Plan</h3>
           <p className="mt-2 text-2xl font-bold text-foreground">
-            {subscription?.plan?.name ?? "Free"}
+            {userIsAdmin ? "Admin" : subscription?.plan?.name ?? "Free"}
           </p>
-          {subscription && (
+          {userIsAdmin ? (
+            <p className="mt-1 text-sm text-muted-foreground">
+              Full platform access
+            </p>
+          ) : subscription ? (
             <p className="mt-1 text-sm text-muted-foreground">
               {subscription.interval === "ANNUAL" ? "Annual" : "Monthly"} billing
             </p>
+          ) : null}
+          {userIsAdmin ? (
+            <Link
+              href="/admin"
+              className="mt-4 inline-block text-sm text-primary hover:underline"
+            >
+              Go to Admin Dashboard
+            </Link>
+          ) : (
+            <Link
+              href="/dashboard/billing"
+              className="mt-4 inline-block text-sm text-primary hover:underline"
+            >
+              Manage plan
+            </Link>
           )}
-          <Link
-            href="/dashboard/billing"
-            className="mt-4 inline-block text-sm text-primary hover:underline"
-          >
-            Manage plan
-          </Link>
         </div>
 
         {/* Subscription Status */}
@@ -87,7 +102,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick actions */}
-      {!subscription && (
+      {!subscription && !userIsAdmin && (
         <div className="rounded-xl border border-border bg-card p-8 text-center space-y-4">
           <h2 className="text-xl font-semibold text-foreground">
             Upgrade your plan

@@ -3,15 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "npm run seed-admin && next dev",
     "build": "npm run generate:redirects && NEXT_BUILD_MODE=default next build",
     "build:export": "npm run generate:redirects && NEXT_BUILD_MODE=export next build && npm run generate:static-redirects",
-    "start": "next start",
+    "start": "npm run seed-admin && next start",
     "lint": "eslint .",
     "generate:redirects": "node scripts/generate-redirects.mjs",
     "generate:static-redirects": "node scripts/generate-static-redirects.mjs",
     "index:search": "tsx scripts/index-search.ts",
-    "test:search": "tsx scripts/test-search.ts"
+    "test:search": "tsx scripts/test-search.ts",
+    "seed-admin": "tsx scripts/seed-admin.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",

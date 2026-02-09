@@ -22,6 +22,9 @@ export async function canDeploy(userId: string, projectId: string) {
   )
   if (!isOwner && !isOrgMember) return false
 
+  // Admins can always deploy
+  if (await isAdmin(userId)) return true
+
   // Check plan limits
   const limits = await checkPlanLimits(userId)
   return limits.canDeploy
@@ -40,6 +43,9 @@ export async function canViewAnalytics(userId: string, projectId: string) {
   )
   if (!isOwner && !isOrgMember) return false
 
+  // Admins can always view analytics
+  if (await isAdmin(userId)) return true
+
   // Analytics requires Starter+ plan
   const subscription = await getUserSubscription(userId)
   if (!subscription) return false
@@ -56,11 +62,23 @@ export async function isAdmin(userId: string) {
 }
 
 export async function checkPlanLimits(userId: string) {
+  const projectCount = await prisma.project.count({ where: { userId } })
+
+  // Admins have unlimited access
+  if (await isAdmin(userId)) {
+    return {
+      planSlug: "admin",
+      maxProjects: Infinity,
+      maxSeats: Infinity,
+      currentProjects: projectCount,
+      canDeploy: true,
+      canCreateProject: true,
+    }
+  }
+
   const subscription = await getUserSubscription(userId)
   const planSlug = subscription?.plan.slug ?? "free"
   const limits = PLAN_LIMITS[planSlug] ?? PLAN_LIMITS.free
-
-  const projectCount = await prisma.project.count({ where: { userId } })
 
   return {
     planSlug,

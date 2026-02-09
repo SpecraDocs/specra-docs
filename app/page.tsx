@@ -2,10 +2,12 @@ import Link from "next/link"
 import { ArrowRight, BookOpen, Zap, Code, Github, Twitter, Linkedin } from "lucide-react"
 import { getConfig } from "specra/lib"
 import { Button, SiteBanner, Logo } from "specra/components"
+import { auth } from "@/auth"
 
-export default function HomePage() {
+export default async function HomePage() {
   // Server component - can use getConfig directly
   const config = getConfig()
+  const session = await auth()
 
   const activeVersion = config.site.activeVersion || "v4.0.0"
   const docsUrl = `/docs/${activeVersion}/en/about`
@@ -33,6 +35,15 @@ export default function HomePage() {
                 </Link>
               ) : null
             }
+            {session ? (
+              <Button asChild variant="outline">
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+            ) : (
+              <Link href="/auth/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Sign In
+              </Link>
+            )}
             <Button asChild>
               <Link href={docsUrl}>Get Started</Link>
             </Button>
