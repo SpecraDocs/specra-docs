@@ -43,6 +43,12 @@ export async function GET(req: NextRequest) {
           },
           take: 1,
         },
+        subscriptions: {
+          where: { status: "ACTIVE" },
+          include: { plan: { select: { name: true, slug: true } } },
+          orderBy: { createdAt: "desc" },
+          take: 1,
+        },
         _count: { select: { subscriptions: true, projects: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -58,7 +64,11 @@ export async function GET(req: NextRequest) {
     ...user,
     isPrimaryAdmin: primaryAdminEmail ? user.email === primaryAdminEmail : false,
     isOnline: user.sessions.length > 0,
-    sessions: undefined, // Remove sessions array from response
+    activeSubscription: user.subscriptions[0]
+      ? { planName: user.subscriptions[0].plan.name, planSlug: user.subscriptions[0].plan.slug, status: user.subscriptions[0].status }
+      : null,
+    sessions: undefined,
+    subscriptions: undefined,
   }))
 
   return NextResponse.json({

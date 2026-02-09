@@ -1,14 +1,32 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect, Suspense } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { Building2 } from "lucide-react"
 
-export default function NewProjectPage() {
+function NewProjectForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const orgId = searchParams.get("orgId")
+
   const [name, setName] = useState("")
   const [slug, setSlug] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [orgName, setOrgName] = useState<string | null>(null)
+  const [orgLoading, setOrgLoading] = useState(!!orgId)
+
+  useEffect(() => {
+    if (!orgId) return
+    fetch(`/api/organizations/${orgId}`)
+      .then((res) => {
+        if (!res.ok) throw new Error()
+        return res.json()
+      })
+      .then((org) => setOrgName(org.name))
+      .catch(() => setOrgName(null))
+      .finally(() => setOrgLoading(false))
+  }, [orgId])
 
   function handleNameChange(value: string) {
     setName(value)
@@ -29,7 +47,7 @@ export default function NewProjectPage() {
       const res = await fetch("/api/projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, slug }),
+        body: JSON.stringify({ name, slug, ...(orgId ? { orgId } : {}) }),
       })
 
       if (!res.ok) {
@@ -55,6 +73,24 @@ export default function NewProjectPage() {
           Create a new docs project to deploy online.
         </p>
       </div>
+
+      {orgLoading ? (
+        <div className="rounded-md border border-border bg-accent/50 px-4 py-3 text-sm text-muted-foreground">
+          Loading organization...
+        </div>
+      ) : orgId && orgName ? (
+        <div className="flex items-center gap-2 rounded-md border border-border bg-accent/50 px-4 py-3 text-sm">
+          <Building2 className="h-4 w-4 text-muted-foreground" />
+          <span className="text-muted-foreground">
+            Creating project in{" "}
+            <span className="font-medium text-foreground">{orgName}</span>
+          </span>
+        </div>
+      ) : (
+        <div className="rounded-md border border-border bg-accent/50 px-4 py-3 text-sm text-muted-foreground">
+          Creating personal project
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -112,5 +148,22 @@ export default function NewProjectPage() {
         </button>
       </form>
     </div>
+  )
+}
+
+export default function NewProjectPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="max-w-lg space-y-6">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">New Project</h1>
+            <p className="text-muted-foreground mt-1">Loading...</p>
+          </div>
+        </div>
+      }
+    >
+      <NewProjectForm />
+    </Suspense>
   )
 }

@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { cookies } from "next/headers"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/db"
@@ -18,14 +19,29 @@ export default async function ProjectsPage() {
   const session = await auth()
   if (!session?.user?.id) redirect("/auth/login")
 
+  const cookieStore = await cookies()
+  const scope = cookieStore.get("dashboard-scope")?.value ?? "personal"
+
+  // Build the where clause based on scope
+  let whereClause
+  if (scope !== "personal") {
+    // Verify membership before filtering by org
+    const membership = await prisma.organizationMember.findUnique({
+      where: { userId_orgId: { userId: session.user.id, orgId: scope } },
+    })
+    if (membership) {
+      whereClause = { orgId: scope }
+    }
+  }
+
+  // Default: personal projects only (orgId = null, owned by user)
+  if (!whereClause) {
+    whereClause = { userId: session.user.id, orgId: null }
+  }
+
   const [projects, limits] = await Promise.all([
     prisma.project.findMany({
-      where: {
-        OR: [
-          { userId: session.user.id },
-          { organization: { members: { some: { userId: session.user.id } } } },
-        ],
-      },
+      where: whereClause,
       include: {
         deployments: {
           orderBy: { createdAt: "desc" },
@@ -38,6 +54,11 @@ export default async function ProjectsPage() {
     checkPlanLimits(session.user.id),
   ])
 
+  const isOrgScope = scope !== "personal" && whereClause.orgId !== undefined && "orgId" in whereClause && whereClause.orgId === scope
+  const newProjectHref = isOrgScope
+    ? `/dashboard/projects/new?orgId=${scope}`
+    : "/dashboard/projects/new"
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -49,7 +70,7 @@ export default async function ProjectsPage() {
         </div>
         {limits.canCreateProject && (
           <Link
-            href="/dashboard/projects/new"
+            href={newProjectHref}
             className="inline-flex items-center gap-2 rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background hover:bg-foreground/90 transition-colors"
           >
             <Plus className="h-4 w-4" />
@@ -69,7 +90,7 @@ export default async function ProjectsPage() {
           </p>
           {limits.canCreateProject && (
             <Link
-              href="/dashboard/projects/new"
+              href={newProjectHref}
               className="inline-flex items-center gap-2 rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background hover:bg-foreground/90 transition-colors"
             >
               <Plus className="h-4 w-4" />

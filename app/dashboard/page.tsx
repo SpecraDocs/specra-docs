@@ -1,15 +1,41 @@
+import { cookies } from "next/headers"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { getUserSubscription } from "@/lib/auth-utils"
 import { isAdmin } from "@/lib/permissions"
+import { prisma } from "@/lib/db"
 import Link from "next/link"
 
 export default async function DashboardPage() {
   const session = await auth()
   if (!session?.user?.id) redirect("/auth/login")
 
-  const subscription = await getUserSubscription(session.user.id)
-  const userIsAdmin = await isAdmin(session.user.id)
+  const cookieStore = await cookies()
+  const scope = cookieStore.get("dashboard-scope")?.value ?? "personal"
+
+  const [subscription, userIsAdmin] = await Promise.all([
+    getUserSubscription(session.user.id),
+    isAdmin(session.user.id),
+  ])
+
+  // Count projects based on scope
+  let projectCount: number
+  if (scope !== "personal") {
+    const membership = await prisma.organizationMember.findUnique({
+      where: { userId_orgId: { userId: session.user.id, orgId: scope } },
+    })
+    if (membership) {
+      projectCount = await prisma.project.count({ where: { orgId: scope } })
+    } else {
+      projectCount = await prisma.project.count({
+        where: { userId: session.user.id, orgId: null },
+      })
+    }
+  } else {
+    projectCount = await prisma.project.count({
+      where: { userId: session.user.id, orgId: null },
+    })
+  }
 
   return (
     <div className="space-y-8">
@@ -44,6 +70,20 @@ export default async function DashboardPage() {
           </Link>
         </div>
 
+        {/* Projects count */}
+        <div className="rounded-lg border border-border bg-card p-6">
+          <h3 className="text-sm font-medium text-muted-foreground">Projects</h3>
+          <p className="mt-2 text-2xl font-bold text-foreground">
+            {projectCount}
+          </p>
+          <Link
+            href="/dashboard/projects"
+            className="mt-4 inline-block text-sm text-primary hover:underline"
+          >
+            View projects
+          </Link>
+        </div>
+
         {/* Subscription Status */}
         <div className="rounded-lg border border-border bg-card p-6">
           <h3 className="text-sm font-medium text-muted-foreground">Status</h3>
@@ -66,28 +106,6 @@ export default async function DashboardPage() {
               Renews{" "}
               {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
             </p>
-          )}
-        </div>
-
-        {/* Payment Provider */}
-        <div className="rounded-lg border border-border bg-card p-6">
-          <h3 className="text-sm font-medium text-muted-foreground">
-            Payment Method
-          </h3>
-          <p className="mt-2 text-2xl font-bold text-foreground">
-            {subscription?.paymentProvider === "MPESA"
-              ? "M-Pesa"
-              : subscription
-              ? "Stripe"
-              : "None"}
-          </p>
-          {subscription && (
-            <Link
-              href="/dashboard/billing"
-              className="mt-4 inline-block text-sm text-primary hover:underline"
-            >
-              Update payment method
-            </Link>
           )}
         </div>
       </div>

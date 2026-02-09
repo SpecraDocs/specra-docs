@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Search, Shield, User, X, Ban, CheckCircle } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
+import { Search, Shield, User, X, Ban, CheckCircle, MoreVertical, Crown, UserX, UserCheck } from "lucide-react"
 
 interface UserData {
   id: string
@@ -12,6 +12,7 @@ interface UserData {
   createdAt: string
   isPrimaryAdmin: boolean
   isOnline: boolean
+  activeSubscription: { planName: string; planSlug: string; status: string } | null
   _count: { subscriptions: number; projects: number }
 }
 
@@ -19,6 +20,93 @@ interface Pagination {
   page: number
   totalPages: number
   total: number
+}
+
+function ActionsMenu({
+  user,
+  onToggleRole,
+  onToggleStatus,
+}: {
+  user: UserData
+  onToggleRole: () => void
+  onToggleStatus: () => void
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  if (user.isPrimaryAdmin) {
+    return (
+      <span className="text-xs text-muted-foreground italic">Protected</span>
+    )
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+      >
+        <MoreVertical className="h-4 w-4" />
+      </button>
+
+      {open && (
+        <div className="absolute right-0 z-50 mt-1 w-48 rounded-md border border-border bg-card shadow-lg py-1">
+          <button
+            onClick={() => {
+              setOpen(false)
+              onToggleRole()
+            }}
+            className="flex w-full items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          >
+            {user.role === "ADMIN" ? (
+              <>
+                <User className="h-4 w-4" />
+                Remove Admin
+              </>
+            ) : (
+              <>
+                <Crown className="h-4 w-4" />
+                Make Admin
+              </>
+            )}
+          </button>
+          <button
+            onClick={() => {
+              setOpen(false)
+              onToggleStatus()
+            }}
+            className={`flex w-full items-center gap-2 px-3 py-2 text-sm transition-colors ${
+              user.status === "ACTIVE"
+                ? "text-red-600 hover:bg-red-500/10"
+                : "text-green-600 hover:bg-green-500/10"
+            }`}
+          >
+            {user.status === "ACTIVE" ? (
+              <>
+                <UserX className="h-4 w-4" />
+                Block User
+              </>
+            ) : (
+              <>
+                <UserCheck className="h-4 w-4" />
+                Unblock User
+              </>
+            )}
+          </button>
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default function AdminUsersPage() {
@@ -59,14 +147,9 @@ export default function AdminUsersPage() {
     loadUsers(1, "")
   }
 
-  async function toggleRole(userId: string, currentRole: string, userEmail: string) {
+  async function toggleRole(userId: string, currentRole: string) {
     const newRole = currentRole === "ADMIN" ? "USER" : "ADMIN"
-    if (
-      !confirm(
-        `Change this user's role to ${newRole}?`
-      )
-    )
-      return
+    if (!confirm(`Change this user's role to ${newRole}?`)) return
 
     const res = await fetch(`/api/admin/users/${userId}`, {
       method: "PATCH",
@@ -106,7 +189,6 @@ export default function AdminUsersPage() {
     })
 
     if (res.ok) {
-      const updatedUser = await res.json()
       setUsers(
         users.map((u) =>
           u.id === userId
@@ -174,6 +256,9 @@ export default function AdminUsersPage() {
                 Status
               </th>
               <th className="text-left px-4 py-3 font-medium text-muted-foreground">
+                Subscription
+              </th>
+              <th className="text-left px-4 py-3 font-medium text-muted-foreground">
                 Projects
               </th>
               <th className="text-left px-4 py-3 font-medium text-muted-foreground">
@@ -188,7 +273,7 @@ export default function AdminUsersPage() {
             {loading ? (
               <tr>
                 <td
-                  colSpan={6}
+                  colSpan={7}
                   className="text-center py-8 text-muted-foreground"
                 >
                   Loading...
@@ -197,7 +282,7 @@ export default function AdminUsersPage() {
             ) : users.length === 0 ? (
               <tr>
                 <td
-                  colSpan={6}
+                  colSpan={7}
                   className="text-center py-8 text-muted-foreground"
                 >
                   No users found.
@@ -263,6 +348,15 @@ export default function AdminUsersPage() {
                       {user.status}
                     </span>
                   </td>
+                  <td className="px-4 py-3">
+                    {user.activeSubscription ? (
+                      <span className="inline-flex items-center text-xs rounded-full px-2 py-0.5 bg-primary/10 text-primary border border-primary/30">
+                        {user.activeSubscription.planName}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">Free</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-muted-foreground">
                     {user._count.projects}
                   </td>
@@ -270,34 +364,12 @@ export default function AdminUsersPage() {
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      {user.isPrimaryAdmin ? (
-                        <span className="text-xs text-muted-foreground italic">
-                          Protected
-                        </span>
-                      ) : (
-                        <>
-                          <button
-                            onClick={() => toggleRole(user.id, user.role, user.email)}
-                            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                          >
-                            {user.role === "ADMIN"
-                              ? "Remove Admin"
-                              : "Make Admin"}
-                          </button>
-                          <span className="text-muted-foreground">|</span>
-                          <button
-                            onClick={() => toggleUserStatus(user.id, user.status)}
-                            className={`text-xs transition-colors ${
-                              user.status === "ACTIVE"
-                                ? "text-red-600 hover:text-red-700"
-                                : "text-green-600 hover:text-green-700"
-                            }`}
-                          >
-                            {user.status === "ACTIVE" ? "Block" : "Unblock"}
-                          </button>
-                        </>
-                      )}
+                    <div className="flex items-center justify-end">
+                      <ActionsMenu
+                        user={user}
+                        onToggleRole={() => toggleRole(user.id, user.role)}
+                        onToggleStatus={() => toggleUserStatus(user.id, user.status)}
+                      />
                     </div>
                   </td>
                 </tr>

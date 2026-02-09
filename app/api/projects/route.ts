@@ -62,6 +62,19 @@ export async function POST(req: NextRequest) {
     )
   }
 
+  // Validate org membership if orgId is provided
+  if (orgId) {
+    const membership = await prisma.organizationMember.findUnique({
+      where: { userId_orgId: { userId: session.user.id, orgId } },
+    })
+    if (!membership) {
+      return NextResponse.json(
+        { error: "You are not a member of this organization" },
+        { status: 403 }
+      )
+    }
+  }
+
   // Check slug uniqueness
   const existing = await prisma.project.findFirst({
     where: { OR: [{ slug }, { subdomain: slug }] },

@@ -11,6 +11,7 @@ import {
   Building2,
   Shield,
 } from "lucide-react"
+import { ScopeSwitcher, type ScopeOrg } from "./scope-switcher"
 
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -21,11 +22,21 @@ const navItems = [
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ]
 
-export function DashboardNav({ isAdmin }: { isAdmin: boolean }) {
+export function DashboardNav({
+  isAdmin,
+  organizations,
+  currentScope,
+}: {
+  isAdmin: boolean
+  organizations: ScopeOrg[]
+  currentScope: string
+}) {
   const pathname = usePathname()
 
   return (
     <nav className="space-y-1">
+      <ScopeSwitcher organizations={organizations} currentScope={currentScope} />
+
       {navItems.map((item) => {
         const isActive = pathname === item.href
         return (

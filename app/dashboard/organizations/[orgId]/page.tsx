@@ -84,7 +84,7 @@ export default async function OrganizationPage({
         <div className="px-6 py-4 border-b border-border flex items-center justify-between">
           <h2 className="font-semibold text-foreground">Projects</h2>
           <Link
-            href="/dashboard/projects/new"
+            href={`/dashboard/projects/new?orgId=${orgId}`}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             New project
