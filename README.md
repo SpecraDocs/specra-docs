@@ -131,7 +131,7 @@ npm run start
 
 ## Learn More
 
-- [Specra Documentation](https://specra.dev/docs)
+- [Specra Documentation](https://specra-docs.com/docs)
 - [Next.js Documentation](https://nextjs.org/docs)
 - [MDX Documentation](https://mdxjs.com)
 
@@ -267,5 +267,5 @@ zip -r out.zip out/ && scp out.zip user@your-server:/path/to/destination/
 
 ## Need Help?
 
-- Check the [documentation](https://specra.dev/docs)
+- Check the [documentation](https://specra-docs.com/docs)
 - Report issues on [GitHub](https://github.com/yourusername/specra/issues)
