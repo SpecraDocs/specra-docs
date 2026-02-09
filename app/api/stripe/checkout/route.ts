@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/db"
-import { validateCoupon } from "@/lib/coupons"
+import { validateCoupon, applyCoupon } from "@/lib/coupons"
 
 export async function POST(req: Request) {
   try {
@@ -35,18 +35,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Plan not found" }, { status: 404 })
     }
 
-    const priceId =
-      interval === "annual"
-        ? plan.stripePriceIdAnnual
-        : plan.stripePriceIdMonthly
-
-    if (!priceId) {
-      return NextResponse.json(
-        { error: "Stripe price not configured for this plan" },
-        { status: 400 }
-      )
-    }
-
     // Save/update billing address if provided
     if (billingAddress && billingAddress.address && billingAddress.city && billingAddress.country) {
       await prisma.billingAddress.upsert({
@@ -71,6 +59,71 @@ export async function POST(req: Request) {
       })
     }
 
+    // Validate coupon and check for 100% discount
+    let couponResult: Awaited<ReturnType<typeof validateCoupon>> | null = null
+    if (couponCode) {
+      const planPrice = interval === "annual"
+        ? (plan.priceUsdAnnual ?? plan.priceUsd)
+        : plan.priceUsd
+
+      couponResult = await validateCoupon(couponCode, plan.slug, planPrice, "USD")
+    }
+
+    // If coupon covers 100% of the cost, activate subscription directly without Stripe
+    if (couponResult?.valid && couponResult.finalAmount === 0) {
+      const now = new Date()
+      const periodEnd = new Date(now)
+      if (interval === "annual") {
+        periodEnd.setFullYear(periodEnd.getFullYear() + 1)
+      } else {
+        periodEnd.setMonth(periodEnd.getMonth() + 1)
+      }
+
+      const subscription = await prisma.subscription.create({
+        data: {
+          userId: session.user.id,
+          planId: plan.id,
+          status: "ACTIVE",
+          paymentProvider: "ADMIN",
+          interval: interval === "annual" ? "ANNUAL" : "MONTHLY",
+          currentPeriodStart: now,
+          currentPeriodEnd: periodEnd,
+          grantReason: `100% coupon: ${couponCode.toUpperCase()}`,
+        },
+      })
+
+      await applyCoupon(couponResult.coupon.id)
+
+      await prisma.payment.create({
+        data: {
+          userId: session.user.id,
+          subscriptionId: subscription.id,
+          amount: 0,
+          currency: "USD",
+          status: "SUCCEEDED",
+          provider: "ADMIN",
+          couponCode: couponCode.toUpperCase(),
+        },
+      })
+
+      return NextResponse.json({
+        url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?checkout=success`,
+      })
+    }
+
+    // For paid checkouts, Stripe price must be configured
+    const priceId =
+      interval === "annual"
+        ? plan.stripePriceIdAnnual
+        : plan.stripePriceIdMonthly
+
+    if (!priceId) {
+      return NextResponse.json(
+        { error: "Stripe price not configured for this plan" },
+        { status: 400 }
+      )
+    }
+
     // Check if user already has a Stripe customer ID
     const existingSub = await prisma.subscription.findFirst({
       where: { userId: session.user.id, stripeCustomerId: { not: null } },
@@ -93,18 +146,11 @@ export async function POST(req: Request) {
       },
     }
 
-    // Validate and apply coupon via Stripe promotion code
-    if (couponCode) {
-      const planPrice = interval === "annual"
-        ? (plan.priceUsdAnnual ?? plan.priceUsd)
-        : plan.priceUsd
-
-      const couponResult = await validateCoupon(couponCode, plan.slug, planPrice, "USD")
-      if (couponResult.valid && couponResult.coupon.stripePromotionCodeId) {
-        checkoutParams.discounts = [
-          { promotion_code: couponResult.coupon.stripePromotionCodeId },
-        ]
-      }
+    // Apply partial coupon discount via Stripe promotion code
+    if (couponResult?.valid && couponResult.coupon.stripePromotionCodeId) {
+      checkoutParams.discounts = [
+        { promotion_code: couponResult.coupon.stripePromotionCodeId },
+      ]
     }
 
     if (existingSub?.stripeCustomerId) {

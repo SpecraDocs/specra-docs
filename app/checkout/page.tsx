@@ -220,8 +220,10 @@ function CheckoutContent() {
       })
 
       const data = await res.json()
-      if (data.url) {
+      if (res.ok && data.url) {
         window.location.href = data.url
+      } else if (data.error) {
+        alert(data.error)
       }
     } finally {
       setPaying(false)

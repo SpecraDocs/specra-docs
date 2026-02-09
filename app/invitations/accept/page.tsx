@@ -1,12 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
+import { useState, useEffect, Suspense } from "react"
+import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 
-export default function AcceptInvitationPage() {
+function AcceptInvitationContent() {
   const searchParams = useSearchParams()
-  const router = useRouter()
   const token = searchParams.get("token")
 
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading")
@@ -42,49 +41,66 @@ export default function AcceptInvitationPage() {
   }, [token])
 
   return (
+    <div className="max-w-md w-full rounded-lg border border-border bg-card p-8 text-center">
+      {status === "loading" && (
+        <>
+          <h1 className="text-xl font-bold text-foreground mb-2">
+            Accepting Invitation...
+          </h1>
+          <p className="text-muted-foreground">Please wait.</p>
+        </>
+      )}
+
+      {status === "success" && (
+        <>
+          <h1 className="text-xl font-bold text-foreground mb-2">
+            Welcome to {orgName}!
+          </h1>
+          <p className="text-muted-foreground mb-6">
+            You&apos;ve been added to the organization.
+          </p>
+          <Link
+            href="/dashboard/organizations"
+            className="inline-flex rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background hover:bg-foreground/90 transition-colors"
+          >
+            Go to Organizations
+          </Link>
+        </>
+      )}
+
+      {status === "error" && (
+        <>
+          <h1 className="text-xl font-bold text-destructive mb-2">
+            Invitation Error
+          </h1>
+          <p className="text-muted-foreground mb-6">{message}</p>
+          <Link
+            href="/dashboard"
+            className="inline-flex rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-accent transition-colors"
+          >
+            Go to Dashboard
+          </Link>
+        </>
+      )}
+    </div>
+  )
+}
+
+export default function AcceptInvitationPage() {
+  return (
     <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="max-w-md w-full rounded-lg border border-border bg-card p-8 text-center">
-        {status === "loading" && (
-          <>
+      <Suspense
+        fallback={
+          <div className="max-w-md w-full rounded-lg border border-border bg-card p-8 text-center">
             <h1 className="text-xl font-bold text-foreground mb-2">
               Accepting Invitation...
             </h1>
             <p className="text-muted-foreground">Please wait.</p>
-          </>
-        )}
-
-        {status === "success" && (
-          <>
-            <h1 className="text-xl font-bold text-foreground mb-2">
-              Welcome to {orgName}!
-            </h1>
-            <p className="text-muted-foreground mb-6">
-              You&apos;ve been added to the organization.
-            </p>
-            <Link
-              href="/dashboard/organizations"
-              className="inline-flex rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background hover:bg-foreground/90 transition-colors"
-            >
-              Go to Organizations
-            </Link>
-          </>
-        )}
-
-        {status === "error" && (
-          <>
-            <h1 className="text-xl font-bold text-destructive mb-2">
-              Invitation Error
-            </h1>
-            <p className="text-muted-foreground mb-6">{message}</p>
-            <Link
-              href="/dashboard"
-              className="inline-flex rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-accent transition-colors"
-            >
-              Go to Dashboard
-            </Link>
-          </>
-        )}
-      </div>
+          </div>
+        }
+      >
+        <AcceptInvitationContent />
+      </Suspense>
     </div>
   )
 }
