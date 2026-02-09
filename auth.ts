@@ -44,6 +44,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           email: user.email,
           image: user.image,
           role: user.role,
+          status: user.status,
         }
       },
     }),
@@ -54,21 +55,28 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.sub = user.id
         token.role = user.role ?? "USER"
+        token.status = user.status ?? "ACTIVE"
       }
-      if (!token.role && token.sub) {
+      if ((!token.role || !token.status) && token.sub) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.sub },
-          select: { role: true },
+          select: { role: true, status: true },
         })
-        if (dbUser) token.role = dbUser.role
+        if (dbUser) {
+          token.role = dbUser.role
+          token.status = dbUser.status
+        }
       }
-      // Refresh role on session update
+      // Refresh role and status on session update
       if (trigger === "update" && token.sub) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.sub },
-          select: { role: true },
+          select: { role: true, status: true },
         })
-        if (dbUser) token.role = dbUser.role
+        if (dbUser) {
+          token.role = dbUser.role
+          token.status = dbUser.status
+        }
       }
       return token
     },

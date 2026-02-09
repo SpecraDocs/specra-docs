@@ -36,21 +36,12 @@ export default async function DashboardPage() {
               {subscription.interval === "ANNUAL" ? "Annual" : "Monthly"} billing
             </p>
           ) : null}
-          {userIsAdmin ? (
-            <Link
-              href="/admin"
-              className="mt-4 inline-block text-sm text-primary hover:underline"
-            >
-              Go to Admin Dashboard
-            </Link>
-          ) : (
-            <Link
-              href="/dashboard/billing"
-              className="mt-4 inline-block text-sm text-primary hover:underline"
-            >
-              Manage plan
-            </Link>
-          )}
+          <Link
+            href="/dashboard/billing"
+            className="mt-4 inline-block text-sm text-primary hover:underline"
+          >
+            Manage plan
+          </Link>
         </div>
 
         {/* Subscription Status */}

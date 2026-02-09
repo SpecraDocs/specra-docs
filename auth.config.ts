@@ -22,12 +22,16 @@ export default {
       if (token.role) {
         session.user.role = token.role as "USER" | "ADMIN"
       }
+      if (token.status) {
+        session.user.status = token.status as "ACTIVE" | "BLOCKED"
+      }
       return session
     },
     async jwt({ token, user }) {
       if (user) {
         token.sub = user.id
         token.role = user.role ?? "USER"
+        token.status = user.status ?? "ACTIVE"
       }
       return token
     },

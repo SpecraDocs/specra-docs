@@ -1,24 +1,9 @@
 import Link from "next/link"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
-import {
-  LayoutDashboard,
-  CreditCard,
-  Settings,
-  ArrowLeft,
-  FolderGit2,
-  BarChart3,
-  Building2,
-} from "lucide-react"
-
-const navItems = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/projects", label: "Projects", icon: FolderGit2 },
-  { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/dashboard/organizations", label: "Organizations", icon: Building2 },
-  { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
-]
+import { isAdmin } from "@/lib/permissions"
+import { ArrowLeft } from "lucide-react"
+import { DashboardNav } from "./components/dashboard-nav"
 
 export default async function DashboardLayout({
   children,
@@ -30,6 +15,8 @@ export default async function DashboardLayout({
   if (!session?.user) {
     redirect("/auth/login")
   }
+
+  const userIsAdmin = session.user.id ? await isAdmin(session.user.id) : false
 
   return (
     <div className="min-h-screen bg-background">
@@ -44,6 +31,15 @@ export default async function DashboardLayout({
             <span className="text-sm font-medium text-muted-foreground">Dashboard</span>
           </div>
           <div className="flex items-center gap-4">
+            {/* {userIsAdmin && (
+              <Link
+                href="/admin"
+                className="flex items-center gap-2 rounded-md bg-destructive/10 px-3 py-1.5 text-sm font-medium text-destructive hover:bg-destructive/20 transition-colors border border-destructive/30"
+              >
+                <Shield className="h-4 w-4" />
+                Admin Panel
+              </Link>
+            )} */}
             <span className="text-sm text-muted-foreground">
               {session.user.email}
             </span>
@@ -67,18 +63,7 @@ export default async function DashboardLayout({
 
       <div className="container px-6 mx-auto flex gap-8 py-8">
         <aside className="w-56 shrink-0">
-          <nav className="space-y-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-              >
-                <item.icon className="h-4 w-4" />
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+          <DashboardNav isAdmin={userIsAdmin} />
         </aside>
 
         <main className="flex-1 min-w-0">{children}</main>
