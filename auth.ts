@@ -1,21 +1,15 @@
 import NextAuth from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import Credentials from "next-auth/providers/credentials"
-import GitHub from "next-auth/providers/github"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/db"
+import authConfig from "@/auth.config"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: PrismaAdapter(prisma) as never,
-  session: { strategy: "jwt" },
-  pages: {
-    signIn: "/auth/login",
-  },
   providers: [
-    GitHub({
-      clientId: process.env.AUTH_GITHUB_ID,
-      clientSecret: process.env.AUTH_GITHUB_SECRET,
-    }),
+    ...authConfig.providers,
     Credentials({
       name: "credentials",
       credentials: {
@@ -55,15 +49,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async session({ session, token }) {
-      if (token.sub) {
-        session.user.id = token.sub
-      }
-      if (token.role) {
-        session.user.role = token.role as "USER" | "ADMIN"
-      }
-      return session
-    },
+    ...authConfig.callbacks,
     async jwt({ token, user, trigger }) {
       if (user) {
         token.sub = user.id
