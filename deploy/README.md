@@ -1,8 +1,31 @@
-# Specra Docs Deployment Guide
+# Specra Docs - Deployment Guide
 
-Complete guide for deploying Specra Docs to a production server using Docker and Caddy.
+Complete guide for deploying Specra Docs to production using Docker and Caddy.
 
-## Architecture Overview
+## 📁 Folder Structure
+
+```
+deploy/
+├── README.md                    # This file - complete deployment guide
+├── QUICK-START.md              # Quick reference for common commands
+├── DEPLOYMENT-SUMMARY.md       # Architecture overview and summary
+├── docker/                     # Docker configuration files
+│   ├── Dockerfile              # Multi-stage Docker build
+│   ├── docker-compose.yml      # Container orchestration
+│   ├── .dockerignore          # Build exclusions
+│   └── .env.production        # Environment variable template
+├── caddy/                      # Web server configuration
+│   └── Caddyfile              # Reverse proxy + HTTPS config
+└── scripts/                    # Deployment automation scripts
+    ├── setup.sh               # Initial server setup
+    ├── deploy.sh              # Deploy updates
+    ├── backup.sh              # Database backup
+    ├── restore.sh             # Database restore
+    ├── logs.sh                # Log viewer
+    └── verify.sh              # Deployment verification
+```
+
+## 🏗️ Architecture
 
 ```
 Internet → Caddy (Port 80/443) → Docker Container (Port 3000) → Next.js App → PostgreSQL
@@ -10,7 +33,7 @@ Internet → Caddy (Port 80/443) → Docker Container (Port 3000) → Next.js Ap
 
 - **Caddy**: Reverse proxy, automatic HTTPS, handles SSL certificates
 - **Docker**: Containerizes the Next.js application
-- **PostgreSQL**: Database (can run in Docker or separately)
+- **PostgreSQL**: Database (runs in Docker)
 - **Next.js**: Application server running on port 3000
 
 ---
@@ -39,94 +62,46 @@ ssh root@your-server-ip
 ssh your-user@your-server-ip
 ```
 
-### 1.2 Update System
+### 1.2 Run Initial Setup Script
 
 ```bash
-sudo apt update && sudo apt upgrade -y
+# Clone repository first (or download setup script)
+git clone https://github.com/SpecraDocs/specra-docs.git /var/www/specra-docs
+cd /var/www/specra-docs
+
+# Run setup script (installs Docker, Caddy, etc.)
+chmod +x deploy/scripts/setup.sh
+./deploy/scripts/setup.sh
 ```
 
-### 1.3 Install Required Software
+This installs:
+- Docker & Docker Compose
+- Caddy web server
+- Git
+- UFW firewall
+- Fail2Ban
+- Creates necessary directories
 
-```bash
-# Install Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-sudo usermod -aG docker $USER
-
-# Install Docker Compose
-sudo apt install docker-compose -y
-
-# Install Caddy
-sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
-sudo apt update
-sudo apt install caddy -y
-
-# Install Git (if not already installed)
-sudo apt install git -y
-
-# Verify installations
-docker --version
-docker-compose --version
-caddy version
-git --version
-```
-
-### 1.4 Configure Firewall
-
-```bash
-# Allow SSH, HTTP, HTTPS
-sudo ufw allow 22/tcp
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
-sudo ufw enable
-sudo ufw status
-```
-
-### 1.5 Log out and back in for Docker group changes
+### 1.3 Log out and back in
 
 ```bash
 exit
-# SSH back in
 ssh your-user@your-server-ip
 ```
 
+This applies Docker group permissions.
+
 ---
 
-## Part 2: Application Setup
+## Part 2: Configuration
 
-### 2.1 Create Application Directory
+### 2.1 Configure Environment Variables
 
 ```bash
-sudo mkdir -p /var/www/specra-docs
-sudo chown -R $USER:$USER /var/www/specra-docs
 cd /var/www/specra-docs
-```
 
-### 2.2 Clone Repository
-
-```bash
-git clone https://github.com/dalmasonto/specra-docs.git .
-# Or if using SSH
-git clone git@github.com:dalmasonto/specra-docs.git .
-```
-
-### 2.3 Copy Deployment Files
-
-```bash
-# Copy docker-compose and related files from deploy folder
-cp deploy/docker-compose.yml .
-cp deploy/Dockerfile .
-cp deploy/.dockerignore .
-cp deploy/Caddyfile /etc/caddy/Caddyfile
-```
-
-### 2.4 Configure Environment Variables
-
-```bash
 # Copy environment template
-cp deploy/.env.production .env
+cp deploy/docker/.env.production .env
 
 # Edit with your actual values
 nano .env
@@ -141,366 +116,228 @@ nano .env
 - `MPESA_*` variables for M-Pesa integration
 - `ADMIN_EMAIL` and `ADMIN_PASSWORD` for admin user
 
-### 2.5 Update Caddyfile
+### 2.2 Configure Caddy
 
 ```bash
+# Copy Caddyfile
+sudo cp deploy/caddy/Caddyfile /etc/caddy/Caddyfile
+
+# Edit and replace domain
 sudo nano /etc/caddy/Caddyfile
+# Change "specra-docs.com" to your actual domain
 ```
 
-Replace `specra-docs.com` with your actual domain name.
+### 2.3 Copy Docker Files to Root
+
+```bash
+# Copy Docker files to project root
+cp deploy/docker/Dockerfile .
+cp deploy/docker/docker-compose.yml .
+cp deploy/docker/.dockerignore .
+```
 
 ---
 
-## Part 3: Database Setup
+## Part 3: Deploy Application
 
-### Option A: PostgreSQL in Docker (Recommended for Simple Setup)
-
-The provided `docker-compose.yml` includes PostgreSQL. It will start automatically.
-
-### Option B: External PostgreSQL Server
-
-If using an external PostgreSQL server:
-
-1. Create database:
-```sql
-CREATE DATABASE specra;
-CREATE USER specra_user WITH PASSWORD 'your_secure_password';
-GRANT ALL PRIVILEGES ON DATABASE specra TO specra_user;
-```
-
-2. Update `DATABASE_URL` in `.env` to point to external server
-
----
-
-## Part 4: Build and Deploy
-
-### 4.1 Build Docker Images
+### 3.1 Build and Start Services
 
 ```bash
 cd /var/www/specra-docs
-docker-compose build
+docker-compose up -d --build
 ```
 
 This will:
-- Install dependencies
-- Build Next.js application
-- Create optimized production image
+- Build the Next.js application
+- Start PostgreSQL database
+- Start the application container
 
-### 4.2 Start Services
-
-```bash
-docker-compose up -d
-```
-
-This starts:
-- PostgreSQL database (if using Docker)
-- Next.js application
-
-### 4.3 Run Database Migrations
+### 3.2 Run Database Migrations
 
 ```bash
 docker-compose exec app npx prisma migrate deploy
 ```
 
-### 4.4 Seed Admin User
+### 3.3 Seed Admin User
 
 ```bash
 docker-compose exec app npm run seed-admin
 ```
 
-### 4.5 Verify Application
-
-```bash
-# Check if containers are running
-docker-compose ps
-
-# Check application logs
-docker-compose logs -f app
-
-# Test local connection
-curl http://localhost:3000
-```
-
-### 4.6 Start Caddy
+### 3.4 Start Caddy
 
 ```bash
 sudo systemctl enable caddy
 sudo systemctl start caddy
-sudo systemctl status caddy
 ```
 
-### 4.7 Test Your Domain
+### 3.5 Verify Deployment
 
-Visit your domain in a browser:
-- `https://your-domain.com` - Should show the homepage
-- `https://your-domain.com/auth/login` - Login page
-- HTTPS should work automatically (Caddy handles SSL)
+```bash
+# Check containers
+docker-compose ps
+
+# Check application
+curl http://localhost:3000
+
+# Run verification script
+chmod +x deploy/scripts/verify.sh
+./deploy/scripts/verify.sh
+```
+
+Visit your domain: `https://your-domain.com` 🎉
 
 ---
 
-## Part 5: Maintenance & Updates
+## Part 4: Maintenance & Updates
 
-### Viewing Logs
-
-```bash
-# Application logs
-docker-compose logs -f app
-
-# Database logs
-docker-compose logs -f db
-
-# Caddy logs
-sudo journalctl -u caddy -f
-```
-
-### Updating the Application
+### Deploy Updates
 
 ```bash
 cd /var/www/specra-docs
-
-# Pull latest code
-git pull origin main
-
-# Rebuild and restart
-docker-compose down
-docker-compose build
-docker-compose up -d
-
-# Run migrations if needed
-docker-compose exec app npx prisma migrate deploy
-
-# Reload Caddy (if Caddyfile changed)
-sudo systemctl reload caddy
+chmod +x deploy/scripts/deploy.sh
+./deploy/scripts/deploy.sh
 ```
 
-### Database Backups
+This script automatically:
+- Pulls latest code
+- Rebuilds containers
+- Runs migrations
+- Restarts services
+- Verifies health
+
+### Backup Database
 
 ```bash
-# Create backup script
-sudo nano /usr/local/bin/backup-specra-db.sh
+chmod +x deploy/scripts/backup.sh
+./deploy/scripts/backup.sh
+```
+
+Backups are stored in `/var/backups/specra-docs/`
+
+### View Logs
+
+```bash
+chmod +x deploy/scripts/logs.sh
+
+# View app logs
+./deploy/scripts/logs.sh app
+
+# Follow logs live
+./deploy/scripts/logs.sh app -f
+
+# View last 50 lines
+./deploy/scripts/logs.sh app -n 50
+```
+
+### Restore Database
+
+```bash
+chmod +x deploy/scripts/restore.sh
+./deploy/scripts/restore.sh /path/to/backup.sql.gz
+```
+
+---
+
+## Part 5: Automated Tasks
+
+### Daily Backups
+
+```bash
+# Add to crontab
+crontab -e
+
+# Add this line (runs daily at 2 AM)
+0 2 * * * cd /var/www/specra-docs && /var/www/specra-docs/deploy/scripts/backup.sh
+```
+
+### Health Monitoring
+
+```bash
+# Create health check script
+sudo nano /usr/local/bin/specra-health-check.sh
 ```
 
 Add:
 ```bash
 #!/bin/bash
-BACKUP_DIR="/var/backups/specra-docs"
-DATE=$(date +%Y%m%d_%H%M%S)
-mkdir -p $BACKUP_DIR
-
-docker-compose exec -T db pg_dump -U specra specra | gzip > $BACKUP_DIR/specra_$DATE.sql.gz
-
-# Keep only last 7 days
-find $BACKUP_DIR -name "specra_*.sql.gz" -mtime +7 -delete
-```
-
-```bash
-# Make executable
-sudo chmod +x /usr/local/bin/backup-specra-db.sh
-
-# Add to crontab (daily at 2 AM)
-sudo crontab -e
-# Add: 0 2 * * * /usr/local/bin/backup-specra-db.sh
-```
-
-### Restarting Services
-
-```bash
-# Restart application only
-docker-compose restart app
-
-# Restart all services
-docker-compose restart
-
-# Restart Caddy
-sudo systemctl restart caddy
-```
-
-### Checking Resource Usage
-
-```bash
-# Docker stats
-docker stats
-
-# System resources
-htop
-# or
-top
-```
-
----
-
-## Part 6: Monitoring & Troubleshooting
-
-### Common Issues
-
-#### Application Won't Start
-```bash
-# Check logs
-docker-compose logs app
-
-# Common causes:
-# - Database not ready (wait 30s and retry)
-# - Missing environment variables
-# - Port 3000 already in use
-```
-
-#### Database Connection Errors
-```bash
-# Check if database is running
-docker-compose ps db
-
-# Test connection
-docker-compose exec db psql -U specra -d specra -c "SELECT 1;"
-```
-
-#### Caddy Not Serving Site
-```bash
-# Check Caddy status
-sudo systemctl status caddy
-
-# Validate Caddyfile
-caddy validate --config /etc/caddy/Caddyfile
-
-# Check logs
-sudo journalctl -u caddy -n 50
-```
-
-#### SSL Certificate Issues
-```bash
-# Caddy auto-renews, but if issues occur:
-sudo systemctl restart caddy
-
-# Check certificate
-echo | openssl s_client -servername your-domain.com -connect your-domain.com:443 2>/dev/null | openssl x509 -noout -dates
-```
-
-### Health Checks
-
-Create a simple health check script:
-
-```bash
-nano /usr/local/bin/health-check.sh
-```
-
-```bash
-#!/bin/bash
-# Check if app responds
-if curl -f http://localhost:3000 > /dev/null 2>&1; then
-    echo "✅ App is healthy"
-else
-    echo "❌ App is down - restarting..."
+if ! curl -f http://localhost:3000 > /dev/null 2>&1; then
     cd /var/www/specra-docs && docker-compose restart app
+    echo "$(date): App restarted" >> /var/log/specra-health.log
 fi
 ```
 
 ```bash
-chmod +x /usr/local/bin/health-check.sh
-# Run every 5 minutes
-(crontab -l 2>/dev/null; echo "*/5 * * * * /usr/local/bin/health-check.sh") | crontab -
+# Make executable and schedule (every 5 minutes)
+sudo chmod +x /usr/local/bin/specra-health-check.sh
+(crontab -l 2>/dev/null; echo "*/5 * * * * /usr/local/bin/specra-health-check.sh") | crontab -
 ```
 
 ---
 
-## Part 7: Security Hardening
-
-### 7.1 Secure SSH
+## Quick Reference
 
 ```bash
-sudo nano /etc/ssh/sshd_config
-```
-
-Set:
-```
-PermitRootLogin no
-PasswordAuthentication no  # If using SSH keys
-```
-
-Restart SSH:
-```bash
-sudo systemctl restart sshd
-```
-
-### 7.2 Enable Automatic Security Updates
-
-```bash
-sudo apt install unattended-upgrades -y
-sudo dpkg-reconfigure --priority=low unattended-upgrades
-```
-
-### 7.3 Configure Fail2Ban
-
-```bash
-sudo apt install fail2ban -y
-sudo systemctl enable fail2ban
-sudo systemctl start fail2ban
-```
-
----
-
-## Part 8: Environment Variables Reference
-
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/specra` |
-| `AUTH_SECRET` | Auth.js encryption key | Generate with `openssl rand -base64 32` |
-| `AUTH_GITHUB_ID` | GitHub OAuth App ID | `Ov23liAC0eiREXzAcHK2` |
-| `AUTH_GITHUB_SECRET` | GitHub OAuth App Secret | From GitHub settings |
-| `STRIPE_SECRET_KEY` | Stripe secret key | `sk_live_...` or `sk_test_...` |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe public key | `pk_live_...` or `pk_test_...` |
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret | `whsec_...` |
-| `MPESA_CONSUMER_KEY` | M-Pesa API consumer key | From Safaricom Daraja |
-| `MPESA_CONSUMER_SECRET` | M-Pesa API consumer secret | From Safaricom Daraja |
-| `MPESA_SHORTCODE` | M-Pesa business shortcode | Your till/paybill number |
-| `MPESA_PASSKEY` | M-Pesa Lipa Na M-Pesa passkey | From Safaricom Daraja |
-| `MPESA_CALLBACK_URL` | M-Pesa callback URL | `https://yourdomain.com/api/mpesa/callback` |
-| `MPESA_ENV` | M-Pesa environment | `sandbox` or `production` |
-| `NEXT_PUBLIC_APP_URL` | Your app's public URL | `https://specra-docs.com` |
-| `ADMIN_EMAIL` | Admin user email | `admin@yourdomain.com` |
-| `ADMIN_PASSWORD` | Admin user password | Strong password |
-
----
-
-## Quick Reference Commands
-
-```bash
-# View all containers
-docker-compose ps
+# Deploy updates
+./deploy/scripts/deploy.sh
 
 # View logs
-docker-compose logs -f
+./deploy/scripts/logs.sh app -f
 
-# Restart app
+# Backup database
+./deploy/scripts/backup.sh
+
+# Restart services
+docker-compose restart
+
+# Check status
+docker-compose ps
+
+# Verify deployment
+./deploy/scripts/verify.sh
+```
+
+---
+
+## Troubleshooting
+
+### Application Won't Start
+```bash
+# Check logs
+docker-compose logs app
+
+# Restart
 docker-compose restart app
+```
 
-# Run migrations
-docker-compose exec app npx prisma migrate deploy
+### Database Issues
+```bash
+# Check database
+docker-compose logs db
 
-# Access database
+# Access database shell
 docker-compose exec db psql -U specra specra
+```
 
-# Execute command in app container
-docker-compose exec app npm run seed-admin
-
-# Stop all services
-docker-compose down
-
-# Start all services
-docker-compose up -d
-
-# Rebuild after code changes
-docker-compose up -d --build
-
-# Check Caddy status
+### SSL/HTTPS Issues
+```bash
+# Check Caddy
 sudo systemctl status caddy
+
+# Restart Caddy
+sudo systemctl restart caddy
+
+# View Caddy logs
+sudo journalctl -u caddy -f
 ```
 
 ---
 
 ## Support
 
-For issues or questions:
-- GitHub Issues: https://github.com/dalmasonto/specra-docs/issues
-- Documentation: https://specra-docs.com
+- GitHub Issues: https://github.com/SpecraDocs/specra-docs/issues
+- Documentation: See [QUICK-START.md](./QUICK-START.md) for quick reference
+- Architecture: See [DEPLOYMENT-SUMMARY.md](./DEPLOYMENT-SUMMARY.md) for details
 
 ---
 
