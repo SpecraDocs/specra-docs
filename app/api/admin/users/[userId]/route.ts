@@ -105,7 +105,7 @@ export async function PATCH(
   }
 
   // Prepare update data
-  const updateData: { role?: string; status?: string } = {}
+  const updateData: { role?: "USER" | "ADMIN"; status?: "ACTIVE" | "BLOCKED" } = {}
   if (role) updateData.role = role
   if (status) updateData.status = status
 
