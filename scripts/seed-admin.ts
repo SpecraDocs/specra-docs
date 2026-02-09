@@ -57,9 +57,143 @@ async function seedAdminUser() {
   } catch (error) {
     console.error('Error seeding admin user:', error);
     process.exit(1); // Exit with an error code
-  } finally {
-    await prisma.$disconnect(); // Disconnect Prisma client
   }
 }
 
-seedAdminUser();
+const plans = [
+  {
+    slug: 'free',
+    name: 'Free',
+    priceUsd: 0,
+    priceUsdAnnual: 0,
+    priceKes: 0,
+    priceKesAnnual: 0,
+    features: {
+      projects: 1,
+      seats: 1,
+      customDomain: false,
+      removeBranding: false,
+      aiSearch: false,
+      apiDocs: false,
+      analytics: false,
+      versionHistoryDays: 7,
+      passwordPages: false,
+      customCssJs: false,
+      gitSync: false,
+      sso: false,
+      rbac: false,
+      auditLogs: false,
+      sla: false,
+      support: 'community',
+    },
+  },
+  {
+    slug: 'starter',
+    name: 'Starter',
+    priceUsd: 1900,
+    priceUsdAnnual: 1500,
+    priceKes: 2450,
+    priceKesAnnual: 2450,
+    features: {
+      projects: 3,
+      seats: 3,
+      customDomain: true,
+      removeBranding: true,
+      aiSearch: false,
+      apiDocs: false,
+      analytics: 'basic',
+      versionHistoryDays: 30,
+      passwordPages: true,
+      customCssJs: false,
+      gitSync: false,
+      sso: false,
+      rbac: false,
+      auditLogs: false,
+      sla: false,
+      support: 'email',
+    },
+  },
+  {
+    slug: 'pro',
+    name: 'Pro',
+    priceUsd: 4900,
+    priceUsdAnnual: 3900,
+    priceKes: 6300,
+    priceKesAnnual: 6300,
+    features: {
+      projects: 10,
+      seats: 10,
+      customDomain: true,
+      removeBranding: true,
+      aiSearch: true,
+      apiDocs: true,
+      analytics: 'advanced',
+      versionHistoryDays: -1,
+      passwordPages: true,
+      customCssJs: true,
+      gitSync: true,
+      sso: false,
+      rbac: false,
+      auditLogs: false,
+      sla: false,
+      support: 'priority',
+    },
+  },
+  {
+    slug: 'enterprise',
+    name: 'Enterprise',
+    priceUsd: 14900,
+    priceUsdAnnual: 12900,
+    priceKes: 19200,
+    priceKesAnnual: 19200,
+    features: {
+      projects: -1,
+      seats: -1,
+      customDomain: true,
+      removeBranding: true,
+      aiSearch: true,
+      apiDocs: true,
+      analytics: 'advanced',
+      versionHistoryDays: -1,
+      passwordPages: true,
+      customCssJs: true,
+      gitSync: true,
+      sso: true,
+      rbac: true,
+      auditLogs: true,
+      sla: '99.9%',
+      support: 'dedicated',
+    },
+  },
+];
+
+async function seedPlans() {
+  for (const plan of plans) {
+    const data = {
+      name: plan.name,
+      priceUsd: plan.priceUsd,
+      priceUsdAnnual: plan.priceUsdAnnual,
+      priceKes: plan.priceKes,
+      priceKesAnnual: plan.priceKesAnnual,
+      features: plan.features,
+    };
+
+    await prisma.plan.upsert({
+      where: { slug: plan.slug },
+      update: data,
+      create: { slug: plan.slug, ...data },
+    });
+  }
+  console.log('Plans seeded.');
+}
+
+async function main() {
+  try {
+    await seedAdminUser();
+    await seedPlans();
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+main();
