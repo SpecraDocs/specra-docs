@@ -164,7 +164,9 @@ export default function PricingPage() {
   function handleSelectPlan(slug: string) {
     if (slug === "free") return
     if (slug === "enterprise") return
-    window.location.href = `/checkout?plan=${slug}&interval=${interval}&currency=${currency}`
+    const tier = tiers.find((t) => t.slug === slug)
+    const isTrial = tier?.cta === "Start Free Trial"
+    window.location.href = `/checkout?plan=${slug}&interval=${interval}&currency=${currency}${isTrial ? "&trial=true" : ""}`
   }
 
   return (

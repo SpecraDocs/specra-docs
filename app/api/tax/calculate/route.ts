@@ -20,7 +20,11 @@ export async function POST(req: Request) {
       )
     }
 
-    const plan = await prisma.plan.findUnique({ where: { id: planId } })
+    // Look up by id first, then by slug
+    let plan = await prisma.plan.findUnique({ where: { id: planId } })
+    if (!plan) {
+      plan = await prisma.plan.findUnique({ where: { slug: planId } })
+    }
     if (!plan) {
       return NextResponse.json({ error: "Plan not found" }, { status: 404 })
     }
