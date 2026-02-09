@@ -5,7 +5,7 @@ import { getInstallationToken, cloneRepository } from "@/lib/github"
 import { deployProject } from "@/lib/deploy"
 import { readFileSync } from "fs"
 import { join } from "path"
-import tar from "tar"
+import * as tar from "tar"
 
 const PROJECTS_DIR = process.env.PROJECTS_DATA_DIR || "/data/specra/projects"
 

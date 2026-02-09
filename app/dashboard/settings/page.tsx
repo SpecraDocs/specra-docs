@@ -46,7 +46,14 @@ export default async function SettingsPage() {
       </div>
 
       {/* API Tokens */}
-      <ApiTokenManager initialTokens={tokens} />
+      <ApiTokenManager
+        initialTokens={tokens.map((t) => ({
+          ...t,
+          lastUsed: t.lastUsed?.toISOString() ?? null,
+          expiresAt: t.expiresAt?.toISOString() ?? null,
+          createdAt: t.createdAt.toISOString(),
+        }))}
+      />
 
       {/* Danger Zone */}
       <div className="rounded-lg border border-destructive/30 bg-card p-6 space-y-4">

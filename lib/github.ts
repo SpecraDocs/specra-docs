@@ -28,9 +28,10 @@ export async function getInstallationToken(
 ): Promise<string> {
   const githubApp = getApp()
   const octokit = await githubApp.getInstallationOctokit(installationId)
-  const { data } = await octokit.rest.apps.createInstallationAccessToken({
-    installation_id: installationId,
-  })
+  const { data } = await (octokit as any).request(
+    "POST /app/installations/{installation_id}/access_tokens",
+    { installation_id: installationId }
+  )
   return data.token
 }
 

@@ -1,4 +1,5 @@
 import geoip from "geoip-lite"
+import { createHash } from "crypto"
 
 interface GeoData {
   country: string | null
@@ -23,7 +24,6 @@ export function lookupIp(ip: string): GeoData {
 }
 
 export function hashIp(ip: string): string {
-  const { createHash } = require("crypto")
   // Use daily salt for privacy — IPs can't be correlated across days
   const salt = new Date().toISOString().split("T")[0]
   return createHash("sha256").update(`${ip}:${salt}`).digest("hex").slice(0, 16)

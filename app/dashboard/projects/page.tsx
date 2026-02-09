@@ -89,7 +89,7 @@ export default async function ProjectsPage() {
         <div className="grid gap-4">
           {projects.map((project) => {
             const latestDeploy = project.deployments[0]
-            const status = latestDeploy?.status || "NO_DEPLOY"
+            const status: string = latestDeploy?.status || "NO_DEPLOY"
 
             return (
               <Link

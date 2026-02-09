@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/db"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma) as never,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/auth/login",
@@ -49,6 +49,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           name: user.name,
           email: user.email,
           image: user.image,
+          role: user.role,
         }
       },
     }),
@@ -59,14 +60,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.id = token.sub
       }
       if (token.role) {
-        session.user.role = token.role
+        session.user.role = token.role as "USER" | "ADMIN"
       }
       return session
     },
     async jwt({ token, user, trigger }) {
       if (user) {
         token.sub = user.id
-        token.role = user.role
+        token.role = user.role ?? "USER"
+      }
+      if (!token.role && token.sub) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.sub },
+          select: { role: true },
+        })
+        if (dbUser) token.role = dbUser.role
       }
       // Refresh role on session update
       if (trigger === "update" && token.sub) {
