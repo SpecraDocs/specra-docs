@@ -4,10 +4,12 @@ import GitHub from "next-auth/providers/github"
 // Edge-compatible auth config (no Node.js dependencies like pg, bcrypt, prisma)
 // Used by middleware. The full auth.ts extends this with PrismaAdapter + Credentials.
 export default {
+  trustHost: true,
   providers: [
     GitHub({
       clientId: process.env.AUTH_GITHUB_ID,
       clientSecret: process.env.AUTH_GITHUB_SECRET,
+      allowDangerousEmailAccountLinking: true,
     }),
   ],
   session: { strategy: "jwt" },

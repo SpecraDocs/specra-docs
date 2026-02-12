@@ -3,11 +3,13 @@
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Github } from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -28,7 +30,7 @@ export default function LoginPage() {
       if (result?.error) {
         setError("Invalid email or password")
       } else {
-        router.push("/dashboard")
+        router.push(callbackUrl)
         router.refresh()
       }
     } catch {
@@ -50,7 +52,7 @@ export default function LoginPage() {
 
         <div className="rounded-lg border border-border bg-card p-8 shadow-sm space-y-6">
           <button
-            onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
+            onClick={() => signIn("github", { callbackUrl })}
             className="w-full flex items-center justify-center gap-2 rounded-md border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-accent transition-colors"
           >
             <Github className="h-5 w-5" />

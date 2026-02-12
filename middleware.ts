@@ -35,8 +35,11 @@ export default auth((req) => {
     }
   }
 
-  // Redirect logged-in users away from auth pages
+  // Redirect logged-in users away from auth pages (except CLI auth flow)
   if (pathname.startsWith("/auth/") && isLoggedIn) {
+    if (pathname === "/auth/cli") {
+      return NextResponse.next()
+    }
     return NextResponse.redirect(new URL("/dashboard", req.nextUrl.origin))
   }
 
