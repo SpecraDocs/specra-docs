@@ -7,7 +7,7 @@ import {
   getCachedDocBySlug,
   getI18nConfig,
   getConfig,
-} from 'specra/lib';
+} from 'specra';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params }) => {

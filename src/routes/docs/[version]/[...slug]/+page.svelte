@@ -2,15 +2,16 @@
   import {
     TableOfContents,
     Header,
-    DocLayoutWrapper,
+    DocLayout,
+    CategoryIndex,
     HotReloadIndicator,
     DevModeBadge,
     MdxHotReload,
     NotFoundContent,
     SearchHighlight,
+    MobileDocLayout,
   } from 'specra/components';
-  import { CategoryIndex, DocLayout } from 'specra/layouts';
-  import { mdxComponents } from 'specra/mdx-components';
+  import { mdxComponents } from 'specra';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -33,14 +34,15 @@
 
 {#if !data.doc && data.isCategory}
   <!-- Category page without doc content -->
-  <DocLayoutWrapper
-    header={Header}
-    headerProps={{ currentVersion: data.version, versions: data.versions, config: data.config }}
+  <MobileDocLayout
     docs={data.allDocs}
     version={data.version}
     config={data.config}
-    currentPageTabGroup={data.categoryTabGroup}
+    activeTabGroup={data.categoryTabGroup}
   >
+    {#snippet header()}
+      <Header currentVersion={data.version} versions={data.versions} config={data.config} />
+    {/snippet}
     <CategoryIndex
       categoryPath={data.slug}
       version={data.version}
@@ -50,35 +52,36 @@
       config={data.config}
       {mdxComponents}
     />
-  </DocLayoutWrapper>
+  </MobileDocLayout>
   <MdxHotReload />
   <HotReloadIndicator />
   <DevModeBadge />
 {:else if data.isNotFound}
   <!-- Not found -->
-  <DocLayoutWrapper
-    header={Header}
-    headerProps={{ currentVersion: data.version, versions: data.versions, config: data.config }}
+  <MobileDocLayout
     docs={data.allDocs}
     version={data.version}
     config={data.config}
-    currentPageTabGroup={undefined}
   >
+    {#snippet header()}
+      <Header currentVersion={data.version} versions={data.versions} config={data.config} />
+    {/snippet}
     <NotFoundContent version={data.version} />
-  </DocLayoutWrapper>
+  </MobileDocLayout>
   <MdxHotReload />
   <HotReloadIndicator />
   <DevModeBadge />
 {:else if data.doc}
   <!-- Normal doc or category with doc content -->
-  <DocLayoutWrapper
-    header={Header}
-    headerProps={{ currentVersion: data.version, versions: data.versions, config: data.config }}
+  <MobileDocLayout
     docs={data.allDocs}
     version={data.version}
     config={data.config}
-    currentPageTabGroup={data.categoryTabGroup}
+    activeTabGroup={data.categoryTabGroup}
   >
+    {#snippet header()}
+      <Header currentVersion={data.version} versions={data.versions} config={data.config} />
+    {/snippet}
     {#snippet toc()}
       {#if !data.isCategory}
         <TableOfContents items={data.toc} config={data.config} />
@@ -100,16 +103,16 @@
       <SearchHighlight />
       <DocLayout
         meta={data.doc.meta}
-        content={data.doc.content}
         previousDoc={data.previous}
         nextDoc={data.next}
         version={data.version}
         slug={data.slug}
         config={data.config}
-        {mdxComponents}
-      />
+      >
+        {@html data.doc.content}
+      </DocLayout>
     {/if}
-  </DocLayoutWrapper>
+  </MobileDocLayout>
   <MdxHotReload />
   <HotReloadIndicator />
   <DevModeBadge />

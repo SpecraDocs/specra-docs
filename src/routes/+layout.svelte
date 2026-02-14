@@ -1,12 +1,10 @@
 <script lang="ts">
   import '../app.css';
-  import { ConfigProvider, TabProvider } from 'specra/components';
+  import { LayoutProviders } from 'specra/components';
   import type { Snippet } from 'svelte';
   import type { LayoutData } from './$types';
 
   let { data, children }: { data: LayoutData; children: Snippet } = $props();
-
-  const defaultTab = data.config.navigation?.tabGroups?.[0]?.id ?? '';
 </script>
 
 <svelte:head>
@@ -25,8 +23,6 @@
   <link rel="llms-txt" href="/llms.txt" />
 </svelte:head>
 
-<ConfigProvider config={data.config}>
-  <TabProvider {defaultTab}>
-    {@render children?.()}
-  </TabProvider>
-</ConfigProvider>
+<LayoutProviders config={data.config}>
+  {@render children?.()}
+</LayoutProviders>

@@ -1,6 +1,6 @@
 import 'dotenv/config';
 // specra-docs/scripts/seed-admin.ts
-import { prisma } from '../lib/db';
+import { prisma } from '../src/lib/server/db';
 import bcrypt from 'bcryptjs';
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL;

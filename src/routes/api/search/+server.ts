@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { MeiliSearch } from 'meilisearch';
-import { SpecraConfig } from 'specra';
+import type { SpecraConfig } from 'specra';
 import specraConfig from '../../../../specra.config.json';
 
 export const POST: RequestHandler = async ({ request }) => {

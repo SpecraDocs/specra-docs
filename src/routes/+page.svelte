@@ -5,10 +5,10 @@
 
   let { data }: { data: PageData } = $props();
 
-  const config = data.config;
-  const session = data.session;
-  const activeVersion = config.site.activeVersion || 'v4.0.0';
-  const docsUrl = `/docs/${activeVersion}/en/about`;
+  let config = $derived(data.config);
+  let session = $derived(data.session);
+  let activeVersion = $derived(config.site.activeVersion || 'v4.0.0');
+  let docsUrl = $derived(`/docs/${activeVersion}/en/about`);
 </script>
 
 <svelte:head>
