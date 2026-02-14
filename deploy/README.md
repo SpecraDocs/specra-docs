@@ -28,13 +28,13 @@ deploy/
 ## 🏗️ Architecture
 
 ```
-Internet → Caddy (Port 80/443) → Docker Container (Port 3000) → Next.js App → PostgreSQL
+Internet → Caddy (Port 80/443) → Docker Container (Port 3000) → SvelteKit App → PostgreSQL
 ```
 
 - **Caddy**: Reverse proxy, automatic HTTPS, handles SSL certificates
-- **Docker**: Containerizes the Next.js application
+- **Docker**: Containerizes the SvelteKit application
 - **PostgreSQL**: Database (runs in Docker)
-- **Next.js**: Application server running on port 3000
+- **SvelteKit**: Application server running on port 3000 (adapter-node)
 
 ---
 
@@ -109,7 +109,7 @@ nano .env
 
 **Important:** Update these values in `.env`:
 - `DATABASE_URL` - Your PostgreSQL connection string
-- `NEXT_PUBLIC_APP_URL` - Your domain (e.g., https://specra-docs.com)
+- `PUBLIC_APP_URL` - Your domain (e.g., https://specra-docs.com)
 - `AUTH_SECRET` - Generate with: `openssl rand -base64 32`
 - `AUTH_GITHUB_ID` and `AUTH_GITHUB_SECRET` - From GitHub OAuth app
 - `STRIPE_SECRET_KEY` and related Stripe keys
@@ -148,7 +148,7 @@ docker-compose up -d --build
 ```
 
 This will:
-- Build the Next.js application
+- Build the SvelteKit application
 - Start PostgreSQL database
 - Start the application container
 

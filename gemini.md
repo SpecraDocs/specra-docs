@@ -75,7 +75,7 @@ Flow:
 
 ```
 Application Layer:
-├── Next.js 16.1.0 (App Router)
+├── SvelteKit 16.1.0 (App Router)
 │   ├── Server Components (default)
 │   ├── Client Components (where needed)
 │   └── Static Site Generation (SSG)
@@ -116,7 +116,7 @@ Build & Deploy:
 ```
 specra-docs/
 │
-├── app/                          # Next.js App Router
+├── app/                          # SvelteKit App Router
 │   ├── layout.tsx                # Root layout (wraps specra)
 │   ├── page.tsx                  # Landing/marketing page (8KB)
 │   ├── globals.css               # Global styles + specra import
@@ -193,7 +193,7 @@ specra-docs/
 │   └── test-search.ts            # Test search functionality
 │
 ├── specra.config.json            # Specra configuration (115 lines)
-├── next.config.mjs               # Next.js config (minimal)
+├── svelte.config.js               # SvelteKit config (minimal)
 ├── tailwind.config.ts            # Tailwind CSS config
 ├── postcss.config.mjs            # PostCSS configuration
 ├── tsconfig.json                 # TypeScript configuration
@@ -210,7 +210,7 @@ specra-docs/
 | app/page.tsx | 8.4KB | ~250 | Landing page with hero, features |
 | app/layout.tsx | 2KB | ~60 | Root layout wrapper |
 | specra.config.json | 3.3KB | 115 | Complete Specra configuration |
-| next.config.mjs | 46B | 1 | Re-exports specra config |
+| svelte.config.js | 46B | 1 | Re-exports specra config |
 | package.json | 1.1KB | 35 | Dependencies and scripts |
 
 **Key Takeaway**: Most files are tiny because Specra does the heavy lifting!
@@ -517,7 +517,7 @@ docs/v1.0.0/
 ### 1. app/layout.tsx
 ```typescript
 import { ReactNode } from 'react'
-import type { Metadata } from 'next'
+// SvelteKit load functions handle metadata
 import './globals.css'
 
 // Import Specra's layout
@@ -525,7 +525,7 @@ import SpecraLayout from 'specra/app/layout'
 
 export const metadata: Metadata = {
   title: 'Specra Docs',
-  description: 'Modern documentation for Next.js',
+  description: 'Modern documentation for SvelteKit',
 }
 
 export default function RootLayout({
@@ -549,7 +549,7 @@ export { generateMetadata } from 'specra/app/layout'
 
 ### 2. app/page.tsx (Landing Page)
 ```typescript
-import Link from 'next/link'
+import { goto } from '$app/navigation'
 import { Button } from 'specra/components'
 import { ArrowRight, Book, Zap, Layers } from 'lucide-react'
 
@@ -560,7 +560,7 @@ export default function HomePage() {
       <section className="container mx-auto px-4 py-20">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl font-bold mb-6">
-            Modern Documentation for Next.js
+            Modern Documentation for SvelteKit
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
             Build beautiful, searchable documentation sites with MDX,
@@ -657,7 +657,7 @@ export {
 
 ### 4. app/not-found.tsx
 ```typescript
-import Link from 'next/link'
+import { goto } from '$app/navigation'
 import { Button } from 'specra/components'
 import { Home } from 'lucide-react'
 
@@ -711,10 +711,10 @@ export default function NotFound() {
 ```json
 {
   "scripts": {
-    "dev": "next dev",
-    "build": "npm run generate:redirects && NEXT_BUILD_MODE=default next build",
-    "build:export": "npm run generate:redirects && NEXT_PUBLIC_BASE_PATH=/specra-docs NEXT_BUILD_MODE=export next build && npm run generate:static-redirects",
-    "start": "next start",
+    "dev": "vite dev",
+    "build": "npm run generate:redirects && NEXT_BUILD_MODE=default vite build",
+    "build:export": "npm run generate:redirects && NEXT_PUBLIC_BASE_PATH=/specra-docs NEXT_BUILD_MODE=export vite build && npm run generate:static-redirects",
+    "start": "vite preview",
     "lint": "eslint .",
     "generate:redirects": "node scripts/generate-redirects.mjs",
     "generate:static-redirects": "node scripts/generate-static-redirects.mjs",
@@ -729,7 +729,7 @@ export default function NotFound() {
 #### Development
 ```bash
 npm run dev
-# Starts Next.js dev server
+# Starts SvelteKit dev server
 # Hot reload enabled
 # Runs on http://localhost:3000
 ```
@@ -739,7 +739,7 @@ npm run dev
 npm run build
 # 1. Generate redirects
 # 2. Build with SSR enabled
-# 3. Output to .next/
+# 3. Output to build/
 # 4. Ready for Vercel deployment
 ```
 
@@ -1032,7 +1032,7 @@ const config = {
 
 #### 3. View Changes
 - Save file
-- Next.js hot-reloads automatically
+- SvelteKit hot-reloads automatically
 - Navigate to URL: `/docs/v1.0.0/guides/my-new-guide`
 - Appears in sidebar under "Guides" tab
 
@@ -1066,9 +1066,9 @@ npm start
 **Setup** (already done):
 1. Connect GitHub repository to Vercel
 2. Configure build settings:
-   - Framework: Next.js
+   - Framework: SvelteKit
    - Build Command: `npm run build`
-   - Output Directory: `.next`
+   - Output Directory: `build`
 3. Add environment variables (if needed)
 4. Deploy
 
@@ -1150,7 +1150,7 @@ jobs:
 
 **Configuration**:
 - Build command: `npm run build`
-- Publish directory: `.next`
+- Publish directory: `build`
 - Node version: 18+
 
 **Deploy Button**:
@@ -1326,7 +1326,7 @@ tabGroup: tutorials
 npm run lint
 
 # Clear cache
-rm -rf .next
+rm -rf .svelte-kit build
 npm run build
 ```
 
@@ -1395,7 +1395,7 @@ tabGroup: guides
 5. **Avoid Duplication**: Link instead of repeat
 
 ### Performance
-1. **Image Optimization**: Use Next.js Image component
+1. **Image Optimization**: Use SvelteKit Image component
 2. **Code Splitting**: Large components in separate files
 3. **Search Indexing**: Re-index after major updates
 4. **Build Time**: Monitor and optimize if slow
@@ -1439,7 +1439,7 @@ tabGroup: guides
 - **CLI**: https://github.com/dalmasonto/specra-cli
 
 ### Documentation
-- **Next.js**: https://nextjs.org/docs
+- **SvelteKit**: https://svelte.dev/docs
 - **MDX**: https://mdxjs.com
 - **MeiliSearch**: https://docs.meilisearch.com
 - **Tailwind**: https://tailwindcss.com/docs

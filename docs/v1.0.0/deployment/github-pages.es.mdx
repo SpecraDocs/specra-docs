@@ -363,7 +363,7 @@ Verifique su configuración `basePath`:
 open https://username.github.io/nombre-repo
 
 # Comprobar si los activos se cargan desde
-https://username.github.io/nombre-repo/_next/...
+https://username.github.io/nombre-repo/_app/immutable/...
 ```
 
 Si los activos devuelven 404, verifique:
@@ -430,7 +430,7 @@ npx imagemin public/images/* --out-dir=public/images
 Verifique qué hay en su paquete:
 
 ```bash
-npm install -D @next/bundle-analyzer
+npm install -D vite-bundle-visualizer
 
 ANALYZE=true npm run build:export
 ```

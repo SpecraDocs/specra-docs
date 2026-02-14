@@ -8,7 +8,7 @@ tab_group: guides
 
 # Deployment Overview
 
-Specra is built on Next.js, which means you can deploy it almost anywhere. This guide covers the most popular deployment options and how to configure Specra for each.
+Specra is built on SvelteKit, which means you can deploy it almost anywhere. This guide covers the most popular deployment options and how to configure Specra for each.
 
 ## Deployment Targets
 
@@ -48,9 +48,9 @@ git push -u origin main
   <Step title="Deploy to Vercel">
     Visit [vercel.com/new](https://vercel.com/new) and import your repository.
 
-    Vercel automatically detects Next.js and uses the correct settings:
+    Vercel automatically detects SvelteKit and uses the correct settings:
     - Build Command: `npm run build`
-    - Output Directory: `.next`
+    - Output Directory: `build`
     - Install Command: `npm install`
   </Step>
 
@@ -203,10 +203,10 @@ Different platforms need different build commands:
 
 | Platform | Build Command | Output Directory |
 |----------|---------------|------------------|
-| Vercel, Railway | `npm run build` | `.next` |
+| Vercel, Railway | `npm run build` | `|
 | GitHub Pages | `npm run build:export` | `out` |
 | Netlify, Cloudflare Pages | `npm run build:export` | `out` |
-| Docker, VPS | `npm run build` + `npm start` | `.next` |
+| Docker, VPS | `npm run build` + `npm start` | `|
 
 ## Configuration by Platform
 
@@ -402,8 +402,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/build ./
+COPY --from=builder /app/build/client ./build/client
 
 EXPOSE 3000
 
@@ -486,7 +486,7 @@ Value: username.github.io
 
 ### Enable Caching
 
-Add cache headers in `next.config.mjs`:
+Add cache headers in `svelte.config.js`:
 
 ```javascript
 async headers() {
@@ -506,7 +506,7 @@ async headers() {
 
 ### Image Optimization
 
-Use Next.js Image component:
+Use optimized images:
 
 ```mdx
 <Image
@@ -522,18 +522,18 @@ Use Next.js Image component:
 Check bundle size:
 
 ```bash
-npm install --save-dev @next/bundle-analyzer
+npm install --save-dev vite-bundle-visualizer
 ```
 
 ```javascript
-// next.config.mjs
-import bundleAnalyzer from '@next/bundle-analyzer'
+// svelte.config.js
+import bundleAnalyzer from 'vite-bundle-visualizer'
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 })
 
-export default withBundleAnalyzer(nextConfig)
+export default // See vite.config.ts for bundle analysis
 ```
 
 Run with:
@@ -580,9 +580,9 @@ Check your `basePath` matches your repo name exactly:
 
 Common fixes:
 
-1. Clear `.next` and `out` folders:
+1. Clear `and `out` folders:
 ```bash
-rm -rf .next out node_modules
+rm -rf .svelte-kit build node_modules
 npm install
 npm run build
 ```

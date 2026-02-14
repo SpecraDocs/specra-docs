@@ -363,7 +363,7 @@ Check your `basePath` configuration:
 open https://username.github.io/repo-name
 
 # Check if assets load from
-https://username.github.io/repo-name/_next/...
+https://username.github.io/repo-name/_app/immutable/...
 ```
 
 If assets 404, verify:
@@ -430,7 +430,7 @@ npx imagemin public/images/* --out-dir=public/images
 Check what's in your bundle:
 
 ```bash
-npm install -D @next/bundle-analyzer
+npm install -D vite-bundle-visualizer
 
 ANALYZE=true npm run build:export
 ```

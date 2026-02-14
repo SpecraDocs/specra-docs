@@ -8,7 +8,7 @@ tab_group: guides
 
 # Déployer sur Vercel
 
-Vercel est le moyen le plus simple de déployer votre documentation Specra. Il est construit par les créateurs de Next.js, donc tout fonctionne parfaitement dès la sortie de la boîte.
+Vercel est le moyen le plus simple de déployer votre documentation Specra. Il est construit par les créateurs de SvelteKit, donc tout fonctionne parfaitement dès la sortie de la boîte.
 
 ## Pourquoi Vercel ?
 
@@ -38,7 +38,7 @@ git push -u origin main
     1. Allez sur [vercel.com/new](https://vercel.com/new)
     2. Cliquez sur "Import Git Repository"
     3. Sélectionnez votre dépôt de documentation
-    4. Vercel détecte automatiquement Next.js et configure tout
+    4. Vercel détecte automatiquement SvelteKit et configure tout
 
     Aucune configuration manuelle nécessaire !
   </Step>
@@ -56,12 +56,12 @@ C'est tout ! Votre documentation est maintenant en ligne avec HTTPS automatique 
 
 ## Configuration
 
-Vercel utilise automatiquement ces paramètres pour les projets Next.js :
+Vercel utilise automatiquement ces paramètres pour les projets SvelteKit :
 
 | Paramètre | Valeur |
 |-----------|--------|
 | Commande de build | `npm run build` |
-| Répertoire de sortie | `.next` |
+| Répertoire de sortie | `|
 | Commande d'installation | `npm install` |
 | Version de Node | 20.x (dernière LTS) |
 
@@ -72,9 +72,9 @@ Si vous avez besoin de paramètres personnalisés, créez `vercel.json` :
 ```json
 {
   "buildCommand": "npm run build",
-  "outputDirectory": ".next",
+  "outputDirectory": "build",
   "installCommand": "npm ci",
-  "framework": "nextjs",
+  "framework": "sveltekit",
   "regions": ["iad1"]
 }
 ```
@@ -196,7 +196,7 @@ Protégez les déploiements de production :
 Vercel optimise automatiquement votre déploiement :
 
 - **Mise en cache Edge** - Fichiers statiques mis en cache mondialement
-- **Optimisation d'image** - Composant Image Next.js optimisé automatiquement
+- **Optimisation d'image** - Composant Image SvelteKit optimisé automatiquement
 - **Compression** - Compression Gzip/Brotli activée
 - **HTTP/2** - Connexions multiplexées plus rapides
 
@@ -230,7 +230,7 @@ Vercel agit comme votre pipeline CI/CD :
 
 **Ce qui s'exécute à chaque déploiement :**
 - `npm install` (dépendances)
-- `npm run build` (build Next.js)
+- `npm run build` (build SvelteKit)
 - Vérifications et validations automatiques
 - Déploiement sur le réseau Edge
 
@@ -292,7 +292,7 @@ Si vos docs sont dans un monorepo :
 ```json
 {
   "buildCommand": "cd ../.. && npm run build:docs",
-  "outputDirectory": ".next"
+  "outputDirectory": "build"
 }
 ```
 

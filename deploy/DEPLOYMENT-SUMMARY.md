@@ -10,7 +10,7 @@ This folder contains all the necessary files and scripts for deploying Specra Do
 - **DEPLOYMENT-SUMMARY.md** - This file, overview of deployment setup
 
 ### Docker Configuration
-- **Dockerfile** - Multi-stage Docker build for Next.js application
+- **Dockerfile** - Multi-stage Docker build for SvelteKit application
 - **docker-compose.yml** - Orchestrates app + PostgreSQL containers
 - **.dockerignore** - Excludes unnecessary files from Docker build
 
@@ -44,7 +44,7 @@ This folder contains all the necessary files and scripts for deploying Specra Do
                          ▼
               ┌──────────────────────┐
               │  Docker Container    │
-              │   (Next.js App)      │  (Port 3000)
+              │   (SvelteKit App)      │  (Port 3000)
               │                      │
               │  - Built with Prisma │
               │  - Node.js Runtime   │
@@ -92,7 +92,7 @@ This folder contains all the necessary files and scripts for deploying Specra Do
 
 ### Docker Setup
 - **Multi-stage build** - Optimized image size
-- **Standalone output** - No external Next.js server needed
+- **Standalone output** - No external SvelteKit server needed
 - **Health checks** - Automatic container health monitoring
 - **Non-root user** - Security best practice
 - **Persistent volumes** - Database data survives restarts
@@ -229,7 +229,7 @@ See `.env.production` template for complete list.
 - **Quick Reference:** [QUICK-START.md](./QUICK-START.md)
 - **Docker Docs:** https://docs.docker.com
 - **Caddy Docs:** https://caddyserver.com/docs
-- **Next.js Deploy:** https://nextjs.org/docs/deployment
+- **SvelteKit Deploy:** https://nextjs.org/docs/deployment
 
 ## ✅ Pre-Deployment Checklist
 

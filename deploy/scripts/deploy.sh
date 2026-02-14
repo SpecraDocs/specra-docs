@@ -77,4 +77,4 @@ fi
 
 echo ""
 echo -e "${GREEN}🎉 Deployment complete!${NC}"
-echo -e "${GREEN}Visit your site: ${NEXT_PUBLIC_APP_URL:-https://yourdomain.com}${NC}"
+echo -e "${GREEN}Visit your site: ${PUBLIC_APP_URL:-https://yourdomain.com}${NC}"

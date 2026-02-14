@@ -76,7 +76,7 @@ For large documentation sites (1000+ files):
 
 1. **Use folder organization**: Organize docs into logical folders to improve cache locality
 2. **Enable draft mode**: Mark work-in-progress docs with `draft: true` to exclude from production builds
-3. **Optimize images**: Use Next.js Image optimization for screenshots and diagrams
+3. **Optimize images**: Use SvelteKit Image optimization for screenshots and diagrams
 4. **Monitor build times**: Watch the performance logs during development
 
 ## Development Mode Features
@@ -146,7 +146,7 @@ During development, watch the console for:
 2. **Use frontmatter wisely**: Add only necessary metadata
 3. **Optimize content**: Large files (>1MB) should be split
 4. **Monitor cache**: High miss rates indicate caching issues
-5. **Clean builds**: Occasionally clear `.next/` for fresh builds
+5. **Clean builds**: Occasionally clear `.svelte-kit/` for fresh builds
 
 ## Troubleshooting
 
@@ -156,7 +156,7 @@ If builds are slow:
 
 1. Check for extremely large MDX files (>5MB)
 2. Reduce the number of concurrent pages being generated
-3. Clear cache: Delete `.next/` and `node_modules/.cache/`
+3. Clear cache: Delete `.svelte-kit/` and `node_modules/.cache/`
 4. Update dependencies to latest versions
 
 ### Hot Reload Not Working

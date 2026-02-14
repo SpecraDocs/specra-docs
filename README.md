@@ -1,8 +1,8 @@
 # Specra Documentation Site
 
-**Specra** is a modern documentation framework built on Next.js that makes it easy to create beautiful, fast, and searchable documentation sites. With built-in support for MDX, versioning, API documentation generation, and customizable themes, Specra helps you focus on writing great docs.
+**Specra** is a modern documentation framework built on SvelteKit that makes it easy to create beautiful, fast, and searchable documentation sites. With built-in support for MDX, versioning, API documentation generation, and customizable themes, Specra helps you focus on writing great docs.
 
-The docs can be found here https://specra.vercel.app/
+The docs can be found here https://specra-docs.com/
 
 ## Quick Start
 
@@ -18,14 +18,14 @@ npm run dev
 ```
 
 This will scaffold a complete documentation site with:
-- Pre-configured Next.js setup
+- Pre-configured SvelteKit setup
 - Sample documentation structure
 - Ready-to-use UI components
 - Version management
 - Search functionality
 - Responsive design
 
-Open [http://localhost:3000](http://localhost:3000) to see your documentation site running locally.
+Open [http://localhost:5173](http://localhost:5173) to see your documentation site running locally.
 
 ### Already Created a Project?
 
@@ -43,21 +43,36 @@ pnpm install && pnpm dev
 ## Project Structure
 
 ```
-├── app/              # Next.js app directory
-│   ├── layout.tsx    # Root layout
-│   ├── page.tsx      # Home page
-│   └── docs/         # Documentation pages
-├── components/       # Reusable components
-│   ├── docs/        # Documentation-specific components
-│   └── ui/          # UI components
-├── docs/            # Your MDX documentation files
-│   └── v1.0.0/     # Version 1.0.0 docs
-├── lib/             # Utility functions
-│   ├── mdx.ts      # MDX processing
-│   ├── config.ts   # Configuration
-│   └── parsers/    # API parsers
-├── public/          # Static assets
-└── specra.config.json  # Specra configuration
+├── src/
+│   ├── routes/              # SvelteKit routes
+│   │   ├── +layout.svelte   # Root layout
+│   │   ├── +layout.server.ts
+│   │   ├── +page.svelte     # Landing page
+│   │   ├── auth/            # Auth pages (login, register)
+│   │   ├── dashboard/       # User dashboard
+│   │   ├── admin/           # Admin panel
+│   │   ├── pricing/         # Pricing page
+│   │   ├── checkout/        # Checkout page
+│   │   ├── docs/            # Documentation pages
+│   │   └── api/             # API routes
+│   ├── lib/
+│   │   ├── server/          # Server-side utilities
+│   │   │   ├── auth.ts      # Auth.js configuration
+│   │   │   ├── db.ts        # Prisma client
+│   │   │   ├── stripe.ts    # Stripe client
+│   │   │   └── mpesa.ts     # M-Pesa client
+│   │   └── components/      # Shared Svelte components
+│   ├── hooks.server.ts      # Auth middleware & route protection
+│   └── app.html             # HTML template
+├── docs/                    # Your MDX documentation files
+│   └── v1.0.0/              # Version 1.0.0 docs
+├── prisma/
+│   └── schema.prisma        # Database schema
+├── static/                  # Static assets
+├── deploy/                  # Deployment configs (Docker, Caddy, scripts)
+├── specra.config.json       # Specra configuration
+├── svelte.config.js         # SvelteKit configuration
+└── vite.config.ts           # Vite configuration
 ```
 
 ## Writing Documentation
@@ -77,13 +92,9 @@ Your content here...
 
 ### Using Components
 
-Import and use components in your MDX:
+Specra provides built-in components for your documentation:
 
 ```mdx
-import { Callout } from '@/components/docs/callout'
-import { CodeBlock } from '@/components/docs/code-block'
-import { Tabs, Tab } from '@/components/docs/tabs'
-
 <Callout type="info">
   This is an info callout!
 </Callout>
@@ -126,146 +137,57 @@ Edit `specra.config.json` to customize your site:
 
 ```bash
 npm run build
-npm run start
+npm run preview
+# or for production:
+node build
 ```
+
+## SaaS Features
+
+This site includes a full SaaS layer on top of the documentation:
+- **Authentication** - Auth.js with GitHub OAuth + email/password
+- **Pricing Tiers** - Free, Starter ($19/mo), Pro ($49/mo), Enterprise ($149/mo)
+- **Dual Payments** - Stripe (international, USD) + M-Pesa Daraja (Kenya, KES)
+- **User Dashboard** - Plan management, billing history, settings
+- **Admin Panel** - User management, analytics, coupons, subscriptions
+- **Database** - PostgreSQL via Prisma v7
 
 ## Learn More
 
 - [Specra Documentation](https://specra-docs.com/docs)
-- [Next.js Documentation](https://nextjs.org/docs)
+- [SvelteKit Documentation](https://svelte.dev/docs/kit)
 - [MDX Documentation](https://mdxjs.com)
 
 ## Deployment
 
-Deploy your Specra documentation site to Vercel, Netlify, GitHub Pages, or any hosting platform that supports Next.js/static pages.
+### Self-Hosted with Docker + Caddy (Production)
+
+See `deploy/README.md` for the complete deployment guide. Uses:
+- Docker for containerization
+- Caddy for reverse proxy + automatic HTTPS
+- PostgreSQL for database
+
+```bash
+cd deploy
+./scripts/setup.sh
+./scripts/deploy.sh
+```
 
 ### Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
+```bash
+npm run build
+# Deploy via Vercel CLI or dashboard
+```
 
 ### Netlify
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start)
-
-### GitHub Pages (Static Export)
-
-To deploy as a static site to GitHub Pages:
-
-1. Update your `specra.config.json`:
-
-```json
-{
-  "deployment": {
-    "target": "github",
-    "basePath": "/your-repo-name",
-    "customDomain": false
-  }
-}
-```
-
-**Note on `basePath`:**
-- **With custom domain** (`docs.yoursite.com`): Set `customDomain: true` and leave `basePath` empty (`""`)
-- **Without custom domain** (`yourusername.github.io/repo-name`): Set `basePath` to your repo name (`"/your-repo-name"`)
-
-2. Build and export your site:
-
 ```bash
-npm run build:export
-```
-
-3. Deploy the `out` directory to GitHub Pages:
-
-```bash
-# Initialize git if not already done
-git init
-git add .
-git commit -m "Initial commit"
-
-# Push to GitHub
-git remote add origin https://github.com/yourusername/your-repo-name.git
-git branch -M main
-git push -u origin main
-
-# Deploy to gh-pages branch
-npm install -g gh-pages
-gh-pages -d out
-```
-
-4. Enable GitHub Pages in your repository settings:
-   - Go to Settings > Pages
-   - Select `gh-pages` branch as the source
-   - Your site will be available at `https://yourusername.github.io/your-repo-name`
-
-Alternatively, use GitHub Actions for automatic deployment. Create `.github/workflows/deploy.yml`:
-
-```yaml
-name: Deploy to GitHub Pages
-
-on:
-  push:
-    branches: [main]
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build:export
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./out
-```
-
-### Manual Server Deployment (SCP)
-
-If you prefer to deploy the static export to your own server manually:
-
-1. Build the static export:
-
-```bash
-npm run build:export
-```
-
-2. Zip the output directory:
-
-```bash
-zip -r out.zip out/
-```
-
-3. Copy the zip to your server:
-
-```bash
-scp out.zip user@your-server:/path/to/destination/
-```
-
-4. SSH into the server and extract:
-
-```bash
-ssh user@your-server
-cd /path/to/destination
-unzip -o out.zip # or unzip -o out.zip -d specra
-```
-
-You can combine steps 2-3 into a single command:
-
-```bash
-zip -r out.zip out/ && scp out.zip user@your-server:/path/to/destination/
+npm run build
+# Deploy the build/ directory
 ```
 
 ## Need Help?
 
 - Check the [documentation](https://specra-docs.com/docs)
-- Report issues on [GitHub](https://github.com/yourusername/specra/issues)
+- Report issues on [GitHub](https://github.com/dalmasonto/specra-docs/issues)

@@ -76,7 +76,7 @@ Für große Dokumentationsseiten (1000+ Dateien):
 
 1. **Ordnerorganisation verwenden**: Organisieren Sie Dokumente in logische Ordner, um die Cache-Lokalität zu verbessern
 2. **Entwurfsmodus aktivieren**: Markieren Sie unvollständige Dokumente mit `draft: true`, um sie von Produktions-Builds auszuschließen
-3. **Bilder optimieren**: Verwenden Sie Next.js Image-Optimierung für Screenshots und Diagramme
+3. **Bilder optimieren**: Verwenden Sie SvelteKit Image-Optimierung für Screenshots und Diagramme
 4. **Build-Zeiten überwachen**: Beobachten Sie die Leistungsprotokolle während der Entwicklung
 
 ## Entwicklungsmodus-Funktionen
@@ -146,7 +146,7 @@ Beobachten Sie während der Entwicklung die Konsole auf:
 2. **Frontmatter weise nutzen**: Nur notwendige Metadaten hinzufügen
 3. **Inhalte optimieren**: Große Dateien (>1MB) sollten aufgeteilt werden
 4. **Cache überwachen**: Hohe Fehlraten weisen auf Caching-Probleme hin
-5. **Saubere Builds**: Gelegentlich `.next/` für frische Builds löschen
+5. **Saubere Builds**: Gelegentlich `.svelte-kit/` für frische Builds löschen
 
 ## Fehlerbehebung
 
@@ -156,7 +156,7 @@ Wenn Builds langsam sind:
 
 1. Prüfen Sie auf extrem große MDX-Dateien (>5MB)
 2. Reduzieren Sie die Anzahl der gleichzeitig generierten Seiten
-3. Cache leeren: `.next/` und `node_modules/.cache/` löschen
+3. Cache leeren: `.svelte-kit/` und `node_modules/.cache/` löschen
 4. Abhängigkeiten auf neueste Versionen aktualisieren
 
 ### Hot Reload funktioniert nicht

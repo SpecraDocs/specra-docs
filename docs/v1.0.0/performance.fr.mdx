@@ -76,7 +76,7 @@ Pour les grands sites de documentation (1000+ fichiers) :
 
 1. **Utiliser l'organisation des dossiers** : Organisez les documents dans des dossiers logiques pour améliorer la localité du cache
 2. **Activer le mode brouillon** : marquez les documents en cours de rédaction avec `draft: true` pour les exclure des builds de production
-3. **Optimiser les images** : Utilisez l'optimisation d'image Next.js pour les captures d'écran et les diagrammes
+3. **Optimiser les images** : Utilisez l'optimisation d'image SvelteKit pour les captures d'écran et les diagrammes
 4. **Surveiller les temps de construction** : Surveillez les journaux de performance pendant le développement
 
 ## Fonctionnalités du mode développement
@@ -146,7 +146,7 @@ Pendant le développement, surveillez la console pour :
 2. **Utilisez le frontmatter judicieusement** : Ajoutez uniquement les métadonnées nécessaires
 3. **Optimisez le contenu** : Les gros fichiers (>1Mo) doivent être divisés
 4. **Surveillez le cache** : Des taux d'échec élevés indiquent des problèmes de mise en cache
-5. **Builds propres** : Effacez occasionnellement `.next/` pour des builds frais
+5. **Builds propres** : Effacez occasionnellement `.svelte-kit/` pour des builds frais
 
 ## Dépannage
 
@@ -156,7 +156,7 @@ Si les builds sont lents :
 
 1. Vérifiez les fichiers MDX extrêmement volumineux (>5Mo)
 2. Réduisez le nombre de pages générées simultanément
-3. Effacez le cache : Supprimez `.next/` et `node_modules/.cache/`
+3. Effacez le cache : Supprimez `.svelte-kit/` et `node_modules/.cache/`
 4. Mettez à jour les dépendances vers les dernières versions
 
 ### Le rechargement à chaud ne fonctionne pas

@@ -8,7 +8,7 @@ tab_group: guides
 
 # Descripción General de Implementación
 
-Specra está construido sobre Next.js, lo que significa que puede implementarlo en casi cualquier lugar. Esta guía cubre las opciones de implementación más populares y cómo configurar Specra para cada una.
+Specra está construido sobre SvelteKit, lo que significa que puede implementarlo en casi cualquier lugar. Esta guía cubre las opciones de implementación más populares y cómo configurar Specra para cada una.
 
 ## Objetivos de Implementación
 
@@ -48,9 +48,9 @@ git push -u origin main
   <Step title="Implementar en Vercel">
     Visite [vercel.com/new](https://vercel.com/new) e importe su repositorio.
 
-    Vercel detecta automáticamente Next.js y usa la configuración correcta:
+    Vercel detecta automáticamente SvelteKit y usa la configuración correcta:
     - Comando de compilación: `npm run build`
-    - Directorio de salida: `.next`
+    - Directorio de salida: `build`
     - Comando de instalación: `npm install`
   </Step>
 
@@ -203,10 +203,10 @@ Diferentes plataformas necesitan diferentes comandos de compilación:
 
 | Plataforma | Comando de Compilación | Directorio de Salida |
 |------------|------------------------|----------------------|
-| Vercel, Railway | `npm run build` | `.next` |
+| Vercel, Railway | `npm run build` | `|
 | GitHub Pages | `npm run build:export` | `out` |
 | Netlify, Cloudflare Pages | `npm run build:export` | `out` |
-| Docker, VPS | `npm run build` + `npm start` | `.next` |
+| Docker, VPS | `npm run build` + `npm start` | `|
 
 ## Configuración por Plataforma
 
@@ -402,8 +402,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/build ./
+COPY --from=builder /app/build/client ./build/client
 
 EXPOSE 3000
 
@@ -486,7 +486,7 @@ Valor: username.github.io
 
 ### Habilitar Almacenamiento en Caché
 
-Agregue encabezados de caché en `next.config.mjs`:
+Agregue encabezados de caché en `svelte.config.js`:
 
 ```javascript
 async headers() {
@@ -506,7 +506,7 @@ async headers() {
 
 ### Optimización de Imágenes
 
-Use el componente Image de Next.js:
+Use el imágenes optimizadas:
 
 ```mdx
 <Image
@@ -522,18 +522,18 @@ Use el componente Image de Next.js:
 Verifique el tamaño del paquete:
 
 ```bash
-npm install --save-dev @next/bundle-analyzer
+npm install --save-dev vite-bundle-visualizer
 ```
 
 ```javascript
-// next.config.mjs
-import bundleAnalyzer from '@next/bundle-analyzer'
+// svelte.config.js
+import bundleAnalyzer from 'vite-bundle-visualizer'
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 })
 
-export default withBundleAnalyzer(nextConfig)
+export default // See vite.config.ts for bundle analysis
 ```
 
 Ejecutar con:
@@ -580,9 +580,9 @@ Verifique que su `basePath` coincida exactamente con el nombre de su repositorio
 
 Correcciones comunes:
 
-1. Borre las carpetas `.next` y `out`:
+1. Borre las carpetas `y `out`:
 ```bash
-rm -rf .next out node_modules
+rm -rf .svelte-kit build node_modules
 npm install
 npm run build
 ```

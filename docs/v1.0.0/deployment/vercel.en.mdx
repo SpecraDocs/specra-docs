@@ -8,7 +8,7 @@ tab_group: guides
 
 # Deploy to Vercel
 
-Vercel is the easiest way to deploy your Specra documentation. It's built by the creators of Next.js, so everything works perfectly out of the box.
+Vercel is the easiest way to deploy your Specra documentation. It's built by the creators of SvelteKit, so everything works perfectly out of the box.
 
 ## Why Vercel?
 
@@ -38,7 +38,7 @@ git push -u origin main
     1. Go to [vercel.com/new](https://vercel.com/new)
     2. Click "Import Git Repository"
     3. Select your documentation repository
-    4. Vercel auto-detects Next.js and configures everything
+    4. Vercel auto-detects SvelteKit and configures everything
 
     No manual configuration needed!
   </Step>
@@ -56,12 +56,12 @@ That's it! Your documentation is now live with automatic HTTPS and global CDN.
 
 ## Configuration
 
-Vercel automatically uses these settings for Next.js projects:
+Vercel automatically uses these settings for SvelteKit projects:
 
 | Setting | Value |
 |---------|-------|
 | Build Command | `npm run build` |
-| Output Directory | `.next` |
+| Output Directory | `|
 | Install Command | `npm install` |
 | Node Version | 20.x (latest LTS) |
 
@@ -72,9 +72,9 @@ If you need custom settings, create `vercel.json`:
 ```json
 {
   "buildCommand": "npm run build",
-  "outputDirectory": ".next",
+  "outputDirectory": "build",
   "installCommand": "npm ci",
-  "framework": "nextjs",
+  "framework": "sveltekit",
   "regions": ["iad1"]
 }
 ```
@@ -196,7 +196,7 @@ Protect production deployments:
 Vercel automatically optimizes your deployment:
 
 - **Edge caching** - Static files cached globally
-- **Image optimization** - Next.js Image component optimized automatically
+- **Image optimization** - optimized images optimized automatically
 - **Compression** - Gzip/Brotli compression enabled
 - **HTTP/2** - Faster multiplexed connections
 
@@ -230,7 +230,7 @@ Vercel acts as your CI/CD pipeline:
 
 **What runs on every deployment:**
 - `npm install` (dependencies)
-- `npm run build` (Next.js build)
+- `npm run build` (SvelteKit build)
 - Automatic checks and validations
 - Deploy to edge network
 
@@ -292,7 +292,7 @@ If your docs are in a monorepo:
 ```json
 {
   "buildCommand": "cd ../.. && npm run build:docs",
-  "outputDirectory": ".next"
+  "outputDirectory": "build"
 }
 ```
 

@@ -363,7 +363,7 @@ Statische Exporte unterstützen dynamisches Routing nicht auf die gleiche Weise.
 open https://username.github.io/repo-name
 
 # Überprüfen, ob Assets geladen werden von
-https://username.github.io/repo-name/_next/...
+https://username.github.io/repo-name/_app/immutable/...
 ```
 
 Wenn Assets 404 zurückgeben, verifizieren Sie:
@@ -430,7 +430,7 @@ npx imagemin public/images/* --out-dir=public/images
 Überprüfen Sie, was in Ihrem Bundle enthalten ist:
 
 ```bash
-npm install -D @next/bundle-analyzer
+npm install -D vite-bundle-visualizer
 
 ANALYZE=true npm run build:export
 ```

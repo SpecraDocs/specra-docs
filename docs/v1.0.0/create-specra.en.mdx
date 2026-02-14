@@ -57,7 +57,7 @@ my-docs/
 │   └── icon-dark-32x32.png    # Favicon (dark mode)
 ├── specra.config.json          # Specra configuration
 ├── package.json                # Dependencies and scripts
-├── next.config.mjs             # Next.js configuration
+├── svelte.config.js             # SvelteKit configuration
 ├── tailwind.config.ts          # Tailwind CSS config
 ├── tsconfig.json               # TypeScript config
 ├── .gitignore
@@ -218,11 +218,11 @@ The generated `package.json` includes these scripts:
 
 | Script | Command | Description |
 |--------|---------|-------------|
-| `dev` | `next dev` | Start development server with hot reload |
-| `build` | `next build` | Build for production (Vercel, Node.js hosting) |
-| `start` | `next start` | Start production server (after `build`) |
-| `build:export` | `next build && next export` | Build static site (GitHub Pages, Netlify) |
-| `lint` | `next lint` | Run ESLint to check code quality |
+| `dev` | `vite dev` | Start development server with hot reload |
+| `build` | `vite build` | Build for production (Vercel, Node.js hosting) |
+| `start` | `node build` | Start production server (after `build`) |
+| `build:export` | `vite build (with adapter-static)` | Build static site (GitHub Pages, Netlify) |
+| `lint` | `npm run check` | Run ESLint to check code quality |
 
 ## Updating Specra
 

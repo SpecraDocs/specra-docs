@@ -1,4 +1,4 @@
-name: Deploy Next.js Documentation
+name: Deploy SvelteKit Documentation
 
 on:
   push:
@@ -23,24 +23,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'yarn'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: npm ci
 
       - name: Validate documentation structure
         run: |
           echo "Validating documentation..."
-          # Check if required config files exist
-          if [ ! -f "next.config.mjs" ] && [ ! -f "next.config.js" ]; then
-            echo "Error: Next.js config not found"
+          if [ ! -f "svelte.config.js" ]; then
+            echo "Error: SvelteKit config not found"
             exit 1
           fi
-          echo "✓ Next.js config found"
-          echo "✓ Documentation structure validated"
+          echo "SvelteKit config found"
+          echo "Documentation structure validated"
 
-      - name: Run linting
-        run: yarn lint
+      - name: Type check
+        run: npm run check
         continue-on-error: true
 
   deploy:
@@ -56,41 +55,40 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch all history for proper git operations
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'yarn'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: npm ci
 
-      - name: Build Next.js documentation
+      - name: Build SvelteKit documentation
         run: |
-          echo "Building Next.js documentation..."
-          yarn build:export
-          echo "✓ Build completed"
+          echo "Building SvelteKit documentation..."
+          npm run build
+          echo "Build completed"
         env:
           NODE_ENV: production
 
       - name: Add .nojekyll
-        run: touch ./out/.nojekyll
+        run: touch ./build/.nojekyll
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./out  # Next.js static export outputs to 'out' directory
-          publish_branch: gh-pages  # Deploy to gh-pages branch
-          # cname: specra.doc  # Custom domain (remove if not using custom domain)
+          publish_dir: ./build  # SvelteKit adapter-static outputs to build/
+          publish_branch: gh-pages
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: 'Deploy Next.js documentation [skip ci]'
+          commit_message: 'Deploy SvelteKit documentation [skip ci]'
 
       - name: Deployment summary
         run: |
-          echo "✓ Documentation deployed to GitHub Pages"
-          echo "View at: https://specra.doc"
+          echo "Documentation deployed to GitHub Pages"
+          echo "View at: https://specra-docs.com"
           echo "Or: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"

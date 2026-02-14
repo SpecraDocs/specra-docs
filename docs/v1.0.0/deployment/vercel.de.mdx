@@ -8,7 +8,7 @@ tab_group: guides
 
 # Auf Vercel bereitstellen
 
-Vercel ist der einfachste Weg, Ihre Specra-Dokumentation bereitzustellen. Es wurde von den Schöpfern von Next.js entwickelt, sodass alles sofort perfekt funktioniert.
+Vercel ist der einfachste Weg, Ihre Specra-Dokumentation bereitzustellen. Es wurde von den Schöpfern von SvelteKit entwickelt, sodass alles sofort perfekt funktioniert.
 
 ## Warum Vercel?
 
@@ -38,7 +38,7 @@ git push -u origin main
     1. Gehen Sie zu [vercel.com/new](https://vercel.com/new)
     2. Klicken Sie auf "Import Git Repository"
     3. Wählen Sie Ihr Dokumentations-Repository aus
-    4. Vercel erkennt Next.js automatisch und konfiguriert alles
+    4. Vercel erkennt SvelteKit automatisch und konfiguriert alles
 
     Keine manuelle Konfiguration erforderlich!
   </Step>
@@ -56,12 +56,12 @@ Das war's! Ihre Dokumentation ist jetzt live mit automatischem HTTPS und globale
 
 ## Konfiguration
 
-Vercel verwendet automatisch diese Einstellungen für Next.js-Projekte:
+Vercel verwendet automatisch diese Einstellungen für SvelteKit-Projekte:
 
 | Einstellung | Wert |
 |-------------|------|
 | Build Command | `npm run build` |
-| Output Directory | `.next` |
+| Output Directory | `|
 | Install Command | `npm install` |
 | Node Version | 20.x (latest LTS) |
 
@@ -72,9 +72,9 @@ Wenn Sie benutzerdefinierte Einstellungen benötigen, erstellen Sie `vercel.json
 ```json
 {
   "buildCommand": "npm run build",
-  "outputDirectory": ".next",
+  "outputDirectory": "build",
   "installCommand": "npm ci",
-  "framework": "nextjs",
+  "framework": "sveltekit",
   "regions": ["iad1"]
 }
 ```
@@ -196,7 +196,7 @@ Schützen Sie Produktions-Bereitstellungen:
 Vercel optimiert Ihre Bereitstellung automatisch:
 
 - **Edge-Caching** - Statische Dateien weltweit zwischengespeichert
-- **Bildoptimierung** - Next.js Image-Komponente automatisch optimiert
+- **Bildoptimierung** - optimierte Bilder automatisch optimiert
 - **Kompression** - Gzip/Brotli-Kompression aktiviert
 - **HTTP/2** - Schnellere gemultiplexte Verbindungen
 
@@ -230,7 +230,7 @@ Vercel fungiert als Ihre CI/CD-Pipeline:
 
 **Was bei jeder Bereitstellung läuft:**
 - `npm install` (Abhängigkeiten)
-- `npm run build` (Next.js Build)
+- `npm run build` (SvelteKit Build)
 - Automatische Überprüfungen und Validierungen
 - Bereitstellung im Edge-Netzwerk
 
@@ -292,7 +292,7 @@ Wenn sich Ihre Docs in einem Monorepo befinden:
 ```json
 {
   "buildCommand": "cd ../.. && npm run build:docs",
-  "outputDirectory": ".next"
+  "outputDirectory": "build"
 }
 ```
 

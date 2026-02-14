@@ -8,7 +8,7 @@ tab_group: guides
 
 # Implementar en Vercel
 
-Vercel es la forma más fácil de implementar su documentación Specra. Está construido por los creadores de Next.js, por lo que todo funciona perfectamente desde el primer momento.
+Vercel es la forma más fácil de implementar su documentación Specra. Está construido por los creadores de SvelteKit, por lo que todo funciona perfectamente desde el primer momento.
 
 ## ¿Por qué Vercel?
 
@@ -38,7 +38,7 @@ git push -u origin main
     1. Vaya a [vercel.com/new](https://vercel.com/new)
     2. Haga clic en "Import Git Repository" (Importar Repositorio Git)
     3. Seleccione su repositorio de documentación
-    4. Vercel detecta automáticamente Next.js y configura todo
+    4. Vercel detecta automáticamente SvelteKit y configura todo
 
     ¡No se necesita configuración manual!
   </Step>
@@ -56,12 +56,12 @@ git push -u origin main
 
 ## Configuración
 
-Vercel utiliza automáticamente esta configuración para proyectos Next.js:
+Vercel utiliza automáticamente esta configuración para proyectos SvelteKit:
 
 | Configuración | Valor |
 |---------------|-------|
 | Comando de Compilación | `npm run build` |
-| Directorio de Salida | `.next` |
+| Directorio de Salida | `|
 | Comando de Instalación | `npm install` |
 | Versión de Node | 20.x (última LTS) |
 
@@ -72,9 +72,9 @@ Si necesita configuraciones personalizadas, cree `vercel.json`:
 ```json
 {
   "buildCommand": "npm run build",
-  "outputDirectory": ".next",
+  "outputDirectory": "build",
   "installCommand": "npm ci",
-  "framework": "nextjs",
+  "framework": "sveltekit",
   "regions": ["iad1"]
 }
 ```
@@ -196,7 +196,7 @@ Proteja las implementaciones de producción:
 Vercel optimiza automáticamente su implementación:
 
 - **Almacenamiento en caché perimetral** - Archivos estáticos almacenados en caché globalmente
-- **Optimización de imagen** - Componente Image de Next.js optimizado automáticamente
+- **Optimización de imagen** - Componente Image de SvelteKit optimizado automáticamente
 - **Compresión** - Compresión Gzip/Brotli habilitada
 - **HTTP/2** - Conexiones multiplexadas más rápidas
 
@@ -230,7 +230,7 @@ Vercel actúa como su tubería CI/CD:
 
 **Qué se ejecuta en cada implementación:**
 - `npm install` (dependencias)
-- `npm run build` (compilación Next.js)
+- `npm run build` (compilación SvelteKit)
 - Comprobaciones y validaciones automáticas
 - Implementar en la red perimetral
 
@@ -292,7 +292,7 @@ Si sus documentos están en un monorepo:
 ```json
 {
   "buildCommand": "cd ../.. && npm run build:docs",
-  "outputDirectory": ".next"
+  "outputDirectory": "build"
 }
 ```
 

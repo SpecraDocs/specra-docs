@@ -76,7 +76,7 @@ Para sitios de documentación grandes (1000+ archivos):
 
 1. **Use organización de carpetas**: Organice los documentos en carpetas lógicas para mejorar la localidad de la caché
 2. **Habilite el modo borrador**: Marque los documentos en progreso con `draft: true` para excluirlos de las compilaciones de producción
-3. **Optimice imágenes**: Use la optimización de imágenes de Next.js para capturas de pantalla y diagramas
+3. **Optimice imágenes**: Use la optimización de imágenes de SvelteKit para capturas de pantalla y diagramas
 4. **Monitoree tiempos de compilación**: Observe los registros de rendimiento durante el desarrollo
 
 ## Características del modo de desarrollo
@@ -146,7 +146,7 @@ Durante el desarrollo, observe la consola para:
 2. **Use frontmatter sabiamente**: Agregue solo los metadatos necesarios
 3. **Optimice el contenido**: Los archivos grandes (>1MB) deben dividirse
 4. **Monitoree la caché**: Las altas tasas de fallos indican problemas de almacenamiento en caché
-5. **Compilaciones limpias**: Ocasionalmente borre `.next/` para compilaciones frescas
+5. **Compilaciones limpias**: Ocasionalmente borre `.svelte-kit/` para compilaciones frescas
 
 ## Solución de problemas
 
@@ -156,7 +156,7 @@ Si las compilaciones son lentas:
 
 1. Verifique si hay archivos MDX extremadamente grandes (>5MB)
 2. Reduzca el número de páginas generadas simultáneamente
-3. Borre la caché: Elimine `.next/` y `node_modules/.cache/`
+3. Borre la caché: Elimine `.svelte-kit/` y `node_modules/.cache/`
 4. Actualice las dependencias a las últimas versiones
 
 ### La recarga en caliente no funciona

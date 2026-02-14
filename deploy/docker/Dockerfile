@@ -1,4 +1,4 @@
-# Multi-stage Docker build for Specra Docs
+# Multi-stage Docker build for Specra Docs (SvelteKit)
 # Production-ready with optimized layers
 
 # Stage 1: Dependencies
@@ -34,13 +34,12 @@ COPY . .
 COPY prisma ./prisma/
 
 # Set environment variables for build
-ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
 # Generate Prisma Client
 RUN npx prisma generate
 
-# Build the application
+# Build the SvelteKit application (adapter-node outputs to build/)
 RUN npm run build
 
 # Stage 3: Runner
@@ -48,16 +47,15 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
 
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN adduser --system --uid 1001 sveltekit
 
-# Copy necessary files from builder
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+# Copy the SvelteKit adapter-node build output
+COPY --from=builder /app/build ./build
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/prisma ./prisma
 
@@ -65,9 +63,9 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/scripts ./scripts
 
 # Set correct permissions
-RUN chown -R nextjs:nodejs /app
+RUN chown -R sveltekit:nodejs /app
 
-USER nextjs
+USER sveltekit
 
 EXPOSE 3000
 
@@ -78,4 +76,4 @@ ENV HOSTNAME="0.0.0.0"
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
-CMD ["node", "server.js"]
+CMD ["node", "build"]

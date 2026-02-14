@@ -143,7 +143,7 @@ Die Standardkonfiguration funktioniert perfekt:
 ```
 
 **Build-Befehl:** `npm run build`
-**Ausgabe:** `.next` Verzeichnis
+**Ausgabe:** `Verzeichnis
 **Kein basePath erforderlich**
 
 ### GitHub Pages (Keine benutzerdefinierte Domain)
@@ -162,7 +162,7 @@ Für `username.github.io/repo-name`:
 
 **Build-Befehl:** `npm run build:export`
 **Ausgabe:** `out` Verzeichnis
-**Assets laden von:** `/repo-name/_next/...`
+**Assets laden von:** `/repo-name/_app/immutable/...`
 
 ### GitHub Pages (Mit benutzerdefinierter Domain)
 
@@ -185,7 +185,7 @@ docs.example.com
 
 **Build-Befehl:** `npm run build:export`
 **Ausgabe:** `out` Verzeichnis
-**Assets laden von:** `/_next/...`
+**Assets laden von:** `/_app/immutable/...`
 
 ### Netlify
 
@@ -222,7 +222,7 @@ Specra hat zwei Build-Modi:
 **1. Standalone (Node.js Hosting)**
 - Verwendet für: Vercel, Railway, Render
 - Befehl: `npm run build`
-- Ausgabe: `.next` Verzeichnis
+- Ausgabe: `Verzeichnis
 - Läuft als Node.js-Server
 - Unterstützt dynamische Funktionen
 
@@ -269,7 +269,7 @@ Sie müssen sich darüber keine Sorgen machen – Specra erledigt das automatisc
 npm run build:export  # anstatt npm run build
 ```
 
-3. `out/`-Ordner anstelle von `.next/` bereitstellen
+3. `out/`-Ordner anstelle von `.svelte-kit/` bereitstellen
 
 ### Von GitHub Pages zu Netlify
 

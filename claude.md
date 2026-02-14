@@ -6,7 +6,7 @@ Hello Claude! This document helps you understand specra-docs, the official docum
 ## Project Context
 
 ### What is specra-docs?
-specra-docs is a Next.js website that:
+specra-docs is a SvelteKit website that:
 - **Documents Specra**: Provides comprehensive guides, API references, and tutorials
 - **Demonstrates Specra**: Shows all features in a production environment
 - **Validates Specra**: Uses the SDK it documents (dogfooding)
@@ -49,7 +49,7 @@ specra-docs is a Next.js website that:
 ### Technology Stack
 ```
 Framework Layer:
-├── Next.js 16.1.0 (App Router, React Server Components)
+├── SvelteKit 16.1.0 (App Router, React Server Components)
 ├── React 19.2.3
 └── TypeScript 5
 
@@ -63,7 +63,7 @@ Styling:
 └── PostCSS
 
 Payment & Auth Layer (SaaS):
-├── Auth.js v5 (next-auth@beta) - GitHub OAuth + credentials
+├── Auth.js v5 (auth.js@beta) - GitHub OAuth + credentials
 ├── Prisma v7 + PostgreSQL - Database ORM
 ├── Stripe (Checkout + Webhooks + Customer Portal) - International payments
 ├── M-Pesa Daraja API (STK Push) - Kenya payments (KES)
@@ -75,7 +75,7 @@ Optional Features:
 
 Build & Deploy:
 ├── Self-hosted server with Caddy reverse proxy (production)
-├── Next.js standalone mode (not static export)
+├── SvelteKit standalone mode (not static export)
 ├── tsx (script execution)
 └── ESLint (linting)
 ```
@@ -84,7 +84,7 @@ Build & Deploy:
 
 ```
 specra-docs/
-├── app/                          # Next.js App Router
+├── app/                          # SvelteKit App Router
 │   ├── layout.tsx                # Root layout
 │   │   └── Uses specra/app/layout with custom wrapper
 │   ├── page.tsx                  # Landing page (hero, features, CTA)
@@ -114,7 +114,7 @@ specra-docs/
 │   │
 │   └── api/                      # API routes
 │       ├── auth/
-│       │   ├── [...nextauth]/route.ts  # Auth.js handler
+│       │   ├── # Handled by @auth/sveltekit in hooks  # Auth.js handler
 │       │   └── register/route.ts       # User registration
 │       ├── stripe/
 │       │   ├── checkout/route.ts       # Create Stripe Checkout session
@@ -161,7 +161,7 @@ specra-docs/
 │   └── test-search.ts
 │
 ├── specra.config.json            # Specra configuration
-├── next.config.mjs               # Next.js config (1 line - simple!)
+├── svelte.config.js               # SvelteKit config (1 line - simple!)
 ├── tsconfig.json                 # TypeScript configuration
 ├── postcss.config.mjs            # PostCSS configuration
 ├── package.json                  # Dependencies and scripts
@@ -194,7 +194,7 @@ export { generateMetadata } from 'specra/app/layout'
 ### 2. app/page.tsx (Landing Page)
 ```typescript
 // Custom landing page (not using Specra's docs template)
-import Link from 'next/link'
+import { goto } from '$app/navigation'
 import { Button } from 'specra/components'
 
 export default function Home() {
@@ -202,7 +202,7 @@ export default function Home() {
     <div className="container">
       <section className="hero">
         <h1>Specra</h1>
-        <p>Modern documentation for Next.js</p>
+        <p>Modern documentation for SvelteKit</p>
         <Link href="/docs/v1.0.0/getting-started">
           <Button>Get Started →</Button>
         </Link>
@@ -309,13 +309,13 @@ export {
 
 **Purpose**: Configures every aspect of Specra's behavior.
 
-### 5. next.config.mjs (Minimal!)
+### 5. svelte.config.js (Minimal!)
 ```javascript
 // That's it - one line!
-export { default } from 'specra/next-config'
+// svelte.config.js imports specra/svelte-config
 ```
 
-**Purpose**: Uses Specra's Next.js configuration. No custom config needed!
+**Purpose**: Uses Specra's SvelteKit configuration. No custom config needed!
 
 ### 6. docs/v1.0.0/getting-started/introduction.mdx (Content)
 ```mdx
@@ -328,7 +328,7 @@ order: 1
 
 # Introduction to Specra
 
-Specra is a modern documentation framework for Next.js...
+Specra is a modern documentation framework for SvelteKit...
 
 ## Features
 
@@ -444,14 +444,14 @@ Check out the [Installation Guide](/docs/v1.0.0/getting-started/installation).
 ### 1. Development
 ```bash
 npm run dev
-# → next dev
+# → vite dev
 # Starts local development server at http://localhost:3000
 ```
 
 ### 2. Production Build (Server Mode — Required for Payment System)
 ```bash
 npm run build
-# → npm run generate:redirects && NEXT_BUILD_MODE=default next build
+# → npm run generate:redirects && vite build
 #
 # 1. Generates redirect rules
 # 2. Builds with output: "standalone" (supports API routes, Auth.js, webhooks)
@@ -465,7 +465,7 @@ npm run build:export
 # → npm run generate:redirects &&
 #    NEXT_PUBLIC_BASE_PATH=/specra-docs
 #    NEXT_BUILD_MODE=export
-#    next build &&
+#    vite build &&
 #    npm run generate:static-redirects
 #
 # 1. Generates redirects
@@ -622,7 +622,7 @@ More content...
 ```
 
 #### 3. View Changes
-- Next.js hot-reloads automatically
+- SvelteKit hot-reloads automatically
 - Navigate to `/docs/v1.0.0/guides/my-new-guide`
 - Appears in sidebar automatically
 
@@ -682,7 +682,7 @@ import { Callout, Tabs, Tab } from 'specra/components'
 
 **Configuration**:
 - Build Command: `npm run build`
-- Output Directory: `.next`
+- Output Directory: `build`
 - Install Command: `npm install`
 
 ### GitHub Pages (Alternative)
@@ -713,7 +713,7 @@ gh-pages -d out
 ### Netlify
 ```bash
 # Build: npm run build
-# Publish: .next
+# Publish: build
 # Environment: Node 18+
 ```
 
@@ -824,7 +824,7 @@ tabGroup: tutorials
 ### Styles Not Loading
 - Check `app/globals.css` imports `specra/styles`
 - Verify Tailwind configuration
-- Clear `.next` cache: `rm -rf .next && npm run dev`
+- Clear cache: `rm -rf .svelte-kit build Clear `.next` cache: `rm -rf .next && npm run dev`Clear `.next` cache: `rm -rf .next && npm run dev` npm run dev`
 
 ### Documentation Not Appearing
 - Check MDX file location (must be in `docs/v1.0.0/`)
@@ -840,7 +840,7 @@ tabGroup: tutorials
 ### Build Fails
 - Check for syntax errors in MDX files
 - Verify all imports are valid
-- Check Next.js version compatibility
+- Check SvelteKit version compatibility
 - Clear node_modules and reinstall
 
 ## Best Practices
@@ -882,7 +882,7 @@ specra-docs includes a full SaaS billing system with 4 pricing tiers, dual payme
 - **Session strategy**: JWT
 - **Adapter**: Prisma (stores users, accounts, sessions in PostgreSQL)
 - **Config**: `auth.ts` at project root
-- **API route**: `app/api/auth/[...nextauth]/route.ts`
+- **API route**: `app/api/auth/# Handled by @auth/sveltekit in hooks`
 - **Registration**: `app/api/auth/register/route.ts` (bcrypt password hashing)
 - **Middleware**: `middleware.ts` protects `/dashboard/*` routes, redirects logged-in users from `/auth/*`
 
@@ -938,8 +938,8 @@ Enums: `SubscriptionStatus`, `PaymentProvider`, `BillingInterval`, `Currency`, `
 
 ### Build Mode
 - The payment system requires **server mode** (`yarn build` / `NEXT_BUILD_MODE=default`) — NOT static export
-- API routes and Auth.js middleware need a running Next.js server
-- Production deployment: Caddy reverse proxy → `localhost:3000` (Next.js server)
+- API routes and Auth.js middleware need a running SvelteKit server
+- Production deployment: Caddy reverse proxy → `localhost:3000` (SvelteKit server)
 - `build:export` remains available for users who don't need billing (self-hosted docs)
 
 ### Environment Variables (`.env.local`)
@@ -975,7 +975,7 @@ MPESA_CALLBACK_URL, MPESA_ENV, NEXT_PUBLIC_APP_URL
 - **CLI**: https://github.com/dalmasonto/specra-cli
 
 ### Tools
-- **Next.js**: https://nextjs.org
+- **SvelteKit**: https://svelte.dev
 - **Vercel**: https://vercel.com
 - **MeiliSearch**: https://meilisearch.com
 

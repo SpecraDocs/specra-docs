@@ -363,7 +363,7 @@ Vérifiez votre configuration `basePath` :
 open https://username.github.io/repo-name
 
 # Vérifier si les ressources se chargent depuis
-https://username.github.io/repo-name/_next/...
+https://username.github.io/repo-name/_app/immutable/...
 ```
 
 Si les ressources renvoient 404, vérifiez :
@@ -430,7 +430,7 @@ npx imagemin public/images/* --out-dir=public/images
 Vérifiez ce qui est dans votre bundle :
 
 ```bash
-npm install -D @next/bundle-analyzer
+npm install -D vite-bundle-visualizer
 
 ANALYZE=true npm run build:export
 ```
