@@ -7,6 +7,11 @@ initConfig(specraConfig as unknown as Partial<SpecraConfig>);
 
 export const load: LayoutServerLoad = async ({ locals }) => {
   const config = getConfig();
-  const session = await locals.auth();
+  let session = null;
+  try {
+    session = await locals.auth();
+  } catch {
+    // Auth may not be configured yet (no database, etc.)
+  }
   return { config, session };
 };

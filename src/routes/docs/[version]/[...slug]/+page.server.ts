@@ -91,11 +91,13 @@ export const load: PageServerLoad = async ({ params }) => {
     };
   }
 
-  // Normal doc page
-  const toc = extractTableOfContents(doc.content);
+  // Normal doc page - use raw markdown (meta.content) for ToC extraction, doc.content is HTML
+  const toc = extractTableOfContents(doc.meta.content || doc.content);
   const { previous, next } = getAdjacentDocs(slug, allDocs);
   const showCategoryIndex = isCategory && !!doc;
-  const currentPageTabGroup = doc.meta?.tab_group || doc.categoryTabGroup;
+  // Look up tab group from allDocs since getDocBySlug doesn't read _category_.json
+  const matchingDoc = allDocs.find((d) => d.slug === slug);
+  const currentPageTabGroup = doc.meta?.tab_group || matchingDoc?.categoryTabGroup;
 
   return {
     version,
