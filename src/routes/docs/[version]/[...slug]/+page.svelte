@@ -10,8 +10,8 @@
     NotFoundContent,
     SearchHighlight,
     MobileDocLayout,
+    mdxComponents,
   } from 'specra/components';
-  import { mdxComponents } from 'specra';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
