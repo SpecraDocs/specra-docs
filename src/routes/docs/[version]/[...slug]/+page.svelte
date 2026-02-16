@@ -7,6 +7,7 @@
     HotReloadIndicator,
     DevModeBadge,
     MdxHotReload,
+    MdxContent,
     NotFoundContent,
     SearchHighlight,
     MobileDocLayout,
@@ -109,7 +110,11 @@
         slug={data.slug}
         config={data.config}
       >
-        {@html data.doc.content}
+        {#if data.doc.contentNodes}
+          <MdxContent nodes={data.doc.contentNodes} components={mdxComponents} />
+        {:else}
+          {@html data.doc.content}
+        {/if}
       </DocLayout>
     {/if}
   </MobileDocLayout>
