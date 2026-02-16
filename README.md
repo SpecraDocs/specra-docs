@@ -14,6 +14,10 @@ The fastest way to get started is with `create-specra`:
 npx create-specra@latest my-docs
 cd my-docs
 npm install
+cp .env.sample .env # update DATABASE_URL with user, password and database name
+npx prism generate && npx prims migrate dev  ## run migrations 
+npx auth secret   # generate secret for auth
+#[Optional] set ADMIN_EMAIL="user email" # this will seed the system with admin user
 npm run dev
 ```
 
