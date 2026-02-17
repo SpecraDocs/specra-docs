@@ -4080,7 +4080,7 @@ space-separated-tokens@^2.0.0:
 "specra@file:../specra-sdk/specra-0.2.8.tgz":
   version "0.2.8"
   resolved "file:../specra-sdk/specra-0.2.8.tgz"
-  integrity sha512-4bWSyq4sfUBWb7DaCCno5jP9MeJ0GdfsamRZQ7ReiTw9JFyK4xrfF0PVlzD8eJb99krLg7yop78WziNs3OjQHQ==
+  integrity sha512-vEcy9qco7MzHW20MzZ/gppPXzCT1SwRAOb3EoeOrFQL5DjJ3MdH1AmkPQ9C/hIQPzZnmch9dDQ+JdwG+9M3D6w==
   dependencies:
     bits-ui "^1.0.0"
     class-variance-authority "^0.7.1"
