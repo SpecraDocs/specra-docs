@@ -80,7 +80,7 @@
         Upgrade your plan
       </h2>
       <p class="text-muted-foreground max-w-md mx-auto">
-        Get access to custom domains, advanced analytics, AI-powered search, and more.
+        Get access to custom domains, advanced analytics, AI-powered search (comming soon), and more.
       </p>
       <a
         href="/pricing"

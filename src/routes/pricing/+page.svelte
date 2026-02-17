@@ -138,7 +138,7 @@
     customDomain: 'Custom domain',
     removeBranding: 'Remove Specra branding',
     search: 'Search',
-    aiSearch: 'AI-powered search',
+    aiSearch: 'AI-powered search ',
     apiDocs: 'API docs (OpenAPI)',
     analytics: 'Analytics',
     versionHistory: 'Version history',
