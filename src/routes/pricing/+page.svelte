@@ -147,10 +147,10 @@
     gitSync: 'Git sync (GitHub/GitLab)',
     contactForm: 'Contact form (Web3Forms)',
     liveChatWidget: 'Live chat widget',
-    sso: 'SSO (SAML/OIDC)',
+    // sso: 'SSO (SAML/OIDC)',
     rbac: 'RBAC',
     auditLogs: 'Audit logs',
-    sla: 'SLA guarantee',
+    // sla: 'SLA guarantee',
     support: 'Support',
   };
 
