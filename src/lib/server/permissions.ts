@@ -77,6 +77,24 @@ export async function canUseChat(userId: string) {
   return slug === "pro" || slug === "enterprise"
 }
 
+export async function getVersionHistoryLimit(userId: string) {
+  if (await isAdmin(userId)) {
+    return { versionHistoryDays: -1, cutoffDate: null }
+  }
+
+  const subscription = await getUserSubscription(userId)
+  const features = (subscription?.plan.features ?? {}) as Record<string, unknown>
+  const days = typeof features.versionHistoryDays === "number" ? features.versionHistoryDays : 7
+
+  if (days === -1) {
+    return { versionHistoryDays: -1, cutoffDate: null }
+  }
+
+  const cutoffDate = new Date()
+  cutoffDate.setDate(cutoffDate.getDate() - days)
+  return { versionHistoryDays: days, cutoffDate }
+}
+
 export async function checkPlanLimits(userId: string) {
   const projectCount = await prisma.project.count({ where: { userId } })
 

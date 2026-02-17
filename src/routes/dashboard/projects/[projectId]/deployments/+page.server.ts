@@ -2,6 +2,7 @@ import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/db.js';
 import { canAccessProject } from '$lib/server/auth-utils.js';
+import { getVersionHistoryLimit } from '$lib/server/permissions.js';
 
 export const load: PageServerLoad = async ({ locals, params, url }) => {
   const session = await locals.auth();
@@ -21,14 +22,21 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
   });
   if (!project) error(404, 'Not found');
 
+  const { versionHistoryDays, cutoffDate } = await getVersionHistoryLimit(session.user.id);
+
+  const where = {
+    projectId,
+    ...(cutoffDate ? { createdAt: { gte: cutoffDate } } : {}),
+  };
+
   const [deployments, total] = await Promise.all([
     prisma.deployment.findMany({
-      where: { projectId },
+      where,
       orderBy: { createdAt: 'desc' },
       skip: (page - 1) * limit,
       take: limit,
     }),
-    prisma.deployment.count({ where: { projectId } }),
+    prisma.deployment.count({ where }),
   ]);
 
   const totalPages = Math.ceil(total / limit);
@@ -40,8 +48,10 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
       status: d.status,
       trigger: d.trigger,
       commitSha: d.commitSha,
+      archivePath: d.archivePath,
       createdAt: d.createdAt.toISOString(),
     })),
+    versionHistoryDays,
     page,
     totalPages,
   };

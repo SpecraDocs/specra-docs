@@ -54,9 +54,19 @@ export async function deployProject(projectId: string, options: DeployOptions) {
   let buildLogs = ""
 
   try {
-    // 2. Extract docs to project directory
-    await updateStatus(deployment.id, "BUILDING")
+    // 2. Save archive for rollback
     const projectDir = path.join(PROJECTS_DIR, projectId)
+    const archivesDir = path.join(projectDir, "archives")
+    await mkdir(archivesDir, { recursive: true })
+    const archiveFilename = `${deployment.id}.tar.gz`
+    await writeFile(path.join(archivesDir, archiveFilename), options.docsContent)
+    await prisma.deployment.update({
+      where: { id: deployment.id },
+      data: { archivePath: `archives/${archiveFilename}` },
+    })
+
+    // 3. Extract docs to project directory
+    await updateStatus(deployment.id, "BUILDING")
     const sourceDir = path.join(projectDir, "source")
     await mkdir(sourceDir, { recursive: true })
 
@@ -73,7 +83,7 @@ export async function deployProject(projectId: string, options: DeployOptions) {
       )
     }
 
-    // 2b. Inject embed scripts (contact form, chat widget)
+    // 3b. Inject embed scripts (contact form, chat widget)
     const embedScripts = buildEmbedScripts(project)
     if (embedScripts) {
       const appHtmlPath = path.join(sourceDir, "src", "app.html")
@@ -86,7 +96,7 @@ export async function deployProject(projectId: string, options: DeployOptions) {
       }
     }
 
-    // 3. Stop existing container if running
+    // 4. Stop existing container if running
     const existingDeployment = await prisma.deployment.findFirst({
       where: {
         projectId,
@@ -104,10 +114,10 @@ export async function deployProject(projectId: string, options: DeployOptions) {
       })
     }
 
-    // 4. Build project
+    // 5. Build project
     buildLogs += await buildProjectImage(projectId)
 
-    // 5. Create and start container (DEPLOYING)
+    // 6. Create and start container (DEPLOYING)
     await updateStatus(deployment.id, "DEPLOYING")
     const port = await allocatePort()
     const containerId = await createContainer(projectId, port)
@@ -118,13 +128,13 @@ export async function deployProject(projectId: string, options: DeployOptions) {
       data: { containerId, port },
     })
 
-    // 6. Register Caddy routes
+    // 7. Register Caddy routes
     await addSubdomainRoute(project.subdomain, port)
     if (project.customDomain) {
       await addCustomDomainRoute(project.customDomain, port)
     }
 
-    // 7. Health check -> RUNNING or FAILED
+    // 8. Health check -> RUNNING or FAILED
     const healthy = await healthCheck(port)
     if (!healthy) {
       throw new Error("Health check failed after deployment")

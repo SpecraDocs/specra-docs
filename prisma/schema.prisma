@@ -296,6 +296,7 @@ model Deployment {
   buildLogs   String?          @db.Text
   trigger     DeployTrigger    @default(MANUAL)
   commitSha   String?
+  archivePath String?
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
 
