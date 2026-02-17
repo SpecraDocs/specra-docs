@@ -31,6 +31,7 @@ model User {
   auditLogs           AuditLog[]
   billingAddress      BillingAddress?
   invoices            Invoice[]
+  resolvedFeedback    FeedbackItem[]  @relation("FeedbackResolver")
 }
 
 model Account {
@@ -284,6 +285,7 @@ model Project {
   deployments     Deployment[]
   analyticsEvents AnalyticsEvent[]
   conversations   ChatConversation[]
+  feedbackItems   FeedbackItem[]
 
   @@index([userId])
   @@index([orgId])
@@ -431,6 +433,29 @@ model DocPageAccess {
   @@index([docVisitorId])
 }
 
+// ─── Feedback Models ───────────────────────────────────────────────────────
+
+model FeedbackItem {
+  id          String         @id @default(cuid())
+  projectId   String?
+  name        String
+  email       String
+  message     String         @db.Text
+  type        FeedbackType   @default(FEEDBACK)
+  status      FeedbackStatus @default(OPEN)
+  source      FeedbackSource @default(CONTACT_FORM)
+  resolvedAt  DateTime?
+  resolvedBy  String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  project  Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  resolver User?    @relation("FeedbackResolver", fields: [resolvedBy], references: [id], onDelete: SetNull)
+
+  @@index([projectId, status])
+  @@index([projectId, createdAt])
+}
+
 // ─── Enums ──────────────────────────────────────────────────────────────────
 
 enum UserRole {
@@ -514,4 +539,19 @@ enum ChatStatus {
 enum ChatSenderType {
   VISITOR
   OWNER
+}
+
+enum FeedbackType {
+  FEEDBACK
+  ISSUE
+}
+
+enum FeedbackStatus {
+  OPEN
+  RESOLVED
+}
+
+enum FeedbackSource {
+  CONTACT_FORM
+  ADMIN
 }

@@ -27,6 +27,10 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
   if (!project) error(404, 'Not found');
 
+  const feedbackCount = await prisma.feedbackItem.count({
+    where: { projectId, status: 'OPEN' },
+  });
+
   const baseDomain = env.DOCS_BASE_DOMAIN || 'docs.specra.dev';
   const latestDeploy = project.deployments[0];
   const isRunning = latestDeploy?.status === 'RUNNING';
@@ -52,5 +56,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     baseDomain,
     siteUrl,
     isRunning,
+    feedbackCount,
   };
 };

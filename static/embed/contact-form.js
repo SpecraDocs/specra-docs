@@ -131,31 +131,39 @@
           btn.textContent = 'Sending...';
           msgEl.style.display = 'none';
 
-          const formData = new FormData(form);
-          formData.append('access_key', config.accessKey);
+          const name = shadow.getElementById('specra-cf-name').value;
+          const email = shadow.getElementById('specra-cf-email').value;
+          const message = shadow.getElementById('specra-cf-message').value;
 
           try {
-            const res = await fetch('https://api.web3forms.com/submit', {
+            // Store locally first (primary)
+            await fetch(`${API_BASE}/api/embed/contact-form`, {
               method: 'POST',
-              body: formData,
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ projectId, name, email, message }),
             });
-            const data = await res.json();
 
-            if (data.success) {
-              form.style.display = 'none';
-              msgEl.className = 'specra-cf-msg success';
-              msgEl.textContent = 'Message sent successfully!';
-              msgEl.style.display = 'block';
-              setTimeout(() => {
-                form.reset();
-                form.style.display = 'block';
-                msgEl.style.display = 'none';
-                isOpen = false;
-                panel.classList.remove('open');
-              }, 3000);
-            } else {
-              throw new Error(data.message || 'Failed to send');
+            // Also submit to Web3Forms for email delivery (if access key present)
+            if (config.accessKey) {
+              const formData = new FormData(form);
+              formData.append('access_key', config.accessKey);
+              fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                body: formData,
+              }).catch(() => {});
             }
+
+            form.style.display = 'none';
+            msgEl.className = 'specra-cf-msg success';
+            msgEl.textContent = 'Message sent successfully!';
+            msgEl.style.display = 'block';
+            setTimeout(() => {
+              form.reset();
+              form.style.display = 'block';
+              msgEl.style.display = 'none';
+              isOpen = false;
+              panel.classList.remove('open');
+            }, 3000);
           } catch (err) {
             msgEl.className = 'specra-cf-msg error';
             msgEl.textContent = 'Failed to send message. Please try again.';

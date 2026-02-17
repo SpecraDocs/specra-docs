@@ -10,6 +10,7 @@
     Crown,
     Tag,
     MessageCircle,
+    MessageSquare,
     ScrollText,
   } from 'lucide-svelte';
 
@@ -22,6 +23,7 @@
     { href: '/admin/deployments', label: 'Deployments', icon: Server },
     { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
     { href: '/admin/chat', label: 'Chat', icon: MessageCircle },
+    { href: '/admin/feedback', label: 'Feedback', icon: MessageSquare },
     { href: '/admin/audit-logs', label: 'Audit Logs', icon: ScrollText },
   ];
 </script>

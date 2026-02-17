@@ -6,6 +6,7 @@
     GitBranch,
     Clock,
     Rocket,
+    MessageSquare,
   } from 'lucide-svelte';
   import type { PageData } from './$types';
 
@@ -89,7 +90,7 @@
   </div>
 
   <!-- Quick Actions -->
-  <div class="grid sm:grid-cols-3 gap-4">
+  <div class="grid sm:grid-cols-4 gap-4">
     <a
       href="/dashboard/projects/{data.project.id}/deployments"
       class="rounded-lg border border-border bg-card p-4 hover:border-foreground/20 transition-colors"
@@ -107,6 +108,16 @@
       <Clock class="h-5 w-5 text-muted-foreground mb-2" />
       <p class="font-medium text-foreground text-sm">Analytics</p>
       <p class="text-xs text-muted-foreground mt-0.5">View traffic</p>
+    </a>
+    <a
+      href="/dashboard/projects/{data.project.id}/feedback"
+      class="rounded-lg border border-border bg-card p-4 hover:border-foreground/20 transition-colors"
+    >
+      <MessageSquare class="h-5 w-5 text-muted-foreground mb-2" />
+      <p class="font-medium text-foreground text-sm">Feedback</p>
+      <p class="text-xs text-muted-foreground mt-0.5">
+        {data.feedbackCount} open
+      </p>
     </a>
     <a
       href="/dashboard/projects/{data.project.id}/settings"

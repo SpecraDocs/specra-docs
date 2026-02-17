@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ArrowRight, BookOpen, Zap, Code, Github, Twitter, Linkedin } from 'lucide-svelte';
+  import { ArrowRight, BookOpen, Zap, Code, Github, Twitter, Linkedin, Mail } from 'lucide-svelte';
   import { Button, SiteBanner, Logo } from 'specra/components';
   import type { PageData } from './$types';
 
@@ -9,6 +9,46 @@
   let session = $derived(data.session);
   let activeVersion = $derived(config.site.activeVersion || 'v4.0.0');
   let docsUrl = $derived(`/docs/${activeVersion}/en/about`);
+
+  let contactName = $state('');
+  let contactEmail = $state('');
+  let contactMessage = $state('');
+  let contactSubmitting = $state(false);
+  let contactSuccess = $state(false);
+  let contactError = $state('');
+
+  async function submitContact() {
+    if (!contactName || !contactEmail || !contactMessage) return;
+    contactSubmitting = true;
+    contactError = '';
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: contactName,
+          email: contactEmail,
+          message: contactMessage,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to send message');
+      }
+
+      contactSuccess = true;
+      contactName = '';
+      contactEmail = '';
+      contactMessage = '';
+      setTimeout(() => (contactSuccess = false), 5000);
+    } catch (err) {
+      contactError = err instanceof Error ? err.message : 'Failed to send message';
+    } finally {
+      contactSubmitting = false;
+    }
+  }
 </script>
 
 <svelte:head>
@@ -139,6 +179,69 @@
             </Button>
           {/if}
         </div>
+      </div>
+    </div>
+
+    <!-- Contact Us Section -->
+    <div class="py-16 max-w-2xl mx-auto">
+      <div class="rounded-xl border border-border bg-card p-8 md:p-10 space-y-6">
+        <div class="text-center space-y-2">
+          <div class="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mx-auto">
+            <Mail class="h-6 w-6 text-primary" />
+          </div>
+          <h2 class="text-2xl md:text-3xl font-bold text-foreground">Contact Us</h2>
+          <p class="text-muted-foreground">Have a question or feedback? We'd love to hear from you.</p>
+        </div>
+
+        {#if contactSuccess}
+          <div class="rounded-md bg-green-50 border border-green-200 p-4 text-center">
+            <p class="text-sm text-green-700 font-medium">Message sent successfully! We'll get back to you soon.</p>
+          </div>
+        {:else}
+          <form onsubmit={(e) => { e.preventDefault(); submitContact(); }} class="space-y-4">
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label for="contact-name" class="block text-sm font-medium text-muted-foreground mb-1">Name</label>
+                <input
+                  id="contact-name"
+                  type="text"
+                  bind:value={contactName}
+                  required
+                  class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  placeholder="Your name"
+                />
+              </div>
+              <div>
+                <label for="contact-email" class="block text-sm font-medium text-muted-foreground mb-1">Email</label>
+                <input
+                  id="contact-email"
+                  type="email"
+                  bind:value={contactEmail}
+                  required
+                  class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  placeholder="you@example.com"
+                />
+              </div>
+            </div>
+            <div>
+              <label for="contact-message" class="block text-sm font-medium text-muted-foreground mb-1">Message</label>
+              <textarea
+                id="contact-message"
+                bind:value={contactMessage}
+                required
+                rows="4"
+                class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground resize-vertical focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                placeholder="Your message..."
+              ></textarea>
+            </div>
+            {#if contactError}
+              <p class="text-sm text-destructive">{contactError}</p>
+            {/if}
+            <Button type="submit" disabled={contactSubmitting} class="w-full">
+              {contactSubmitting ? 'Sending...' : 'Send Message'}
+            </Button>
+          </form>
+        {/if}
       </div>
     </div>
 
