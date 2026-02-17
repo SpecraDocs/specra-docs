@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
 import { canAccessProject } from '$lib/server/auth-utils.js';
+import { logAudit } from '$lib/server/audit.js';
 
 export const GET: RequestHandler = async ({ locals, params }) => {
   const session = await locals.auth();
@@ -57,6 +58,13 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
     },
   });
 
+  logAudit({
+    userId: session.user.id,
+    action: 'PROJECT.UPDATE',
+    target: projectId,
+    metadata: { name, customDomain },
+  });
+
   return json(project);
 };
 
@@ -90,6 +98,13 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
   }
 
   await prisma.project.delete({ where: { id: projectId } });
+
+  logAudit({
+    userId: session.user.id,
+    action: 'PROJECT.DELETE',
+    target: projectId,
+    metadata: { name: project.name, slug: project.slug },
+  });
 
   return json({ success: true });
 };

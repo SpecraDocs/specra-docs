@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { isAdmin } from '$lib/server/permissions.js';
 import { prisma } from '$lib/server/db.js';
+import { logAudit } from '$lib/server/audit.js';
 
 export const GET: RequestHandler = async ({ locals, params }) => {
   const session = await locals.auth();
@@ -107,6 +108,13 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
     where: { id: userId },
     data: updateData,
     select: { id: true, name: true, email: true, role: true, status: true },
+  });
+
+  logAudit({
+    userId: session.user.id,
+    action: 'ADMIN.USER_UPDATE',
+    target: userId,
+    metadata: { role, status, oldRole: targetUser.role, oldStatus: targetUser.status },
   });
 
   // If blocking user, invalidate all their sessions

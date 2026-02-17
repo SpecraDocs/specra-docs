@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
 import { canAccessProject } from '$lib/server/auth-utils.js';
 import { canUseContactForm } from '$lib/server/permissions.js';
+import { logAudit } from '$lib/server/audit.js';
 
 export const PUT: RequestHandler = async ({ request, locals, params }) => {
   const session = await locals.auth();
@@ -29,6 +30,13 @@ export const PUT: RequestHandler = async ({ request, locals, params }) => {
   const project = await prisma.project.update({
     where: { id: projectId },
     data: { web3formsKey: accessKey || null },
+  });
+
+  logAudit({
+    userId: session.user.id,
+    action: 'PROJECT.CONTACT_FORM_UPDATE',
+    target: projectId,
+    metadata: { enabled: !!accessKey },
   });
 
   return json({ success: true, web3formsKey: project.web3formsKey });

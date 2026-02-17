@@ -4,6 +4,7 @@ import { prisma } from '$lib/server/db.js';
 import { canAccessProject } from '$lib/server/auth-utils.js';
 import { stopContainer, removeContainer } from '$lib/server/docker.js';
 import { removeRoute } from '$lib/server/caddy.js';
+import { logAudit } from '$lib/server/audit.js';
 
 export const POST: RequestHandler = async ({ locals, params }) => {
   const session = await locals.auth();
@@ -49,6 +50,13 @@ export const POST: RequestHandler = async ({ locals, params }) => {
   await prisma.deployment.update({
     where: { id: deploymentId },
     data: { status: 'STOPPED' },
+  });
+
+  logAudit({
+    userId: session.user.id,
+    action: 'DEPLOYMENT.STOP',
+    target: deploymentId,
+    metadata: { projectId },
   });
 
   return json({ success: true });

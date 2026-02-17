@@ -4,6 +4,7 @@ import { prisma } from '$lib/server/db.js';
 import { canDeploy } from '$lib/server/permissions.js';
 import { getVersionHistoryLimit } from '$lib/server/permissions.js';
 import { deployProject } from '$lib/server/deploy.js';
+import { logAudit } from '$lib/server/audit.js';
 import { readFile } from 'fs/promises';
 import path from 'path';
 
@@ -53,6 +54,13 @@ export const POST: RequestHandler = async ({ locals, params }) => {
     docsContent,
     trigger: 'MANUAL',
     commitSha: deployment.commitSha ?? undefined,
+  });
+
+  logAudit({
+    userId: session.user.id,
+    action: 'DEPLOYMENT.ROLLBACK',
+    target: newDeploymentId,
+    metadata: { projectId, fromDeploymentId: deploymentId },
   });
 
   return json({ deploymentId: newDeploymentId }, { status: 202 });

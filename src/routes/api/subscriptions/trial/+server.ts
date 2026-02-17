@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
+import { logAudit } from '$lib/server/audit.js';
 
 const TRIAL_DAYS = 14;
 
@@ -75,17 +76,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       },
     });
 
-    await prisma.auditLog.create({
-      data: {
-        userId: session.user.id,
-        action: 'START_FREE_TRIAL',
-        target: session.user.id,
-        metadata: {
-          planSlug: plan.slug,
-          planName: plan.name,
-          trialDays: TRIAL_DAYS,
-          subscriptionId: subscription.id,
-        },
+    logAudit({
+      userId: session.user.id,
+      action: 'START_FREE_TRIAL',
+      target: session.user.id,
+      metadata: {
+        planSlug: plan.slug,
+        planName: plan.name,
+        trialDays: TRIAL_DAYS,
+        subscriptionId: subscription.id,
       },
     });
 

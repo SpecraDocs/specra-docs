@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
+import { logAudit } from '$lib/server/audit.js';
 
 async function getOrgMembership(userId: string, orgId: string) {
   return prisma.organizationMember.findUnique({
@@ -56,6 +57,14 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
     },
   });
 
+  logAudit({
+    userId: session.user.id,
+    orgId,
+    action: 'ORG.UPDATE',
+    target: orgId,
+    metadata: { name, avatar },
+  });
+
   return json(org);
 };
 
@@ -72,7 +81,17 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
     return json({ error: 'Only owners can delete organizations' }, { status: 403 });
   }
 
+  const org = await prisma.organization.findUnique({ where: { id: orgId }, select: { name: true } });
+
   await prisma.organization.delete({ where: { id: orgId } });
+
+  logAudit({
+    userId: session.user.id,
+    orgId,
+    action: 'ORG.DELETE',
+    target: orgId,
+    metadata: { name: org?.name },
+  });
 
   return json({ success: true });
 };

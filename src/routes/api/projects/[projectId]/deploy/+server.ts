@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 import { canDeploy } from '$lib/server/permissions.js';
 import { deployProject } from '$lib/server/deploy.js';
 import { authenticateApiRequest } from '$lib/server/api-auth.js';
+import { logAudit } from '$lib/server/audit.js';
 
 export const POST: RequestHandler = async ({ request, locals, params }) => {
   const { projectId } = params;
@@ -61,6 +62,13 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
       configJson,
       trigger,
       commitSha,
+    });
+
+    logAudit({
+      userId,
+      action: 'DEPLOYMENT.CREATE',
+      target: deploymentId,
+      metadata: { projectId, trigger, commitSha },
     });
 
     return json({ deploymentId }, { status: 202 });

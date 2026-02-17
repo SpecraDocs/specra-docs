@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
+import { logAudit } from '$lib/server/audit.js';
 
 export const PATCH: RequestHandler = async ({ request, locals, params }) => {
   const session = await locals.auth();
@@ -40,6 +41,14 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
     include: { user: { select: { id: true, name: true, email: true } } },
   });
 
+  logAudit({
+    userId: session.user.id,
+    orgId,
+    action: 'ORG.MEMBER_ROLE_CHANGE',
+    target: orgId,
+    metadata: { memberId, oldRole: target.role, newRole: role },
+  });
+
   return json(updated);
 };
 
@@ -74,6 +83,14 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
   }
 
   await prisma.organizationMember.delete({ where: { id: memberId } });
+
+  logAudit({
+    userId: session.user.id,
+    orgId,
+    action: 'ORG.MEMBER_REMOVE',
+    target: orgId,
+    metadata: { memberId, removedUserId: target.userId, selfRemoval: isSelf },
+  });
 
   return json({ success: true });
 };

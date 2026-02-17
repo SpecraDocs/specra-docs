@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 import { isAdmin } from '$lib/server/permissions.js';
 import { prisma } from '$lib/server/db.js';
 import { stripe } from '$lib/server/stripe.js';
+import { logAudit } from '$lib/server/audit.js';
 
 export const GET: RequestHandler = async ({ locals, params }) => {
   try {
@@ -98,19 +99,17 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
       },
     });
 
-    await prisma.auditLog.create({
-      data: {
-        userId: session.user.id,
-        action: 'ADMIN_CHANGE_PLAN',
-        target: subscription.userId,
-        metadata: {
-          subscriptionId,
-          oldPlanId: subscription.planId,
-          oldPlanName: subscription.plan.name,
-          newPlanId: planId,
-          newPlanName: newPlan.name,
-          reason: reason || null,
-        },
+    logAudit({
+      userId: session.user.id,
+      action: 'ADMIN_CHANGE_PLAN',
+      target: subscription.userId,
+      metadata: {
+        subscriptionId,
+        oldPlanId: subscription.planId,
+        oldPlanName: subscription.plan.name,
+        newPlanId: planId,
+        newPlanName: newPlan.name,
+        reason: reason || null,
       },
     });
 
@@ -156,16 +155,14 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
       data: { status: 'CANCELLED' },
     });
 
-    await prisma.auditLog.create({
-      data: {
-        userId: session.user.id,
-        action: 'ADMIN_CANCEL_SUBSCRIPTION',
-        target: subscription.userId,
-        metadata: {
-          subscriptionId,
-          planName: subscription.plan.name,
-          provider: subscription.paymentProvider,
-        },
+    logAudit({
+      userId: session.user.id,
+      action: 'ADMIN_CANCEL_SUBSCRIPTION',
+      target: subscription.userId,
+      metadata: {
+        subscriptionId,
+        planName: subscription.plan.name,
+        provider: subscription.paymentProvider,
       },
     });
 

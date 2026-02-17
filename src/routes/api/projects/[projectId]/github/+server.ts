@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
 import { canAccessProject } from '$lib/server/auth-utils.js';
+import { logAudit } from '$lib/server/audit.js';
 
 export const POST: RequestHandler = async ({ request, locals, params }) => {
   const session = await locals.auth();
@@ -33,6 +34,13 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
     },
   });
 
+  logAudit({
+    userId: session.user.id,
+    action: 'PROJECT.GITHUB_CONNECT',
+    target: projectId,
+    metadata: { repo, branch: branch || 'main' },
+  });
+
   return json(project);
 };
 
@@ -55,6 +63,13 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
       githubRepo: null,
       githubBranch: 'main',
     },
+  });
+
+  logAudit({
+    userId: session.user.id,
+    action: 'PROJECT.GITHUB_DISCONNECT',
+    target: projectId,
+    metadata: {},
   });
 
   return json(project);

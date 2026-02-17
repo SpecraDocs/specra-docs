@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
 import { checkPlanLimits } from '$lib/server/permissions.js';
+import { logAudit } from '$lib/server/audit.js';
 
 export const GET: RequestHandler = async ({ locals }) => {
   const session = await locals.auth();
@@ -91,6 +92,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       userId: session.user.id,
       orgId: orgId || null,
     },
+  });
+
+  logAudit({
+    userId: session.user.id,
+    orgId: orgId || null,
+    action: 'PROJECT.CREATE',
+    target: project.id,
+    metadata: { name, slug, orgId: orgId || null },
   });
 
   return json(project, { status: 201 });

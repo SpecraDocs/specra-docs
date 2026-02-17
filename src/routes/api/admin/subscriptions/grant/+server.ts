@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { isAdmin } from '$lib/server/permissions.js';
 import { prisma } from '$lib/server/db.js';
+import { logAudit } from '$lib/server/audit.js';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {
@@ -63,18 +64,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       },
     });
 
-    await prisma.auditLog.create({
-      data: {
-        userId: session.user.id,
-        action: 'ADMIN_GRANT_SUBSCRIPTION',
-        target: userId,
-        metadata: {
-          planId,
-          planName: plan.name,
-          interval: interval || 'monthly',
-          reason: reason || null,
-          subscriptionId: subscription.id,
-        },
+    logAudit({
+      userId: session.user.id,
+      action: 'ADMIN_GRANT_SUBSCRIPTION',
+      target: userId,
+      metadata: {
+        planId,
+        planName: plan.name,
+        interval: interval || 'monthly',
+        reason: reason || null,
+        subscriptionId: subscription.id,
       },
     });
 

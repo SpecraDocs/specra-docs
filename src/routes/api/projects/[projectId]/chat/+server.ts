@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
 import { canAccessProject } from '$lib/server/auth-utils.js';
 import { canUseChat } from '$lib/server/permissions.js';
+import { logAudit } from '$lib/server/audit.js';
 
 export const PUT: RequestHandler = async ({ request, locals, params }) => {
   const session = await locals.auth();
@@ -29,6 +30,13 @@ export const PUT: RequestHandler = async ({ request, locals, params }) => {
   const project = await prisma.project.update({
     where: { id: projectId },
     data: { chatEnabled: enabled },
+  });
+
+  logAudit({
+    userId: session.user.id,
+    action: 'PROJECT.CHAT_UPDATE',
+    target: projectId,
+    metadata: { enabled },
   });
 
   return json({ success: true, chatEnabled: project.chatEnabled });

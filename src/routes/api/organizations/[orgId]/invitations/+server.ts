@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
+import { logAudit } from '$lib/server/audit.js';
 
 export const GET: RequestHandler = async ({ locals, params }) => {
   const session = await locals.auth();
@@ -78,6 +79,14 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
       role: role || 'MEMBER',
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
     },
+  });
+
+  logAudit({
+    userId: session.user.id,
+    orgId,
+    action: 'ORG.INVITE',
+    target: orgId,
+    metadata: { email, role: role || 'MEMBER' },
   });
 
   // In production, send email with invitation link
