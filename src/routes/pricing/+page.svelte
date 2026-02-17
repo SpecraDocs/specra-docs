@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Check, X, ArrowLeft } from 'lucide-svelte';
+  import { Check, X, ArrowLeft, ArrowRight } from 'lucide-svelte';
 
   const tiers = [
     {
@@ -23,6 +23,8 @@
         passwordPages: false,
         customCssJs: false,
         gitSync: false,
+        contactForm: false,
+        liveChatWidget: false,
         sso: false,
         rbac: false,
         auditLogs: false,
@@ -53,6 +55,8 @@
         passwordPages: true,
         customCssJs: false,
         gitSync: false,
+        contactForm: true,
+        liveChatWidget: false,
         sso: false,
         rbac: false,
         auditLogs: false,
@@ -83,6 +87,8 @@
         passwordPages: true,
         customCssJs: true,
         gitSync: true,
+        contactForm: true,
+        liveChatWidget: true,
         sso: false,
         rbac: false,
         auditLogs: false,
@@ -113,6 +119,8 @@
         passwordPages: true,
         customCssJs: true,
         gitSync: true,
+        contactForm: true,
+        liveChatWidget: true,
         sso: true,
         rbac: true,
         auditLogs: true,
@@ -137,6 +145,8 @@
     passwordPages: 'Password-protected pages',
     customCssJs: 'Custom CSS/JS',
     gitSync: 'Git sync (GitHub/GitLab)',
+    contactForm: 'Contact form (Web3Forms)',
+    liveChatWidget: 'Live chat widget',
     sso: 'SSO (SAML/OIDC)',
     rbac: 'RBAC',
     auditLogs: 'Audit logs',
@@ -244,9 +254,9 @@
       </div>
     </div>
 
-    <!-- Tier cards -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-20">
-      {#each tiers as tier (tier.slug)}
+    <!-- Simplified plan cards (Free, Starter, Pro only) -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto mb-20">
+      {#each tiers.filter(t => t.slug !== 'enterprise') as tier (tier.slug)}
         <div
           class="relative rounded-xl border p-6 flex flex-col {tier.popular
             ? 'border-primary shadow-lg shadow-primary/10'
@@ -281,39 +291,18 @@
 
           <button
             onclick={() => handleSelectPlan(tier.slug)}
-            class="w-full rounded-md px-4 py-2.5 text-sm font-medium transition-colors mb-6 {tier.popular
+            class="w-full rounded-md px-4 py-2.5 text-sm font-medium transition-colors {tier.popular
               ? 'bg-primary text-primary-foreground hover:bg-primary/90'
               : 'border border-border bg-background text-foreground hover:bg-accent'}"
           >
             {tier.cta}
           </button>
-
-          <ul class="space-y-3 flex-1">
-            {#each Object.entries(tier.features) as [key, value] (key)}
-              <li class="flex items-start gap-2 text-sm">
-                {#if value === false}
-                  <X class="h-4 w-4 text-muted-foreground/40 mt-0.5 shrink-0" />
-                {:else}
-                  <Check class="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                {/if}
-                <span
-                  class={value === false
-                    ? 'text-muted-foreground/40'
-                    : 'text-foreground'}
-                >
-                  {typeof value === 'string'
-                    ? value
-                    : featureLabels[key] || key}
-                </span>
-              </li>
-            {/each}
-          </ul>
         </div>
       {/each}
     </div>
 
     <!-- Feature comparison table -->
-    <div class="max-w-5xl mx-auto">
+    <div class="max-w-5xl mx-auto mb-20">
       <h2 class="text-2xl font-bold text-foreground text-center mb-8">
         Compare all features
       </h2>
@@ -330,6 +319,18 @@
             </tr>
           </thead>
           <tbody>
+            <!-- Pricing row -->
+            <tr class="border-b border-border bg-accent/30">
+              <td class="py-3 pr-4 font-medium text-foreground">Price</td>
+              {#each tiers as tier (tier.slug)}
+                <td class="text-center py-3 px-4">
+                  <span class="font-semibold text-foreground">{getPrice(tier)}</span>
+                  {#if tier.priceUsd > 0}
+                    <span class="text-muted-foreground text-xs">/mo</span>
+                  {/if}
+                </td>
+              {/each}
+            </tr>
             {#each Object.entries(featureLabels) as [key, label] (key)}
               <tr class="border-b border-border/50">
                 <td class="py-3 pr-4 text-foreground">{label}</td>
@@ -349,6 +350,23 @@
             {/each}
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- Enterprise CTA -->
+    <div class="max-w-3xl mx-auto">
+      <div class="rounded-xl border border-border bg-card p-8 text-center space-y-4">
+        <h2 class="text-2xl font-bold text-foreground">Enterprise</h2>
+        <p class="text-muted-foreground max-w-lg mx-auto">
+          For organizations needing SSO, RBAC, audit logs, and a dedicated SLA. Get a plan tailored to your needs.
+        </p>
+        <a
+          href="mailto:sales@specra.dev"
+          class="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+        >
+          Contact Sales
+          <ArrowRight class="h-4 w-4" />
+        </a>
       </div>
     </div>
   </main>

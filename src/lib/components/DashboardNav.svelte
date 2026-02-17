@@ -8,6 +8,7 @@
     BarChart3,
     Building2,
     Shield,
+    MessageCircle,
   } from 'lucide-svelte';
   import ScopeSwitcher from '$lib/components/ScopeSwitcher.svelte';
   import type { ComponentType } from 'svelte';
@@ -22,6 +23,7 @@
     { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
     { href: '/dashboard/projects', label: 'Projects', icon: FolderGit2 },
     { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3 },
+    { href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
     { href: '/dashboard/organizations', label: 'Organizations', icon: Building2 },
     { href: '/dashboard/billing', label: 'Billing', icon: CreditCard },
     { href: '/dashboard/settings', label: 'Settings', icon: Settings },

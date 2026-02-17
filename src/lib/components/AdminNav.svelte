@@ -9,6 +9,7 @@
     User,
     Crown,
     Tag,
+    MessageCircle,
   } from 'lucide-svelte';
 
   const adminNavItems = [
@@ -19,6 +20,7 @@
     { href: '/admin/coupons', label: 'Coupons', icon: Tag },
     { href: '/admin/deployments', label: 'Deployments', icon: Server },
     { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
+    { href: '/admin/chat', label: 'Chat', icon: MessageCircle },
   ];
 </script>
 

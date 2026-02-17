@@ -9,7 +9,7 @@ import {
   healthCheck,
 } from "./docker.js"
 import { addSubdomainRoute, addCustomDomainRoute } from "./caddy.js"
-import { mkdir, writeFile } from "fs/promises"
+import { mkdir, readFile, writeFile } from "fs/promises"
 import path from "path"
 
 const PROJECTS_DIR = process.env.PROJECTS_DATA_DIR || "/data/specra/projects"
@@ -19,6 +19,21 @@ interface DeployOptions {
   configJson?: string
   trigger: "MANUAL" | "CLI" | "GITHUB"
   commitSha?: string
+}
+
+function buildEmbedScripts(project: { id: string; web3formsKey: string | null; chatEnabled: boolean }): string {
+  let scripts = ""
+  const baseUrl = process.env.PUBLIC_BASE_URL || "https://specra.dev"
+
+  if (project.web3formsKey) {
+    scripts += `<script src="${baseUrl}/embed/contact-form.js" data-project-id="${project.id}" defer><\/script>\n`
+  }
+
+  if (project.chatEnabled) {
+    scripts += `<script src="${baseUrl}/embed/chat-widget.js" data-project-id="${project.id}" defer><\/script>\n`
+  }
+
+  return scripts
 }
 
 export async function deployProject(projectId: string, options: DeployOptions) {
@@ -56,6 +71,19 @@ export async function deployProject(projectId: string, options: DeployOptions) {
         path.join(sourceDir, "specra.config.json"),
         options.configJson
       )
+    }
+
+    // 2b. Inject embed scripts (contact form, chat widget)
+    const embedScripts = buildEmbedScripts(project)
+    if (embedScripts) {
+      const appHtmlPath = path.join(sourceDir, "src", "app.html")
+      try {
+        let html = await readFile(appHtmlPath, "utf-8")
+        html = html.replace("</body>", `${embedScripts}</body>`)
+        await writeFile(appHtmlPath, html)
+      } catch {
+        // app.html may not exist in all project types, skip silently
+      }
     }
 
     // 3. Stop existing container if running

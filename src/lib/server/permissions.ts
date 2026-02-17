@@ -61,6 +61,22 @@ export async function isAdmin(userId: string) {
   return user?.role === "ADMIN"
 }
 
+export async function canUseContactForm(userId: string) {
+  if (await isAdmin(userId)) return true
+  const subscription = await getUserSubscription(userId)
+  if (!subscription) return false
+  const slug = subscription.plan.slug
+  return slug === "starter" || slug === "pro" || slug === "enterprise"
+}
+
+export async function canUseChat(userId: string) {
+  if (await isAdmin(userId)) return true
+  const subscription = await getUserSubscription(userId)
+  if (!subscription) return false
+  const slug = subscription.plan.slug
+  return slug === "pro" || slug === "enterprise"
+}
+
 export async function checkPlanLimits(userId: string) {
   const projectCount = await prisma.project.count({ where: { userId } })
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { ArrowLeft, Trash2 } from 'lucide-svelte';
+  import { ArrowLeft, Trash2, ExternalLink } from 'lucide-svelte';
 
   interface Project {
     id: string;
@@ -11,9 +11,14 @@
     customDomain: string | null;
     githubRepo: string | null;
     githubBranch: string | null;
+    web3formsKey: string | null;
+    chatEnabled: boolean;
   }
 
+  let { data } = $props();
+
   const projectId = $derived($page.params.projectId);
+  const planSlug = $derived(data.planSlug);
 
   let project = $state<Project | null>(null);
   let domain = $state('');
@@ -22,12 +27,32 @@
   let verifying = $state(false);
   let deleting = $state(false);
 
+  // Web3Forms state
+  let web3formsKey = $state('');
+  let web3formsSaving = $state(false);
+  let web3formsMsg = $state('');
+
+  // Chat state
+  let chatEnabled = $state(false);
+  let chatSaving = $state(false);
+  let chatMsg = $state('');
+
+  const canContactForm = $derived(
+    planSlug === 'starter' || planSlug === 'pro' || planSlug === 'enterprise' || planSlug === 'admin'
+  );
+
+  const canChat = $derived(
+    planSlug === 'pro' || planSlug === 'enterprise' || planSlug === 'admin'
+  );
+
   $effect(() => {
     fetch(`/api/projects/${projectId}`)
       .then((r) => r.json())
       .then((data) => {
         project = data;
         domain = data.customDomain || '';
+        web3formsKey = data.web3formsKey || '';
+        chatEnabled = data.chatEnabled || false;
       });
   });
 
@@ -90,6 +115,50 @@
     if (project) {
       project = { ...project, githubRepo: null, githubBranch: null };
     }
+  }
+
+  async function handleSaveWeb3Forms(e: SubmitEvent) {
+    e.preventDefault();
+    web3formsSaving = true;
+    web3formsMsg = '';
+
+    const res = await fetch(`/api/projects/${projectId}/web3forms`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ accessKey: web3formsKey }),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (project) project = { ...project, web3formsKey: data.web3formsKey };
+      web3formsMsg = web3formsKey ? 'Contact form key saved!' : 'Contact form key removed.';
+    } else {
+      const data = await res.json();
+      web3formsMsg = data.error || 'Failed to save';
+    }
+    web3formsSaving = false;
+  }
+
+  async function handleToggleChat() {
+    chatSaving = true;
+    chatMsg = '';
+
+    const res = await fetch(`/api/projects/${projectId}/chat`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ enabled: !chatEnabled }),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      chatEnabled = data.chatEnabled;
+      if (project) project = { ...project, chatEnabled: data.chatEnabled };
+      chatMsg = chatEnabled ? 'Live chat enabled!' : 'Live chat disabled.';
+    } else {
+      const data = await res.json();
+      chatMsg = data.error || 'Failed to update';
+    }
+    chatSaving = false;
   }
 </script>
 
@@ -183,6 +252,84 @@
             Connect GitHub
           </a>
         </div>
+      {/if}
+    </div>
+
+    <!-- Contact Form (Web3Forms) -->
+    <div class="rounded-lg border border-border bg-card p-6 space-y-4">
+      <h2 class="text-lg font-semibold text-foreground">Contact Form</h2>
+      {#if canContactForm}
+        <p class="text-sm text-muted-foreground">
+          Add a contact form widget to your published doc site using
+          <a href="https://web3forms.com/" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline inline-flex items-center gap-1">
+            Web3Forms <ExternalLink class="h-3 w-3" />
+          </a>. Get your free access key from their site, then paste it below.
+        </p>
+        <form onsubmit={handleSaveWeb3Forms} class="flex gap-2">
+          <input
+            type="text"
+            bind:value={web3formsKey}
+            placeholder="Your Web3Forms access key"
+            class="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20"
+          />
+          <button
+            type="submit"
+            disabled={web3formsSaving}
+            class="rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background hover:bg-foreground/90 transition-colors disabled:opacity-50"
+          >
+            {web3formsSaving ? 'Saving...' : 'Save'}
+          </button>
+        </form>
+        {#if web3formsMsg}
+          <p class="text-sm text-green-600">{web3formsMsg}</p>
+        {/if}
+      {:else}
+        <p class="text-sm text-muted-foreground">
+          Contact form requires the Starter plan or above.
+        </p>
+        <a
+          href="/pricing"
+          class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+        >
+          Upgrade Plan
+        </a>
+      {/if}
+    </div>
+
+    <!-- Live Chat -->
+    <div class="rounded-lg border border-border bg-card p-6 space-y-4">
+      <h2 class="text-lg font-semibold text-foreground">Live Chat</h2>
+      {#if canChat}
+        <p class="text-sm text-muted-foreground">
+          Enable a live chat widget on your published doc site. Visitors can chat with you in real-time from your dashboard.
+        </p>
+        <div class="flex items-center gap-4">
+          <button
+            onclick={handleToggleChat}
+            disabled={chatSaving}
+            class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors {chatEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}"
+          >
+            <span
+              class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform {chatEnabled ? 'translate-x-6' : 'translate-x-1'}"
+            ></span>
+          </button>
+          <span class="text-sm text-foreground">
+            {chatEnabled ? 'Enabled' : 'Disabled'}
+          </span>
+        </div>
+        {#if chatMsg}
+          <p class="text-sm text-green-600">{chatMsg}</p>
+        {/if}
+      {:else}
+        <p class="text-sm text-muted-foreground">
+          Live chat requires the Pro plan or above.
+        </p>
+        <a
+          href="/pricing"
+          class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+        >
+          Upgrade Plan
+        </a>
       {/if}
     </div>
 

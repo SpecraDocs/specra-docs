@@ -272,6 +272,8 @@ model Project {
   githubRepo     String?
   githubBranch   String?  @default("main")
   githubInstallId Int?
+  web3formsKey   String?
+  chatEnabled    Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -279,6 +281,7 @@ model Project {
   organization    Organization?     @relation(fields: [orgId], references: [id], onDelete: SetNull)
   deployments     Deployment[]
   analyticsEvents AnalyticsEvent[]
+  conversations   ChatConversation[]
 
   @@index([userId])
   @@index([orgId])
@@ -361,6 +364,38 @@ model AuditLog {
   @@index([createdAt])
 }
 
+// ─── Chat Models ────────────────────────────────────────────────────────────
+
+model ChatConversation {
+  id           String     @id @default(cuid())
+  projectId    String
+  visitorId    String
+  visitorName  String?
+  visitorEmail String?
+  status       ChatStatus @default(OPEN)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  project  Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  messages ChatMessage[]
+
+  @@index([projectId, status])
+  @@index([projectId, updatedAt])
+}
+
+model ChatMessage {
+  id             String         @id @default(cuid())
+  conversationId String
+  senderType     ChatSenderType
+  senderId       String?
+  content        String         @db.Text
+  createdAt      DateTime       @default(now())
+
+  conversation ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+}
+
 // ─── Enums ──────────────────────────────────────────────────────────────────
 
 enum UserRole {
@@ -434,4 +469,14 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
+}
+
+enum ChatStatus {
+  OPEN
+  CLOSED
+}
+
+enum ChatSenderType {
+  VISITOR
+  OWNER
 }
