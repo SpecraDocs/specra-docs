@@ -4077,10 +4077,10 @@ space-separated-tokens@^2.0.0:
   resolved "https://registry.npmjs.org/space-separated-tokens/-/space-separated-tokens-2.0.2.tgz"
   integrity sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==
 
-"specra@file:../specra-sdk/specra-0.2.7.tgz":
-  version "0.2.7"
-  resolved "file:../specra-sdk/specra-0.2.7.tgz"
-  integrity sha512-KfqRV5soOVrbf1JOvi9krDOJzsWieFrpfFJuWy8zOZR7IWxMpXbS5fx5AOQv2RPDmmIB3MVD/aNql9LOUd4qvQ==
+"specra@file:../specra-sdk/specra-0.2.8.tgz":
+  version "0.2.8"
+  resolved "file:../specra-sdk/specra-0.2.8.tgz"
+  integrity sha512-4bWSyq4sfUBWb7DaCCno5jP9MeJ0GdfsamRZQ7ReiTw9JFyK4xrfF0PVlzD8eJb99krLg7yop78WziNs3OjQHQ==
   dependencies:
     bits-ui "^1.0.0"
     class-variance-authority "^0.7.1"
