@@ -21,7 +21,7 @@
         analytics: false,
         versionHistory: 'Version history of 7 days',
         passwordPages: false,
-        customCssJs: false,
+        customCssJs: true,
         gitSync: false,
         contactForm: false,
         liveChatWidget: false,
@@ -43,7 +43,7 @@
       priceKesAnnual: 2450,
       description: 'For indie devs and small startups',
       features: {
-        projects: '3 projects',
+        projects: '4 projects',
         seats: '3 seats (+$5/seat)',
         customDomain: true,
         removeBranding: true,
@@ -53,7 +53,7 @@
         analytics: 'Basic',
         versionHistory: 'Version history of 30 days',
         passwordPages: true,
-        customCssJs: false,
+        customCssJs: true,
         gitSync: false,
         contactForm: true,
         liveChatWidget: false,
@@ -75,7 +75,7 @@
       priceKesAnnual: 6300,
       description: 'For growing teams and API docs',
       features: {
-        projects: '10 projects',
+        projects: '20 projects',
         seats: '10 seats (+$8/seat)',
         customDomain: true,
         removeBranding: true,
@@ -101,10 +101,10 @@
     {
       name: 'Enterprise',
       slug: 'enterprise',
-      priceUsd: 149,
-      priceUsdAnnual: 129,
-      priceKes: 19200,
-      priceKesAnnual: 19200,
+      priceUsd: 0,
+      priceUsdAnnual: 0,
+      priceKes: 0,
+      priceKesAnnual: 0,
       description: 'For orgs needing SSO and RBAC',
       features: {
         projects: 'Unlimited',
@@ -158,6 +158,7 @@
   let currency = $state<'usd' | 'kes'>('usd');
 
   function getPrice(tier: (typeof tiers)[number]) {
+    if (tier.slug === 'enterprise') return 'Custom';
     if (tier.priceUsd === 0) return 'Free';
     if (currency === 'kes') {
       const price = interval === 'annual' ? tier.priceKesAnnual : tier.priceKes;

@@ -3,8 +3,8 @@ import { getUserSubscription } from "./auth-utils.js"
 
 const PLAN_LIMITS: Record<string, { maxProjects: number; maxSeats: number }> = {
   free: { maxProjects: 1, maxSeats: 1 },
-  starter: { maxProjects: 3, maxSeats: 3 },
-  pro: { maxProjects: 10, maxSeats: 10 },
+  starter: { maxProjects: 4, maxSeats: 3 },
+  pro: { maxProjects: 20, maxSeats: 10 },
   enterprise: { maxProjects: Infinity, maxSeats: Infinity },
 }
 
