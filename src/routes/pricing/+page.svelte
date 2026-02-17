@@ -105,7 +105,7 @@
       priceUsdAnnual: 0,
       priceKes: 0,
       priceKesAnnual: 0,
-      description: 'For orgs needing SSO and RBAC',
+      description: 'For orgs needing advanced controls',
       features: {
         projects: 'Unlimited',
         seats: 'Unlimited',
@@ -148,7 +148,7 @@
     contactForm: 'Contact form (Web3Forms)',
     liveChatWidget: 'Live chat widget',
     // sso: 'SSO (SAML/OIDC)',
-    rbac: 'RBAC',
+    rbac: 'Team roles (Owner/Admin/Member)',
     auditLogs: 'Audit logs',
     // sla: 'SLA guarantee',
     support: 'Support',
@@ -359,7 +359,7 @@
       <div class="rounded-xl border border-border bg-card p-8 text-center space-y-4">
         <h2 class="text-2xl font-bold text-foreground">Enterprise</h2>
         <p class="text-muted-foreground max-w-lg mx-auto">
-          For organizations needing SSO, RBAC, audit logs, and a dedicated SLA. Get a plan tailored to your needs.
+          For organizations needing advanced controls, audit logs, and dedicated support. Get a plan tailored to your needs.
         </p>
         <a
           href="mailto:sales@specra.dev"
