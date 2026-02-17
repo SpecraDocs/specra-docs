@@ -49,6 +49,12 @@
       contactSubmitting = false;
     }
   }
+
+  const btnBase = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]";
+  const btnDefault = `${btnBase} bg-primary text-primary-foreground hover:bg-primary/90`;
+  const btnOutline = `${btnBase} border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50`;
+  const btnSm = "h-9 px-4 py-2";
+  const btnLg = "h-10 rounded-md px-6";
 </script>
 
 <svelte:head>
@@ -60,7 +66,7 @@
   <header class="border-b border-border">
     <div class="container flex h-16 items-center justify-between px-6 mx-auto">
       <a href="/" class="flex items-center gap-2">
-        <Logo logo={config.site.logo} alt={config.site.title} class="w-18 object-contain" />
+        <Logo logo={config.site.logo} alt={config.site.title} className="w-18 object-contain" />
         <span class="font-semibold text-lg text-foreground">Specra</span>
       </a>
       <div class="flex items-center gap-6">
@@ -76,17 +82,13 @@
           </a>
         {/if}
         {#if session}
-          <Button asChild variant="outline">
-            <a href="/dashboard">Dashboard</a>
-          </Button>
+          <a href="/dashboard" class="{btnOutline} {btnSm}">Dashboard</a>
         {:else}
           <a href="/auth/login" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Sign In
           </a>
         {/if}
-        <Button asChild>
-          <a href={docsUrl}>Get Started</a>
-        </Button>
+        <a href={docsUrl} class="{btnDefault} {btnSm}">Get Started</a>
       </div>
     </div>
   </header>
@@ -105,19 +107,15 @@
         Write in MDX, configure with ease, and ship beautiful docs in minutes.
       </p>
       <div class="flex items-center justify-center gap-4 pt-4">
-        <Button asChild size="lg">
-          <a href={docsUrl}>
-            Get Started
-            <ArrowRight class="ml-2 h-4 w-4" />
-          </a>
-        </Button>
+        <a href={docsUrl} class="{btnDefault} {btnLg}">
+          Get Started
+          <ArrowRight class="ml-2 h-4 w-4" />
+        </a>
         {#if config?.social?.github}
-          <Button asChild size="lg" variant="outline">
-            <a href={config.social.github} target="_blank" rel="noopener noreferrer">
-              <Github class="mr-2 h-4 w-4" />
-              View on GitHub
-            </a>
-          </Button>
+          <a href={config.social.github} target="_blank" rel="noopener noreferrer" class="{btnOutline} {btnLg}">
+            <Github class="mr-2 h-4 w-4" />
+            View on GitHub
+          </a>
         {/if}
       </div>
     </div>
@@ -164,19 +162,15 @@
           Specra gives you everything you need to write, organize, and publish great docs.
         </p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-          <Button asChild size="lg" variant="default">
-            <a href={docsUrl}>
-              Read the Docs
-              <ArrowRight class="ml-2 h-4 w-4" />
-            </a>
-          </Button>
+          <a href={docsUrl} class="{btnDefault} {btnLg}">
+            Read the Docs
+            <ArrowRight class="ml-2 h-4 w-4" />
+          </a>
           {#if config?.social?.github}
-            <Button asChild size="lg" variant="outline">
-              <a href={config.social.github} target="_blank" rel="noopener noreferrer">
-                <Github class="mr-2 h-4 w-4" />
-                Star on GitHub
-              </a>
-            </Button>
+            <a href={config.social.github} target="_blank" rel="noopener noreferrer" class="{btnOutline} {btnLg}">
+              <Github class="mr-2 h-4 w-4" />
+              Star on GitHub
+            </a>
           {/if}
         </div>
       </div>
@@ -253,28 +247,22 @@
       </p>
       <div class="flex items-center justify-center gap-4 pt-4">
         {#if config?.social?.github}
-          <Button asChild variant="outline" size="lg">
-            <a href={config.social.github} target="_blank" rel="noopener noreferrer">
-              <Github class="mr-2 h-5 w-5" />
-              GitHub
-            </a>
-          </Button>
+          <a href={config.social.github} target="_blank" rel="noopener noreferrer" class="{btnOutline} {btnLg}">
+            <Github class="mr-2 h-5 w-5" />
+            GitHub
+          </a>
         {/if}
         {#if config?.social?.twitter}
-          <Button asChild variant="outline" size="lg">
-            <a href={config.social.twitter} target="_blank" rel="noopener noreferrer">
-              <Twitter class="mr-2 h-5 w-5" />
-              Twitter
-            </a>
-          </Button>
+          <a href={config.social.twitter} target="_blank" rel="noopener noreferrer" class="{btnOutline} {btnLg}">
+            <Twitter class="mr-2 h-5 w-5" />
+            Twitter
+          </a>
         {/if}
         {#if config?.social?.linkedin}
-          <Button asChild variant="outline" size="lg">
-            <a href={config.social.linkedin} target="_blank" rel="noopener noreferrer">
-              <Linkedin class="mr-2 h-5 w-5" />
-              LinkedIn
-            </a>
-          </Button>
+          <a href={config.social.linkedin} target="_blank" rel="noopener noreferrer" class="{btnOutline} {btnLg}">
+            <Linkedin class="mr-2 h-5 w-5" />
+            LinkedIn
+          </a>
         {/if}
       </div>
     </div>

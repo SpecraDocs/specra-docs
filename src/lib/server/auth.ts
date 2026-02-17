@@ -5,6 +5,16 @@ import Credentials from '@auth/sveltekit/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { prisma } from './db.js';
 
+declare module '@auth/core/types' {
+  interface User {
+    role?: string;
+    status?: string;
+  }
+  interface Session {
+    user: User & { id: string; email: string; name?: string | null; image?: string | null };
+  }
+}
+
 export const { handle, signIn, signOut } = SvelteKitAuth({
   trustHost: true,
   adapter: PrismaAdapter(prisma) as never,

@@ -15,7 +15,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
   if (session?.user?.id) {
     userId = session.user.id;
   } else {
-    const apiUser = await authenticateApiRequest(request);
+    const apiUser = await authenticateApiRequest(request.headers.get('authorization'));
     if (apiUser) userId = apiUser.id;
   }
 

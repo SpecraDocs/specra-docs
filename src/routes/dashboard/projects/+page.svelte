@@ -61,7 +61,7 @@
   {:else}
     <div class="grid gap-4">
       {#each data.projects as project (project.id)}
-        {@const status = project.latestDeployStatus}
+        {@const status = project.latestDeployStatus as string}
         <a
           href="/dashboard/projects/{project.id}"
           class="rounded-lg border border-border bg-card p-6 hover:border-foreground/20 transition-colors"

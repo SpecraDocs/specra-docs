@@ -100,7 +100,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
           subscriptionId: subscription.id,
           amount: 0,
           currency: 'USD',
-          status: 'SUCCEEDED',
+          status: 'COMPLETED',
           provider: 'ADMIN',
           couponCode: couponCode.toUpperCase(),
         },

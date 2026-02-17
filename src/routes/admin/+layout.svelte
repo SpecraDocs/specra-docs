@@ -23,7 +23,7 @@
       </div>
       <div class="flex items-center gap-4">
         <span class="text-sm text-muted-foreground">
-          {data.session.user.email}
+          {data.session.user?.email}
         </span>
       </div>
     </div>

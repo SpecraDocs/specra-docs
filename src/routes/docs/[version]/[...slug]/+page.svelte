@@ -17,6 +17,13 @@
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
+
+  // Type-compatible wrappers for component props
+  let allDocsCompat: any[] = $derived(data.allDocs);
+  let previousDoc = $derived(data.previous ?? undefined);
+  let nextDoc = $derived(data.next ?? undefined);
+  let categoryTitle = $derived(data.categoryTitle ?? undefined);
+  let categoryDescription = $derived(data.categoryDescription ?? undefined);
 </script>
 
 <svelte:head>
@@ -37,7 +44,7 @@
 {#if !data.doc && data.isCategory}
   <!-- Category page without doc content -->
   <MobileDocLayout
-    docs={data.allDocs}
+    docs={allDocsCompat}
     version={data.version}
     config={data.config}
     activeTabGroup={data.categoryTabGroup}
@@ -48,11 +55,10 @@
     <CategoryIndex
       categoryPath={data.slug}
       version={data.version}
-      allDocs={data.allDocs}
-      title={data.categoryTitle}
-      description={data.categoryDescription}
+      allDocs={allDocsCompat}
+      title={categoryTitle}
+      description={categoryDescription}
       config={data.config}
-      {mdxComponents}
     />
   </MobileDocLayout>
   <MdxHotReload />
@@ -61,7 +67,7 @@
 {:else if data.isProtected}
   <!-- Protected page — requires social login -->
   <MobileDocLayout
-    docs={data.allDocs}
+    docs={allDocsCompat}
     version={data.version}
     config={data.config}
   >
@@ -76,7 +82,7 @@
 {:else if data.isNotFound}
   <!-- Not found -->
   <MobileDocLayout
-    docs={data.allDocs}
+    docs={allDocsCompat}
     version={data.version}
     config={data.config}
   >
@@ -91,7 +97,7 @@
 {:else if data.doc}
   <!-- Normal doc or category with doc content -->
   <MobileDocLayout
-    docs={data.allDocs}
+    docs={allDocsCompat}
     version={data.version}
     config={data.config}
     activeTabGroup={data.categoryTabGroup}
@@ -106,22 +112,28 @@
     {/snippet}
 
     {#if data.isCategory}
+      {#snippet categoryContent()}
+        {#if data.doc?.contentNodes}
+          <MdxContent nodes={data.doc.contentNodes} components={mdxComponents} />
+        {:else if data.doc?.content}
+          {@html data.doc.content}
+        {/if}
+      {/snippet}
       <CategoryIndex
         categoryPath={data.slug}
         version={data.version}
-        allDocs={data.allDocs}
+        allDocs={allDocsCompat}
         title={data.doc.meta.title}
         description={data.doc.meta.description}
-        content={data.doc.content}
+        content={categoryContent}
         config={data.config}
-        {mdxComponents}
       />
     {:else}
       <SearchHighlight />
       <DocLayout
         meta={data.doc.meta}
-        previousDoc={data.previous}
-        nextDoc={data.next}
+        previousDoc={previousDoc}
+        nextDoc={nextDoc}
         version={data.version}
         slug={data.slug}
         config={data.config}
