@@ -396,6 +396,38 @@ model ChatMessage {
   @@index([conversationId, createdAt])
 }
 
+// ─── Doc Visitor Models ─────────────────────────────────────────────────────
+
+model DocVisitor {
+  id                String   @id @default(cuid())
+  email             String
+  name              String?
+  image             String?
+  provider          String   // "google" | "github"
+  providerAccountId String
+  createdAt         DateTime @default(now())
+  lastLoginAt       DateTime @default(now())
+
+  pageAccesses DocPageAccess[]
+
+  @@unique([provider, providerAccountId])
+  @@index([email])
+}
+
+model DocPageAccess {
+  id           String   @id @default(cuid())
+  docVisitorId String
+  projectId    String
+  path         String
+  version      String
+  createdAt    DateTime @default(now())
+
+  visitor DocVisitor @relation(fields: [docVisitorId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
+  @@index([docVisitorId])
+}
+
 // ─── Enums ──────────────────────────────────────────────────────────────────
 
 enum UserRole {

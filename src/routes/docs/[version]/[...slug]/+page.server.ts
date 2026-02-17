@@ -8,9 +8,29 @@ import {
   getI18nConfig,
   getConfig,
 } from 'specra';
+import jwt from 'jsonwebtoken';
+import { prisma } from '$lib/server/db.js';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ params }) => {
+interface DocSessionPayload {
+  visitorId: string;
+  email: string;
+  exp: number;
+}
+
+function verifyDocSession(cookie: string | undefined): DocSessionPayload | null {
+  if (!cookie) return null;
+  const secret = process.env.AUTH_SECRET;
+  if (!secret) return null;
+
+  try {
+    return jwt.verify(cookie, secret) as DocSessionPayload;
+  } catch {
+    return null;
+  }
+}
+
+export const load: PageServerLoad = async ({ params, cookies }) => {
   const { version, slug: slugArray } = params;
   const slug = slugArray;
 
@@ -55,6 +75,7 @@ export const load: PageServerLoad = async ({ params }) => {
       config,
       isCategory: true,
       isNotFound: false,
+      isProtected: false,
       doc: null,
       categoryTitle,
       categoryDescription: 'Browse the documentation in this section.',
@@ -78,6 +99,7 @@ export const load: PageServerLoad = async ({ params }) => {
       config,
       isCategory: false,
       isNotFound: true,
+      isProtected: false,
       doc: null,
       categoryTitle: null,
       categoryDescription: null,
@@ -90,6 +112,57 @@ export const load: PageServerLoad = async ({ params }) => {
       ogUrl,
     };
   }
+
+  // Check social login protection
+  if (doc.meta.protected) {
+    const session = verifyDocSession(cookies.get('specra-doc-session'));
+
+    if (!session) {
+      // Not authenticated — return no content
+      return {
+        version,
+        slug,
+        allDocs,
+        versions,
+        config,
+        isCategory: false,
+        isNotFound: false,
+        isProtected: true,
+        doc: null,
+        categoryTitle: null,
+        categoryDescription: null,
+        categoryTabGroup: undefined,
+        toc: [],
+        previous: null,
+        next: null,
+        title,
+        description,
+        ogUrl,
+      };
+    }
+
+    // Authenticated — log page access
+    const projectId = config.site?.projectId;
+    if (projectId) {
+      // Fire-and-forget: don't block page load for analytics
+      prisma.docPageAccess.create({
+        data: {
+          docVisitorId: session.visitorId,
+          projectId,
+          path: slug,
+          version,
+        },
+      }).catch(() => {
+        // Silently ignore access logging failures
+      });
+    }
+
+    // Strip protected flag from meta before sending to client
+    delete doc.meta.protected;
+  }
+
+  // Strip protected from meta (safety net)
+  delete doc.meta.protected;
 
   // Normal doc page - use raw markdown (meta.content) for ToC extraction, doc.content is HTML
   const toc = extractTableOfContents(doc.meta.content || doc.content);
@@ -107,6 +180,7 @@ export const load: PageServerLoad = async ({ params }) => {
     config,
     isCategory: showCategoryIndex,
     isNotFound: false,
+    isProtected: false,
     doc,
     categoryTitle: null,
     categoryDescription: null,

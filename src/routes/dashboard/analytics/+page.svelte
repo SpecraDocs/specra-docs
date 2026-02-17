@@ -75,6 +75,14 @@
 <div class="space-y-6">
   <div class="flex items-center justify-between flex-wrap gap-4">
     <div>
+      <div class="flex items-center gap-4 mb-1">
+        <span class="text-sm font-medium text-foreground border-b-2 border-primary pb-0.5">
+          Traffic
+        </span>
+        <a href="/dashboard/analytics/visitors" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          Page Visitors
+        </a>
+      </div>
       <h1 class="text-2xl font-bold text-foreground">Analytics</h1>
       <p class="text-muted-foreground mt-1">
         Track visitor traffic across your docs

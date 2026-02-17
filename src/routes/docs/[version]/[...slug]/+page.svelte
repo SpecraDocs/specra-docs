@@ -13,6 +13,7 @@
     MobileDocLayout,
     mdxComponents,
   } from 'specra/components';
+  import DocLoginGate from '$lib/components/DocLoginGate.svelte';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -53,6 +54,21 @@
       config={data.config}
       {mdxComponents}
     />
+  </MobileDocLayout>
+  <MdxHotReload />
+  <HotReloadIndicator />
+  <DevModeBadge />
+{:else if data.isProtected}
+  <!-- Protected page — requires social login -->
+  <MobileDocLayout
+    docs={data.allDocs}
+    version={data.version}
+    config={data.config}
+  >
+    {#snippet header()}
+      <Header currentVersion={data.version} versions={data.versions} config={data.config} />
+    {/snippet}
+    <DocLoginGate slug={data.slug} version={data.version} />
   </MobileDocLayout>
   <MdxHotReload />
   <HotReloadIndicator />
