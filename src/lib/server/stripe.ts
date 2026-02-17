@@ -28,3 +28,23 @@ export const PLANS = {
     priceKesAnnual: 19200,
   },
 } as const
+
+export const EXTRA_SEAT_PRICES: Record<
+  string,
+  {
+    pricePerSeatUsd: number
+    stripePriceIdMonthly: string
+    stripePriceIdAnnual: string
+  }
+> = {
+  starter: {
+    pricePerSeatUsd: 500,
+    stripePriceIdMonthly: process.env.STRIPE_STARTER_SEAT_PRICE_MONTHLY!,
+    stripePriceIdAnnual: process.env.STRIPE_STARTER_SEAT_PRICE_ANNUAL!,
+  },
+  pro: {
+    pricePerSeatUsd: 800,
+    stripePriceIdMonthly: process.env.STRIPE_PRO_SEAT_PRICE_MONTHLY!,
+    stripePriceIdAnnual: process.env.STRIPE_PRO_SEAT_PRICE_ANNUAL!,
+  },
+}

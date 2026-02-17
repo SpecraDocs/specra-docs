@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { stripe } from '$lib/server/stripe.js';
+import { stripe, EXTRA_SEAT_PRICES } from '$lib/server/stripe.js';
 import { prisma } from '$lib/server/db.js';
 import { createAndSendInvoice } from '$lib/server/invoices.js';
 import { sendRenewalReminderEmail, sendPaymentFailedEmail } from '$lib/server/email.js';
@@ -153,6 +153,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   const dbSub = await prisma.subscription.findFirst({
     where: { stripeSubscriptionId: subscription.id },
+    include: { plan: true },
   });
 
   if (!dbSub) return;
@@ -167,6 +168,29 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 
   const period = getSubscriptionPeriod(subscription);
 
+  // Sync extra seat data from Stripe subscription items
+  const planSlug = dbSub.plan.slug;
+  const seatPricing = EXTRA_SEAT_PRICES[planSlug];
+  let extraSeats = 0;
+  let stripeExtraSeatItemId: string | null = null;
+
+  if (seatPricing && subscription.items?.data) {
+    const seatPriceIds = [
+      seatPricing.stripePriceIdMonthly,
+      seatPricing.stripePriceIdAnnual,
+    ];
+
+    for (const item of subscription.items.data) {
+      const itemPriceId =
+        typeof item.price === 'string' ? item.price : item.price?.id;
+      if (itemPriceId && seatPriceIds.includes(itemPriceId)) {
+        extraSeats = item.quantity ?? 0;
+        stripeExtraSeatItemId = item.id;
+        break;
+      }
+    }
+  }
+
   await prisma.subscription.update({
     where: { id: dbSub.id },
     data: {
@@ -178,6 +202,8 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
         | 'INCOMPLETE',
       currentPeriodStart: period.start,
       currentPeriodEnd: period.end,
+      extraSeats,
+      stripeExtraSeatItemId,
     },
   });
 }

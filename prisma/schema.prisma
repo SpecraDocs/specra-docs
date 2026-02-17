@@ -106,6 +106,8 @@ model Subscription {
   currentPeriodEnd     DateTime
   grantedBy            String?
   grantReason          String?
+  extraSeats              Int      @default(0)
+  stripeExtraSeatItemId   String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

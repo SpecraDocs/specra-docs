@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
 import { logAudit } from '$lib/server/audit.js';
+import { getOrgSeatInfo } from '$lib/server/permissions.js';
 
 export const GET: RequestHandler = async ({ locals, params }) => {
   const session = await locals.auth();
@@ -69,6 +70,25 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
     return json(
       { error: 'Invitation already pending' },
       { status: 409 }
+    );
+  }
+
+  // Enforce seat limits
+  const seatInfo = await getOrgSeatInfo(orgId);
+  if (seatInfo && !seatInfo.canAddSeat) {
+    return json(
+      {
+        error: 'Organization has reached its seat limit',
+        code: 'SEAT_LIMIT_REACHED',
+        seatInfo: {
+          baseSeats: seatInfo.baseSeats,
+          extraSeats: seatInfo.extraSeats,
+          totalAllowedSeats: seatInfo.totalAllowedSeats,
+          currentUsage: seatInfo.currentUsage,
+          canBuyExtraSeats: seatInfo.canBuyExtraSeats,
+        },
+      },
+      { status: 403 }
     );
   }
 

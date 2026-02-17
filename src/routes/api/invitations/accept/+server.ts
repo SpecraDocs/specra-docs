@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
+import { getOrgSeatInfo } from '$lib/server/permissions.js';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   const session = await locals.auth();
@@ -56,6 +57,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     return json(
       { error: 'You are already a member of this organization' },
       { status: 409 }
+    );
+  }
+
+  // Re-check seat limits (owner may have downgraded between invite and acceptance)
+  const seatInfo = await getOrgSeatInfo(invitation.orgId);
+  if (seatInfo && !seatInfo.canAddSeat) {
+    return json(
+      {
+        error: 'Organization has reached its seat limit. Contact the org owner to add more seats.',
+        code: 'SEAT_LIMIT_REACHED',
+      },
+      { status: 403 }
     );
   }
 

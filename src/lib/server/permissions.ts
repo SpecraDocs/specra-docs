@@ -1,5 +1,6 @@
 import { prisma } from "./db.js"
 import { getUserSubscription } from "./auth-utils.js"
+import { EXTRA_SEAT_PRICES } from "./stripe.js"
 
 const PLAN_LIMITS: Record<string, { maxProjects: number; maxSeats: number }> = {
   free: { maxProjects: 1, maxSeats: 1 },
@@ -121,5 +122,55 @@ export async function checkPlanLimits(userId: string) {
     currentProjects: projectCount,
     canDeploy: planSlug !== "free",
     canCreateProject: projectCount < limits.maxProjects,
+  }
+}
+
+export async function getOrgSeatInfo(orgId: string) {
+  // Find the org owner's subscription
+  const ownerMember = await prisma.organizationMember.findFirst({
+    where: { orgId, role: "OWNER" },
+  })
+
+  if (!ownerMember) {
+    return null
+  }
+
+  const subscription = await getUserSubscription(ownerMember.userId)
+  const planSlug = subscription?.plan.slug ?? "free"
+  const limits = PLAN_LIMITS[planSlug] ?? PLAN_LIMITS.free
+  const extraSeats = subscription?.extraSeats ?? 0
+
+  // Count current members + pending invitations
+  const [memberCount, pendingInviteCount] = await Promise.all([
+    prisma.organizationMember.count({ where: { orgId } }),
+    prisma.orgInvitation.count({ where: { orgId, status: "PENDING" } }),
+  ])
+
+  const baseSeats = limits.maxSeats
+  const totalAllowedSeats = baseSeats + extraSeats
+  const currentUsage = memberCount + pendingInviteCount
+  const remainingSeats = Math.max(0, totalAllowedSeats - currentUsage)
+  const canAddSeat = currentUsage < totalAllowedSeats
+  const canBuyExtraSeats =
+    planSlug !== "free" &&
+    planSlug !== "enterprise" &&
+    !!EXTRA_SEAT_PRICES[planSlug]
+
+  return {
+    planSlug,
+    baseSeats,
+    extraSeats,
+    totalAllowedSeats,
+    currentUsage,
+    memberCount,
+    pendingInviteCount,
+    remainingSeats,
+    canAddSeat,
+    canBuyExtraSeats,
+    stripeSubscriptionId: subscription?.stripeSubscriptionId ?? null,
+    stripeExtraSeatItemId: subscription?.stripeExtraSeatItemId ?? null,
+    subscriptionId: subscription?.id ?? null,
+    interval: subscription?.interval ?? null,
+    paymentProvider: subscription?.paymentProvider ?? null,
   }
 }
