@@ -6,43 +6,43 @@ The docs can be found here https://specra-docs.com/
 
 ## Quick Start
 
-### Create a New Documentation Site
+### Create a New Documentation Site (SDK)
 
-The fastest way to get started is with `create-specra`:
+The fastest way to create a self-hosted documentation site:
 
 ```bash
 npx create-specra@latest my-docs
 cd my-docs
 npm install
-cp .env.sample .env # update DATABASE_URL with user, password and database name
-npx prism generate && npx prims migrate dev  ## run migrations 
-npx auth secret   # generate secret for auth
-#[Optional] set ADMIN_EMAIL="user email" # this will seed the system with admin user
 npm run dev
 ```
 
-This will scaffold a complete documentation site with:
-- Pre-configured SvelteKit setup
-- Sample documentation structure
-- Ready-to-use UI components
-- Version management
-- Search functionality
-- Responsive design
+Open [http://localhost:5173](http://localhost:5173) to see your docs running locally.
 
-Open [http://localhost:5173](http://localhost:5173) to see your documentation site running locally.
+The CLI offers **3 templates**:
+- **Minimal** — Clean starting point with basic structure
+- **Book Docs** — Knowledge base style with dark theme and categorized sidebar
+- **JBrains Docs** — Reference docs style with light theme and tab groups
 
-### Already Created a Project?
+```bash
+npx create-specra my-docs --template book-docs
+npx create-specra my-docs --template jbrains-docs
+```
 
-If you've already created your project with `create-specra`, just install dependencies and start:
+### Running This SaaS Site (specra-docs)
+
+This repository is the official Specra documentation site **and** a full SaaS platform. To run it locally:
 
 ```bash
 npm install
+cp .env.sample .env       # Update DATABASE_URL, auth secrets, Stripe/M-Pesa keys
+npx prisma generate       # Generate Prisma client
+npx prisma migrate dev    # Run database migrations
+npx auth secret           # Generate Auth.js secret
 npm run dev
-# or
-yarn install && yarn dev
-# or
-pnpm install && pnpm dev
 ```
+
+Open [http://localhost:5173](http://localhost:5173) to see the site running locally.
 
 ## Project Structure
 
@@ -126,13 +126,23 @@ Edit `specra.config.json` to customize your site:
   "site": {
     "title": "Your Docs",
     "description": "Your documentation site",
-    "url": "https://yourdocs.com"
+    "url": "https://yourdocs.com",
+    "activeVersion": "v1.0.0"
+  },
+  "theme": {
+    "defaultMode": "system",
+    "respectPrefersColorScheme": true
   },
   "navigation": {
-    "links": [
-      { "title": "Home", "href": "/" },
-      { "title": "Docs", "href": "/docs" }
-    ]
+    "showSidebar": true,
+    "collapsibleSidebar": true,
+    "showBreadcrumbs": true,
+    "showTableOfContents": true,
+    "sidebarStyle": "card"
+  },
+  "features": {
+    "versioning": true,
+    "showReadingTime": true
   }
 }
 ```
@@ -155,6 +165,22 @@ This site includes a full SaaS layer on top of the documentation:
 - **User Dashboard** - Plan management, billing history, settings
 - **Admin Panel** - User management, analytics, coupons, subscriptions
 - **Database** - PostgreSQL via Prisma v7
+
+## Specra Architecture
+
+Specra is composed of three packages:
+
+```
+specra (SDK)          →  Core library: Svelte components, MDX processing, config types
+  ↓
+create-specra (CLI)   →  Scaffolding tool: generates new doc sites from templates
+  ↓
+specra-docs (this)    →  Official site: documentation + SaaS platform (auth, billing, dashboard)
+```
+
+- **specra** (npm: `specra`) — The SDK that powers all documentation sites. Provides layout components, sidebar, header, search, theming, versioning, and MDX processing. Users install this as a dependency.
+- **create-specra** (npm: `create-specra`) — The CLI that scaffolds new projects. Copies template files (SvelteKit boilerplate + sample docs + config) and installs dependencies.
+- **specra-docs** (this repo) — The official documentation site at [specra-docs.com](https://specra-docs.com). Also serves as a SaaS platform with authentication, subscription billing (Stripe + M-Pesa), user dashboard, and admin panel. The SaaS layer is specific to this repo and does not affect the SDK.
 
 ## Learn More
 

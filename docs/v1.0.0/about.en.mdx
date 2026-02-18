@@ -30,7 +30,7 @@ Documentation shouldn't be hard. You should be able to focus on writing great co
   <Card icon="search" title="Powerful Search" description="MeiliSearch integration gives you typo-tolerant, instant search that actually works." />
   <Card icon="git-branch" title="Version Management" description="Ship multiple doc versions side by side. Perfect for APIs and libraries with breaking changes." />
   <Card icon="palette" title="Beautiful Theming" description="Dark mode out of the box. Customize colors, fonts, and styles to match your brand." />
-  <Card icon="code" title="MDX Components" description="Use Markdown for content, React components for interactivity. Best of both worlds." />
+  <Card icon="code" title="MDX Components" description="Use Markdown for content, Svelte components for interactivity. Best of both worlds." />
   <Card icon="layout" title="Smart Navigation" description="Auto-generated sidebar from your file structure. Collapsible sections, breadcrumbs, table of contents." />
 </CardGrid>
 
@@ -38,8 +38,8 @@ Documentation shouldn't be hard. You should be able to focus on writing great co
 
 We built Specra on proven, modern technologies:
 
-- **SvelteKit 15+** with the App Router for optimal performance and developer experience
-- **MDX** so you can write Markdown with React components mixed in
+- **SvelteKit** with file-based routing for optimal performance and developer experience
+- **MDX** so you can write Markdown with Svelte components mixed in
 - **Tailwind CSS** for styling that's both powerful and maintainable
 - **MeiliSearch** for search that's fast and forgiving of typos
 - **TypeScript** because type safety saves time and sanity
@@ -78,7 +78,7 @@ Specra follows a simple philosophy: you write, we handle the rest.
 
 <Steps>
   <Step title="Write in MDX">
-    Create `.mdx` files in your `docs/` folder. Use frontmatter for metadata. Write Markdown for content. Mix in React components when needed.
+    Create `.mdx` files in your `docs/` folder. Use frontmatter for metadata. Write Markdown for content. Mix in Svelte components when needed.
   </Step>
 
   <Step title="Auto-Generation">
@@ -103,6 +103,26 @@ Specra is perfect for:
 - **API developers** who need versioned docs and interactive API references
 - **Technical writers** who prefer Markdown over WYSIWYG editors
 - **Teams** that want docs living in the same repo as their code
+
+## Architecture
+
+Specra is composed of three packages that work together:
+
+**specra** (SDK) — The core library installed as a dependency in every Specra site. Provides Svelte layout components (Header, Sidebar, Footer, TabGroups), MDX processing, configuration types, theming, and versioning logic.
+
+**create-specra** (CLI) — The scaffolding tool that generates new documentation projects. Offers three templates (Minimal, Book Docs, JBrains Docs), each with different layouts and sample content. Run `npx create-specra` to get started.
+
+**specra-docs** (this site) — The official documentation and SaaS platform at [specra-docs.com](https://specra-docs.com). Built with the Specra SDK, it also includes authentication (Auth.js), subscription billing (Stripe + M-Pesa), a user dashboard, and an admin panel. The SaaS features are specific to this site and are not part of the SDK.
+
+```
+specra (SDK)  ←  Core components & config
+     ↑
+create-specra (CLI)  ←  Scaffolds new projects using the SDK
+     ↑
+specra-docs  ←  Official site + SaaS layer
+```
+
+Users of the SDK can build free, self-hosted documentation sites without any billing or authentication features.
 
 ## Ready to Start?
 

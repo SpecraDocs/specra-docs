@@ -60,7 +60,7 @@ npx prisma generate
 npm run build
 ```
 
-This produces `.next/standalone/` — a self-contained Node.js server.
+This produces `build/` — a self-contained Node.js server (via `@sveltejs/adapter-node`).
 
 ---
 
@@ -71,8 +71,7 @@ cd /home/kamau/Development/Projects/specra/specra-docs
 
 # Create a deployment package with only what's needed
 tar -czf specra-deploy.tar.gz \
-  .next/standalone/ \
-  .next/static/ \
+  build/ \
   public/ \
   prisma/ \
   prisma.config.ts \
@@ -126,7 +125,7 @@ AUTH_GITHUB_SECRET="your-production-github-oauth-secret"
 
 # Stripe (use LIVE keys for production, test keys for staging)
 STRIPE_SECRET_KEY="sk_live_..."
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_live_..."
+PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_live_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
 
 # M-Pesa
@@ -138,7 +137,7 @@ MPESA_CALLBACK_URL="https://specra-docs.com/api/mpesa/callback"
 MPESA_ENV="production"
 
 # App URL — MUST match your domain
-NEXT_PUBLIC_APP_URL="https://specra-docs.com"
+PUBLIC_APP_URL="https://specra-docs.com"
 
 # Admin
 ADMIN_EMAIL=kennkamau09@gmail.com
@@ -179,8 +178,8 @@ npx tsx scripts/seed-admin.ts
 ```bash
 cd ~/specra
 
-# The standalone server entry point
-pm2 start .next/standalone/server.js \
+# The SvelteKit adapter-node entry point
+pm2 start build/index.js \
   --name specra-docs \
   --env production \
   --cwd /home/kamau/specra
@@ -330,8 +329,7 @@ npm run build
 
 echo "Packaging..."
 tar -czf specra-deploy.tar.gz \
-  .next/standalone/ \
-  .next/static/ \
+  build/ \
   public/ \
   prisma/ \
   prisma.config.ts \
@@ -374,7 +372,7 @@ pm2 monit               # real-time monitoring
 | | Old (Static) | New (SaaS) |
 |---|---|---|
 | Build command | `npm run build:export` | `npm run build` |
-| Output | `out/` (HTML files) | `.next/standalone/` (Node.js server) |
+| Output | `out/` (HTML files) | `build/` (Node.js server via adapter-node) |
 | Caddy handler | `file_server` | `reverse_proxy` to `:3000` |
 | Database | None | PostgreSQL required |
 | Process manager | None | PM2 |

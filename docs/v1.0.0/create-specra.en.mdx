@@ -40,38 +40,90 @@ When you run `create-specra`, here's what you get:
 
 ```txt
 my-docs/
-├── app/
-│   ├── layout.tsx              # Root layout with Specra setup
-│   ├── page.tsx                # Landing page
-│   ├── globals.css             # Global styles
-│   └── docs/
-│       └── [...slug]/
-│           └── page.tsx        # Documentation page renderer
+├── src/
+│   ├── app.css                    # Global styles (imports specra/styles)
+│   ├── app.html                   # HTML template
+│   └── routes/
+│       ├── +layout.server.ts      # Load Specra config
+│       ├── +layout.svelte         # Root layout with Specra components
+│       ├── +page.server.ts        # Landing page redirect
+│       └── docs/
+│           └── [version]/
+│               └── [...slug]/
+│                   ├── +page.server.ts   # Load doc data
+│                   └── +page.svelte      # Doc page renderer
 ├── docs/
-│   └── v1.0.0/
-│       ├── about.mdx           # Sample about page
-│       ├── getting-started.mdx # Sample getting started guide
-│       └── components/         # Component examples
+│   ├── v1.0.0/                    # Version 1 docs (MDX files)
+│   └── v2.0.0/                    # Version 2 docs (MDX files)
 ├── public/
-│   ├── icon-light-32x32.png   # Favicon (light mode)
-│   └── icon-dark-32x32.png    # Favicon (dark mode)
-├── specra.config.json          # Specra configuration
-├── package.json                # Dependencies and scripts
-├── svelte.config.js             # SvelteKit configuration
-├── tailwind.config.ts          # Tailwind CSS config
-├── tsconfig.json               # TypeScript config
-├── .gitignore
-└── README.md
+│   └── api-specs/                 # API spec files (OpenAPI, Postman)
+├── specra.config.json             # Specra configuration
+├── package.json                   # Dependencies and scripts
+├── svelte.config.js               # SvelteKit configuration
+├── vite.config.ts                 # Vite configuration
+├── postcss.config.mjs             # PostCSS (for Tailwind)
+├── tsconfig.json                  # TypeScript config
+└── .gitignore
+```
+
+## Templates
+
+`create-specra` offers three templates to choose from:
+
+### Minimal (Default)
+
+Clean starting point with basic structure:
+- System theme (follows OS preference)
+- Card-style sidebar with rounded container
+- Table of contents enabled
+- Simple docs: about page, getting started guide, component examples
+
+```bash
+npx create-specra my-docs --template minimal
+```
+
+### Book Docs
+
+Knowledge base style inspired by platforms like GitBook:
+- Dark theme by default
+- Flush sidebar (attached to screen edge)
+- Categorized sidebar with section headers (Content, Customization)
+- Site-wide banner
+- Version badge in sidebar
+- Rich sample content with cards on landing page
+
+```bash
+npx create-specra my-docs --template book-docs
+```
+
+### JBrains Docs
+
+Reference documentation style with tabbed navigation:
+- Light theme by default
+- Flush sidebar (attached to screen edge)
+- Tab groups for organizing content (Language, Multiplatform)
+- Collapsible tree-style sidebar
+- No table of contents (right panel)
+- Version badge in sidebar
+
+```bash
+npx create-specra my-docs --template jbrains-docs
 ```
 
 ## Interactive Setup
 
-When you run `create-specra`, it may prompt you for:
+When you run `create-specra` without options, it will prompt you for:
 
 **Project name** (if not provided as argument)
 ```bash
 npx create-specra@latest
 # Prompts: What is your project named?
+```
+
+**Template** (if not provided via `--template`)
+```bash
+# Will ask: Which template do you want to use?
+# Options: Minimal, Book Docs, JBrains Docs
 ```
 
 **Package manager preference** (if multiple are detected)
@@ -102,11 +154,23 @@ npx create-specra@latest my-awesome-docs
 npx create-specra@latest .
 ```
 
+**Use a specific template:**
+```bash
+npx create-specra@latest my-docs --template minimal
+npx create-specra@latest my-docs --template book-docs
+npx create-specra@latest my-docs --template jbrains-docs
+```
+
 **Use a specific package manager:**
 ```bash
 npx create-specra@latest my-docs --use-npm
 npx create-specra@latest my-docs --use-yarn
 npx create-specra@latest my-docs --use-pnpm
+```
+
+**Skip package installation:**
+```bash
+npx create-specra@latest my-docs --skip-install
 ```
 
 ## What Happens Next
@@ -161,7 +225,7 @@ pnpm dev
   </Tab>
 </Tabs>
 
-    Open [http://localhost:3000](http://localhost:3000) to see your site.
+    Open [http://localhost:5173](http://localhost:5173) to see your site.
   </Step>
 </Steps>
 
@@ -204,13 +268,13 @@ You can customize any of these settings. See [Configuration](/docs/v1.0.0/config
 
 ## Sample Content
 
-The scaffolded project includes sample documentation to help you get started:
+Each template includes sample documentation to help you get started. The content varies by template:
 
-**About page** - Example of a simple informational page
-**Getting started** - Shows how to structure tutorials with steps
-**Component examples** - Demonstrates all available MDX components
+**Minimal** — About page, getting started guide, and component examples
+**Book Docs** — Introduction with card grid, quickstart, concepts, and categorized sections (Content, Customization)
+**JBrains Docs** — Home page with cards, getting started, and tabbed sections (Basics, Advanced, Tools)
 
-Feel free to delete or modify these pages. They're just there to show you what's possible.
+All templates include two doc versions (`v1.0.0` and `v2.0.0`) to demonstrate the versioning system. Feel free to delete or modify any sample pages.
 
 ## Available Scripts
 
@@ -219,10 +283,9 @@ The generated `package.json` includes these scripts:
 | Script | Command | Description |
 |--------|---------|-------------|
 | `dev` | `vite dev` | Start development server with hot reload |
-| `build` | `vite build` | Build for production (Vercel, Node.js hosting) |
-| `start` | `node build` | Start production server (after `build`) |
-| `build:export` | `vite build (with adapter-static)` | Build static site (GitHub Pages, Netlify) |
-| `lint` | `npm run check` | Run ESLint to check code quality |
+| `build` | `vite build` | Build for production (uses adapter-node by default) |
+| `preview` | `vite preview` | Preview the production build locally |
+| `check` | `svelte-kit sync && svelte-check` | Run type checking |
 
 ## Updating Specra
 
