@@ -3,16 +3,24 @@ import { redirect, type Handle } from '@sveltejs/kit';
 import { handle as authHandle } from '$lib/server/auth.js';
 import { lookupIp } from '$lib/server/geo.js';
 
+const GEO_DEFAULT_COUNTRY = process.env.GEO_DEFAULT_COUNTRY || '';
+
 const geoHandle: Handle = async ({ event, resolve }) => {
   try {
-    const ip = event.getClientAddress();
+    // Try proxy headers first, then fall back to getClientAddress()
+    const forwarded = event.request.headers.get('x-forwarded-for');
+    const cfIp = event.request.headers.get('cf-connecting-ip');
+    const ip = cfIp || (forwarded ? forwarded.split(',')[0].trim() : event.getClientAddress());
+
     const geo = lookupIp(ip);
+    const country = geo.country || GEO_DEFAULT_COUNTRY || null;
     event.locals.geo = {
-      country: geo.country,
-      detectedCurrency: geo.country === 'KE' ? 'kes' : 'usd',
+      country,
+      detectedCurrency: country === 'KE' ? 'kes' : 'usd',
     };
   } catch {
-    event.locals.geo = { country: null, detectedCurrency: 'usd' };
+    const fallback = GEO_DEFAULT_COUNTRY || null;
+    event.locals.geo = { country: fallback, detectedCurrency: fallback === 'KE' ? 'kes' : 'usd' };
   }
   return resolve(event);
 };

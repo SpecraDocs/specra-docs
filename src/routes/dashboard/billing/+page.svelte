@@ -116,7 +116,7 @@
                 </td>
                 <td class="py-3 px-4 text-foreground">
                   {payment.currency === 'KES'
-                    ? `KES ${payment.amount.toLocaleString()}`
+                    ? `KSh ${payment.amount.toLocaleString()}`
                     : payment.currency === 'CRYPTO'
                       ? `$${(payment.amount / 100).toFixed(2)} (crypto)`
                       : `$${(payment.amount / 100).toFixed(2)}`}

@@ -163,7 +163,7 @@
     if (tier.priceUsd === 0) return 'Free';
     if (currency === 'kes') {
       const price = interval === 'annual' ? tier.priceKesAnnual : tier.priceKes;
-      return `KES ${price.toLocaleString()}`;
+      return `KSh ${price.toLocaleString()}`;
     }
     const price = interval === 'annual' ? tier.priceUsdAnnual : tier.priceUsd;
     return `$${price}`;
@@ -245,7 +245,7 @@
       </div>
 
       {#if currency === 'kes'}
-        <span class="text-xs text-muted-foreground">Prices in KES</span>
+        <span class="text-xs text-muted-foreground">Prices in KSh</span>
       {/if}
     </div>
 

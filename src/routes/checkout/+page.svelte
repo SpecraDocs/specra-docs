@@ -324,7 +324,7 @@
   }
 
   function formatCurrency(amount: number, cur: string) {
-    if (cur === 'KES') return `KES ${amount.toLocaleString()}`;
+    if (cur === 'KES') return `KSh ${amount.toLocaleString()}`;
     return `$${(amount / 100).toFixed(2)}`;
   }
 
