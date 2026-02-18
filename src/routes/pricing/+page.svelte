@@ -178,11 +178,20 @@
     return `Get ${tier.name} Plan`;
   }
 
+  const session = $derived($page.data.session);
+
   function handleSelectPlan(slug: string) {
     if (slug === 'free') return;
     if (slug === 'enterprise') return;
     const isTrial = trialEnabled;
-    window.location.href = `/checkout?plan=${slug}&interval=${interval}&currency=${currency}${isTrial ? '&trial=true' : ''}`;
+    const checkoutUrl = `/checkout?plan=${slug}&interval=${interval}&currency=${currency}${isTrial ? '&trial=true' : ''}`;
+
+    if (!session?.user) {
+      window.location.href = `/auth/login?callbackUrl=${encodeURIComponent(checkoutUrl)}`;
+      return;
+    }
+
+    window.location.href = checkoutUrl;
   }
 </script>
 
