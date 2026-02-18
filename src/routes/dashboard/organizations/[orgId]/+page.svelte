@@ -69,7 +69,7 @@
                   {project.name}
                 </p>
                 <p class="text-xs text-muted-foreground">
-                  {project.subdomain}.docs.specra.dev
+                  {project.subdomain}.docs.specra-docs.com
                 </p>
               </div>
             </div>

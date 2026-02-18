@@ -362,7 +362,7 @@
           For organizations needing advanced controls, audit logs, and dedicated support. Get a plan tailored to your needs.
         </p>
         <a
-          href="mailto:sales@specra.dev"
+          href="mailto:sales@specra-docs.com"
           class="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
         >
           Contact Sales

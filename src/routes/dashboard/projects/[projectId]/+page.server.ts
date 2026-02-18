@@ -31,7 +31,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     where: { projectId, status: 'OPEN' },
   });
 
-  const baseDomain = env.DOCS_BASE_DOMAIN || 'docs.specra.dev';
+  const baseDomain = env.DOCS_BASE_DOMAIN || 'docs.specra-docs.com';
   const latestDeploy = project.deployments[0];
   const isRunning = latestDeploy?.status === 'RUNNING';
   const siteUrl = `https://${project.subdomain}.${baseDomain}`;

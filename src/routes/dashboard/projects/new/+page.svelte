@@ -132,7 +132,7 @@
           class="w-full rounded-l-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20"
         />
         <span class="rounded-r-md border border-l-0 border-border bg-accent px-3 py-2 text-sm text-muted-foreground whitespace-nowrap">
-          .docs.specra.dev
+          .docs.specra-docs.com
         </span>
       </div>
     </div>

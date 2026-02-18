@@ -185,7 +185,7 @@
       <p class="text-sm text-muted-foreground">
         Point your own domain to this project. Add a CNAME record pointing to
         <code class="bg-accent px-1 py-0.5 rounded text-xs">
-          docs.specra.dev
+          docs.specra-docs.com
         </code>
       </p>
       <form onsubmit={handleSetDomain} class="flex gap-2">

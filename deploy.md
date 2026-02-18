@@ -444,3 +444,125 @@ pm2 monit               # real-time monitoring
 | Server: start | `pm2 start "node --import tsx server.ts"` | `pm2 restart specra-docs` |
 | Caddy | Configure reverse proxy to `:3000` | No change |
 | .env | Create with all secrets | No change (unless adding new vars) |
+
+---
+
+## Part C: User Project Deployment Setup
+
+This section covers the additional infrastructure needed for the user project deployment feature — where users deploy their documentation projects as Docker containers with `{subdomain}.docs.specra-docs.com` subdomains.
+
+### 1. Install Docker
+
+```bash
+ssh root@46.101.48.218
+
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker kamau
+
+# Verify
+docker --version
+docker run hello-world
+```
+
+Log out and back in for the group change to take effect.
+
+### 2. Create Projects Data Directory
+
+```bash
+sudo mkdir -p /data/specra/projects
+sudo chown kamau:kamau /data/specra/projects
+```
+
+### 3. Build and Transfer Docker Base Images
+
+The server has limited RAM, so build the images locally and transfer them.
+
+**On your local machine:**
+
+```bash
+cd /home/kamau/Development/Projects/specra/specra-docs
+
+# Build runtime image
+docker build -t specra/docs-base:latest docker/docs-base/
+
+# Build builder image
+docker build -t specra/docs-builder:latest docker/docs-builder/
+
+# Save and compress
+docker save specra/docs-base:latest specra/docs-builder:latest | gzip > specra-images.tar.gz
+
+# Transfer to server
+scp specra-images.tar.gz root@46.101.48.218:/home/kamau/
+```
+
+**On the server:**
+
+```bash
+docker load < /home/kamau/specra-images.tar.gz
+rm /home/kamau/specra-images.tar.gz
+
+# Verify
+docker images | grep specra
+```
+
+### 4. Configure Wildcard DNS
+
+In your DNS provider (e.g., DigitalOcean, Cloudflare), add:
+
+| Type | Name | Value |
+|------|------|-------|
+| A | `*.docs.specra-docs.com` | `46.101.48.218` |
+
+Verify:
+```bash
+dig test.docs.specra-docs.com
+# Should return 46.101.48.218
+```
+
+### 5. Update Caddy Configuration
+
+Rename the server name in `~/caddy.json` from `static_sites` to `srv0` so it matches what the application code expects. Alternatively, set `CADDY_SERVER_NAME=static_sites` in `.env`.
+
+Reload Caddy after changes:
+```bash
+curl localhost:2019/load \
+  -H "Content-Type: application/json" \
+  -d @~/caddy.json
+```
+
+### 6. Add Deployment Environment Variables
+
+Add these to `/home/kamau/specra/.env`:
+
+```env
+# User Project Deployment
+PROJECTS_DATA_DIR="/data/specra/projects"
+DOCS_BASE_DOMAIN="docs.specra-docs.com"
+DOCS_BASE_IMAGE="specra/docs-base:latest"
+CADDY_ADMIN_URL="http://localhost:2019"
+CADDY_SERVER_NAME="srv0"
+DOCKER_SOCKET_PATH="/var/run/docker.sock"
+```
+
+Restart the app:
+```bash
+pm2 restart specra-docs
+```
+
+### 7. Verification
+
+```bash
+# Docker is installed and images are loaded
+docker images | grep specra
+
+# Projects directory exists
+ls -la /data/specra/projects/
+
+# Caddy admin API is reachable
+curl http://localhost:2019/config/
+
+# DNS resolves (after propagation)
+dig test.docs.specra-docs.com
+
+# Deploy a test project via the dashboard and verify the subdomain resolves
+```

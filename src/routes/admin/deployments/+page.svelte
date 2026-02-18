@@ -86,7 +86,7 @@
                   {d.project.name}
                 </p>
                 <p class="text-xs text-muted-foreground">
-                  {d.project.subdomain}.docs.specra.dev
+                  {d.project.subdomain}.docs.specra-docs.com
                 </p>
               </td>
               <td class="px-4 py-3 text-muted-foreground">

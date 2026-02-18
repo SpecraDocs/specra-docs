@@ -61,7 +61,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
     dnsInstructions: {
       type: 'CNAME',
       name: domain,
-      value: 'docs.specra.dev',
+      value: 'docs.specra-docs.com',
       note: 'Add this CNAME record in your DNS provider, then verify.',
     },
   });

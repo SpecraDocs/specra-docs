@@ -1,5 +1,6 @@
 const CADDY_ADMIN_URL = process.env.CADDY_ADMIN_URL || "http://localhost:2019"
-const BASE_DOMAIN = process.env.DOCS_BASE_DOMAIN || "docs.specra.dev"
+const BASE_DOMAIN = process.env.DOCS_BASE_DOMAIN || "docs.specra-docs.com"
+const CADDY_SERVER_NAME = process.env.CADDY_SERVER_NAME || "srv0"
 
 async function caddyApi(path: string, method: string, body?: unknown) {
   const res = await fetch(`${CADDY_ADMIN_URL}${path}`, {
@@ -34,7 +35,7 @@ export async function addSubdomainRoute(subdomain: string, port: number) {
     await caddyApi(`/id/${routeId}`, "PUT", route)
   } catch {
     // Add new route
-    await caddyApi("/config/apps/http/servers/srv0/routes", "POST", route)
+    await caddyApi(`/config/apps/http/servers/${CADDY_SERVER_NAME}/routes`, "POST", route)
   }
 }
 
@@ -56,7 +57,7 @@ export async function addCustomDomainRoute(domain: string, port: number) {
   try {
     await caddyApi(`/id/${routeId}`, "PUT", route)
   } catch {
-    await caddyApi("/config/apps/http/servers/srv0/routes", "POST", route)
+    await caddyApi(`/config/apps/http/servers/${CADDY_SERVER_NAME}/routes`, "POST", route)
   }
 }
 
@@ -73,7 +74,7 @@ export async function verifyDomainDns(domain: string): Promise<{
   error?: string
 }> {
   const { resolve } = await import("dns/promises")
-  const expectedCname = `docs.specra.dev`
+  const expectedCname = BASE_DOMAIN
 
   try {
     // Check CNAME record

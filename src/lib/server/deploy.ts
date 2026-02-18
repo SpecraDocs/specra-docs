@@ -23,7 +23,7 @@ interface DeployOptions {
 
 function buildEmbedScripts(project: { id: string; web3formsKey: string | null; chatEnabled: boolean }): string {
   let scripts = ""
-  const baseUrl = process.env.PUBLIC_BASE_URL || "https://specra.dev"
+  const baseUrl = process.env.PUBLIC_BASE_URL || "https://specra-docs.com"
 
   if (project.web3formsKey) {
     scripts += `<script src="${baseUrl}/embed/contact-form.js" data-project-id="${project.id}" defer><\/script>\n`

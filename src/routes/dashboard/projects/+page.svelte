@@ -72,7 +72,7 @@
                 {project.name}
               </h3>
               <p class="text-sm text-muted-foreground mt-1">
-                {project.subdomain}.docs.specra.dev
+                {project.subdomain}.docs.specra-docs.com
                 {#if project.customDomain}
                   <span class="ml-2">({project.customDomain})</span>
                 {/if}

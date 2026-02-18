@@ -97,7 +97,7 @@
                   {entry.project?.name || 'Unknown'}
                   {' '}
                   <span class="text-muted-foreground">
-                    ({entry.project?.subdomain}.docs.specra.dev)
+                    ({entry.project?.subdomain}.docs.specra-docs.com)
                   </span>
                 </span>
                 <span class="text-muted-foreground">
