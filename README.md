@@ -150,10 +150,14 @@ Edit `specra.config.json` to customize your site:
 ## Building for Production
 
 ```bash
-npm run build
+npx prisma generate
+STRIPE_SECRET_KEY="sk_test_placeholder" RESEND_API_KEY="re_placeholder" npm run build
+
+# Preview locally:
 npm run preview
-# or for production:
-node build
+
+# Or start with custom server (WebSocket support):
+node --import tsx server.ts
 ```
 
 ## SaaS Features
@@ -190,32 +194,39 @@ specra-docs (this)    →  Official site: documentation + SaaS platform (auth, b
 
 ## Deployment
 
-### Self-Hosted with Docker + Caddy (Production)
+### Self-Hosted VPS with PM2 + Caddy (Production)
 
-See `deploy/README.md` for the complete deployment guide. Uses:
-- Docker for containerization
-- Caddy for reverse proxy + automatic HTTPS
-- PostgreSQL for database
+See [`deploy.md`](deploy.md) for the full guide. The server has limited RAM so all dependencies are built locally and shipped in the tarball.
 
+**First deployment:**
 ```bash
-cd deploy
-./scripts/setup.sh
-./scripts/deploy.sh
+# Local: build app + prod node_modules, package everything, upload
+STRIPE_SECRET_KEY="sk_test_placeholder" RESEND_API_KEY="re_placeholder" npm run build
+# Build prod deps in /tmp (server can't run npm install — OOM)
+mkdir -p /tmp/specra-prod-deps && cp package.json package-lock.json specra-0.2.9.tgz /tmp/specra-prod-deps/
+cd /tmp/specra-prod-deps && npm install --omit=dev && cd -
+# Package with node_modules included
+tar -czf specra-deploy.tar.gz build/ static/ docs/ prisma/ prisma.config.ts scripts/ server.ts specra.config.json specra-0.2.9.tgz src/lib/server/db.ts package.json package-lock.json --directory=/tmp/specra-prod-deps node_modules/
+scp specra-deploy.tar.gz root@46.101.48.218:/home/kamau/specra/
+
+# Server: extract, generate prisma client, migrate, seed, start
+ssh root@46.101.48.218
+cd /home/kamau/specra && tar -xzf specra-deploy.tar.gz && rm specra-deploy.tar.gz
+npx prisma generate && npx prisma db push && npx tsx scripts/seed-admin.ts
+pm2 start "node --import tsx server.ts" --name specra-docs --cwd /home/kamau/specra
 ```
 
-### Vercel
-
+**Updates:**
 ```bash
-npm run build
-# Deploy via Vercel CLI or dashboard
+# Local: rebuild and upload (or use deploy.sh)
+./deploy.sh
+# Server: extract, regenerate prisma, restart
+ssh root@46.101.48.218 'cd /home/kamau/specra && tar -xzf specra-deploy.tar.gz && rm specra-deploy.tar.gz && npx prisma generate && pm2 restart specra-docs'
 ```
 
-### Netlify
+### Docker + Caddy (Alternative)
 
-```bash
-npm run build
-# Deploy the build/ directory
-```
+See [`deploy/README.md`](deploy/README.md) for the Docker-based deployment guide.
 
 ## Need Help?
 

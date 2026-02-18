@@ -30,7 +30,7 @@
     "lucide-svelte": "^0.454.0",
     "pg": "^8.18.0",
     "resend": "^6.9.1",
-    "specra": "file:../specra-sdk/specra-0.2.9.tgz",
+    "specra": "file:specra-0.2.9.tgz",
     "stripe": "^20.3.1",
     "svelte-sonner": "^0.3.28",
     "tar": "^7.5.7",

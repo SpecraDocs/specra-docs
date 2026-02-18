@@ -1,24 +1,33 @@
-# Specra-Docs Deployment Guide (Self-Hosted with Caddy)
+# Specra-Docs Deployment Guide
 
-**Key change**: specra-docs is now a full SaaS (API routes, database, auth, payments) — it can no longer be deployed as a static export. It needs a **running Node.js server** with Caddy as a **reverse proxy** instead of a file server.
+specra-docs is a full SaaS app (API routes, database, auth, payments) built on SvelteKit with `@sveltejs/adapter-node`. It requires a running Node.js server with Caddy as a reverse proxy.
+
+**Server**: `ssh root@46.101.48.218` (user: `kamau`)
+
+**Important notes**:
+- The server has limited RAM — `npm install` will get OOM-killed. All `node_modules` must be built locally and included in the deployment tarball.
+- The server may run a different Node.js version than local. `npx prisma generate` must run on the server to produce a compatible Prisma client.
+- Stripe and Resend SDKs initialize eagerly at build time — placeholder env vars must be provided during `npm run build`.
 
 ---
 
-## Step 1: Install Prerequisites on the Server
+## Part A: New Server Setup (First Time Only)
 
-SSH into your server:
+### 1. Install Prerequisites
+
+SSH into the server:
 ```bash
-ssh kamau@kamau-tools
+ssh root@46.101.48.218
 ```
 
-**Install Node.js 22** (if not already installed):
+**Install Node.js 22+**:
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt-get install -y nodejs
 node -v  # verify
 ```
 
-**Install PostgreSQL 16** (if not already installed):
+**Install PostgreSQL 16**:
 ```bash
 sudo apt-get install -y postgresql postgresql-contrib
 sudo systemctl enable postgresql
@@ -36,94 +45,103 @@ GRANT ALL PRIVILEGES ON DATABASE specra TO specra;
 \q
 ```
 
-**Install PM2** (process manager to keep the app running):
+**Install PM2 and tsx globally**:
 ```bash
-sudo npm install -g pm2
+sudo npm install -g pm2 tsx
 ```
 
 ---
 
-## Step 2: Build Locally (Standalone Mode)
+### 2. Build Locally
 
-On your **local machine** (`/home/kamau/Development/Projects/specra/specra-docs/`):
+On your **local machine**:
 
 ```bash
 cd /home/kamau/Development/Projects/specra/specra-docs
 
-# Install dependencies
 npm install
-
-# Generate Prisma client
 npx prisma generate
 
-# Build in standalone mode (this is the default, NOT export)
-npm run build
+# Stripe and Resend initialize at build time — provide placeholder env vars
+STRIPE_SECRET_KEY="sk_test_placeholder" RESEND_API_KEY="re_placeholder" npm run build
 ```
 
-This produces `build/` — a self-contained Node.js server (via `@sveltejs/adapter-node`).
+This produces `build/` via `@sveltejs/adapter-node`.
 
 ---
 
-## Step 3: Package and Transfer to Server
+### 3. Install Production node_modules Locally
+
+The server doesn't have enough RAM to run `npm install`. Build prod deps in a temp directory on your local machine:
+
+```bash
+mkdir -p /tmp/specra-prod-deps
+cp package.json package-lock.json specra-0.2.9.tgz /tmp/specra-prod-deps/
+cd /tmp/specra-prod-deps
+npm install --omit=dev
+cd /home/kamau/Development/Projects/specra/specra-docs
+```
+
+---
+
+### 4. Package and Transfer
+
+The tarball includes everything the server needs — no `npm install` required on the server.
 
 ```bash
 cd /home/kamau/Development/Projects/specra/specra-docs
 
-# Create a deployment package with only what's needed
 tar -czf specra-deploy.tar.gz \
   build/ \
-  public/ \
+  static/ \
+  docs/ \
   prisma/ \
   prisma.config.ts \
   scripts/ \
-  node_modules/.prisma/ \
-  node_modules/@prisma/ \
-  package.json
+  server.ts \
+  specra.config.json \
+  specra-0.2.9.tgz \
+  src/lib/server/db.ts \
+  package.json \
+  package-lock.json \
+  --directory=/tmp/specra-prod-deps node_modules/
 
-# Transfer to server
-scp specra-deploy.tar.gz kamau@kamau-tools:~/
+scp specra-deploy.tar.gz root@46.101.48.218:/home/kamau/specra/
+```
+
+**Note**: `src/lib/server/db.ts` is included because `scripts/seed-admin.ts` imports from it.
+
+---
+
+### 5. Extract on Server
+
+```bash
+ssh root@46.101.48.218
+
+mkdir -p /home/kamau/specra
+cd /home/kamau/specra
+tar -xzf specra-deploy.tar.gz
+rm specra-deploy.tar.gz
 ```
 
 ---
 
-## Step 4: Set Up on the Server
-
-SSH into the server:
-```bash
-ssh kamau@kamau-tools
-
-# Back up old static specra directory
-mv ~/specra ~/specra-static-backup
-
-# Create new directory and extract
-mkdir -p ~/specra
-cd ~/specra
-tar -xzf ~/specra-deploy.tar.gz
-
-# Clean up
-rm ~/specra-deploy.tar.gz
-```
-
----
-
-## Step 5: Create Environment File on the Server
+### 6. Create Environment File
 
 ```bash
-nano ~/specra/.env
+nano /home/kamau/specra/.env
 ```
-
-Paste and edit these values (use your **production** values):
 
 ```env
-# Database (use the password you set in Step 1)
+# Database
 DATABASE_URL="postgresql://specra:your-secure-password@localhost:5432/specra"
 
-# Auth.js — generate a new secret for production
+# Auth.js
 AUTH_SECRET="run: openssl rand -base64 32"
-AUTH_GITHUB_ID="your-production-github-oauth-id"
-AUTH_GITHUB_SECRET="your-production-github-oauth-secret"
+AUTH_GITHUB_ID="your-github-oauth-id"
+AUTH_GITHUB_SECRET="your-github-oauth-secret"
 
-# Stripe (use LIVE keys for production, test keys for staging)
+# Stripe
 STRIPE_SECRET_KEY="sk_live_..."
 PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_live_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
@@ -136,16 +154,18 @@ MPESA_PASSKEY="your-passkey"
 MPESA_CALLBACK_URL="https://specra-docs.com/api/mpesa/callback"
 MPESA_ENV="production"
 
-# App URL — MUST match your domain
+# App
 PUBLIC_APP_URL="https://specra-docs.com"
 
 # Admin
 ADMIN_EMAIL=kennkamau09@gmail.com
 ADMIN_PASSWORD=your-secure-admin-password
 
-# Cron & Email
-CRON_SECRET="run: openssl rand -hex 16"
+# Email
 RESEND_API_KEY="re_..."
+
+# Cron
+CRON_SECRET="run: openssl rand -hex 16"
 
 # Invoice/Billing
 COMPANY_NAME="Your Company Name"
@@ -156,128 +176,73 @@ DEFAULT_TAX_RATE="0"
 
 ---
 
-## Step 6: Run Database Migrations & Seed
+### 7. Run Prisma Generate, Migrations & Seed
+
+Prisma client must be generated **on the server** because the server may run a different Node.js version than your local machine. The locally-built Prisma client may not be compatible.
 
 ```bash
-cd ~/specra
+cd /home/kamau/specra
 
-# Install tsx globally if not available
-sudo npm install -g tsx
+# Regenerate Prisma client for the server's Node.js version
+npx prisma generate
 
-# Push the Prisma schema to the database
+# Push schema to database
 npx prisma db push
 
-# Seed the admin user
+# Seed admin user and plans
 npx tsx scripts/seed-admin.ts
 ```
 
 ---
 
-## Step 7: Start the App with PM2
+### 8. Start the App with PM2
+
+The app uses a custom `server.ts` entry point (for WebSocket support):
 
 ```bash
-cd ~/specra
+cd /home/kamau/specra
 
-# The SvelteKit adapter-node entry point
-pm2 start build/index.js \
+pm2 start "node --import tsx server.ts" \
   --name specra-docs \
-  --env production \
   --cwd /home/kamau/specra
 
-# Save PM2 process list so it restarts on reboot
 pm2 save
 pm2 startup  # follow the printed command to enable on boot
 ```
 
-The app will now be running on **port 3000**.
-
-Verify it's working:
+The app runs on **port 3000**. Verify:
 ```bash
 curl http://localhost:3000
 ```
 
 ---
 
-## Step 8: Update Caddy Config (Reverse Proxy)
+### 9. Configure Caddy (Reverse Proxy)
 
-The critical change — Caddy must **reverse proxy** to the Node.js server instead of serving static files.
-
-Edit your `caddy.json`:
+Edit your Caddy config:
 ```bash
 nano ~/caddy.json
 ```
 
-Change **only** the specra-docs.com route from `file_server` to `reverse_proxy`:
+Add the specra-docs.com route as a `reverse_proxy`:
 
 ```json
 {
-  "apps": {
-    "http": {
-      "servers": {
-        "static_sites": {
-          "listen": [":80", ":443"],
-          "routes": [
-            {
-              "match": [
-                {
-                  "host": ["koru.africa"]
-                }
-              ],
-              "handle": [
-                {
-                  "handler": "file_server",
-                  "root": "/home/kamau/koru"
-                }
-              ]
-            },
-            {
-              "match": [
-                {
-                  "host": ["hopium.koru.africa"]
-                }
-              ],
-              "handle": [
-                {
-                  "handler": "file_server",
-                  "root": "/home/kamau/hopium"
-                }
-              ]
-            },
-            {
-              "match": [
-                {
-                  "host": ["stratos.koru.africa"]
-                }
-              ],
-              "handle": [
-                {
-                  "handler": "file_server",
-                  "root": "/home/kamau/stratos"
-                }
-              ]
-            },
-            {
-              "match": [
-                {
-                  "host": ["specra-docs.com"]
-                }
-              ],
-              "handle": [
-                {
-                  "handler": "reverse_proxy",
-                  "upstreams": [
-                    {
-                      "dial": "localhost:3000"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      }
+  "match": [
+    {
+      "host": ["specra-docs.com"]
     }
-  }
+  ],
+  "handle": [
+    {
+      "handler": "reverse_proxy",
+      "upstreams": [
+        {
+          "dial": "localhost:3000"
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -288,24 +253,21 @@ curl localhost:2019/load \
   -d @caddy.json
 ```
 
-All other domains (koru.africa, hopium, stratos) remain untouched as static file servers.
-
 ---
 
-## Step 9: Set Up Stripe Webhook (Production)
+### 10. Set Up Stripe Webhook
 
-In your Stripe Dashboard:
+In Stripe Dashboard:
 1. Go to **Developers → Webhooks**
 2. Add endpoint: `https://specra-docs.com/api/webhooks/stripe`
 3. Select events: `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.updated`, `customer.subscription.deleted`
-4. Copy the webhook signing secret and update `STRIPE_WEBHOOK_SECRET` in `~/specra/.env`
-5. Restart the app: `pm2 restart specra-docs`
+4. Copy webhook signing secret → update `STRIPE_WEBHOOK_SECRET` in `~/specra/.env`
+5. Restart: `pm2 restart specra-docs`
 
 ---
 
-## Step 10: Set Up GitHub OAuth (Production)
+### 11. Set Up GitHub OAuth
 
-Update your GitHub OAuth App:
 1. Go to **GitHub → Settings → Developer Settings → OAuth Apps**
 2. Set **Homepage URL**: `https://specra-docs.com`
 3. Set **Authorization callback URL**: `https://specra-docs.com/api/auth/callback/github`
@@ -314,9 +276,84 @@ Update your GitHub OAuth App:
 
 ---
 
-## Future Deployments (Quick Redeploy Script)
+## Part B: Updating the VPS with a New Version
 
-On your **local machine**, create `deploy.sh` in the project root:
+When you have code changes and want to redeploy:
+
+### 1. Build locally
+
+```bash
+cd /home/kamau/Development/Projects/specra/specra-docs
+
+npm install
+npx prisma generate
+STRIPE_SECRET_KEY="sk_test_placeholder" RESEND_API_KEY="re_placeholder" npm run build
+```
+
+### 2. Rebuild prod node_modules (only if dependencies changed)
+
+```bash
+rm -rf /tmp/specra-prod-deps
+mkdir -p /tmp/specra-prod-deps
+cp package.json package-lock.json specra-0.2.9.tgz /tmp/specra-prod-deps/
+cd /tmp/specra-prod-deps
+npm install --omit=dev
+cd /home/kamau/Development/Projects/specra/specra-docs
+```
+
+If no dependencies changed, skip this step — reuse the existing `/tmp/specra-prod-deps/node_modules/`.
+
+### 3. Package and upload
+
+```bash
+cd /home/kamau/Development/Projects/specra/specra-docs
+
+tar -czf specra-deploy.tar.gz \
+  build/ \
+  static/ \
+  docs/ \
+  prisma/ \
+  prisma.config.ts \
+  scripts/ \
+  server.ts \
+  specra.config.json \
+  specra-0.2.9.tgz \
+  src/lib/server/db.ts \
+  package.json \
+  package-lock.json \
+  --directory=/tmp/specra-prod-deps node_modules/
+
+scp specra-deploy.tar.gz root@46.101.48.218:/home/kamau/specra/
+```
+
+### 4. Deploy on server
+
+```bash
+ssh root@46.101.48.218
+
+cd /home/kamau/specra
+tar -xzf specra-deploy.tar.gz
+rm specra-deploy.tar.gz
+
+# Regenerate Prisma client for server's Node version
+npx prisma generate
+
+# Only if schema changed:
+npx prisma db push
+
+# Restart the app
+pm2 restart specra-docs
+```
+
+### Quick One-Liner (after scp, no schema changes)
+
+```bash
+ssh root@46.101.48.218 'cd /home/kamau/specra && tar -xzf specra-deploy.tar.gz && rm specra-deploy.tar.gz && npx prisma generate && pm2 restart specra-docs'
+```
+
+### deploy.sh Script
+
+Save this in the project root for quick redeployments:
 
 ```bash
 #!/bin/bash
@@ -325,27 +362,42 @@ set -e
 cd /home/kamau/Development/Projects/specra/specra-docs
 
 echo "Building..."
-npm run build
+npx prisma generate
+STRIPE_SECRET_KEY="sk_test_placeholder" RESEND_API_KEY="re_placeholder" npm run build
+
+echo "Building prod node_modules..."
+rm -rf /tmp/specra-prod-deps
+mkdir -p /tmp/specra-prod-deps
+cp package.json package-lock.json specra-0.2.9.tgz /tmp/specra-prod-deps/
+cd /tmp/specra-prod-deps && npm install --omit=dev
+cd /home/kamau/Development/Projects/specra/specra-docs
 
 echo "Packaging..."
 tar -czf specra-deploy.tar.gz \
   build/ \
-  public/ \
+  static/ \
+  docs/ \
   prisma/ \
   prisma.config.ts \
   scripts/ \
-  node_modules/.prisma/ \
-  node_modules/@prisma/ \
-  package.json
+  server.ts \
+  specra.config.json \
+  specra-0.2.9.tgz \
+  src/lib/server/db.ts \
+  package.json \
+  package-lock.json \
+  --directory=/tmp/specra-prod-deps node_modules/
 
 echo "Uploading..."
-scp specra-deploy.tar.gz kamau@kamau-tools:~/
+scp specra-deploy.tar.gz root@46.101.48.218:/home/kamau/specra/
 
 echo "Deploying on server..."
-ssh kamau@kamau-tools 'cd ~/specra && tar -xzf ~/specra-deploy.tar.gz && rm ~/specra-deploy.tar.gz && pm2 restart specra-docs'
+ssh root@46.101.48.218 'cd /home/kamau/specra && tar -xzf specra-deploy.tar.gz && rm specra-deploy.tar.gz && npx prisma generate && pm2 restart specra-docs'
+
+echo "Cleaning up..."
+rm specra-deploy.tar.gz
 
 echo "Done! App redeployed."
-rm specra-deploy.tar.gz
 ```
 
 ```bash
@@ -367,13 +419,28 @@ pm2 monit               # real-time monitoring
 
 ---
 
-## Summary: Old vs New Deployment
+## Gotchas
 
-| | Old (Static) | New (SaaS) |
+| Problem | Cause | Fix |
 |---|---|---|
-| Build command | `npm run build:export` | `npm run build` |
-| Output | `out/` (HTML files) | `build/` (Node.js server via adapter-node) |
-| Caddy handler | `file_server` | `reverse_proxy` to `:3000` |
-| Database | None | PostgreSQL required |
-| Process manager | None | PM2 |
-| Environment vars | None | `.env` with all secrets |
+| `npm install` killed on server | OOM — server has limited RAM | Build node_modules locally, include in tarball |
+| `PrismaClient` import error on server | Node version mismatch (local vs server) | Run `npx prisma generate` on the server after extracting |
+| `seed-admin.ts` can't find `db` module | `src/lib/server/db.ts` not in tarball | Include `src/lib/server/db.ts` in tar command |
+| Build fails with "Missing API key" | Stripe/Resend init at build time | Pass `STRIPE_SECRET_KEY` and `RESEND_API_KEY` as env vars during build |
+| Tarball extracts to wrong location | `scp` target path vs `tar -xzf` path mismatch | `scp` directly into `/home/kamau/specra/`, then `cd` there before extracting |
+
+---
+
+## Summary
+
+| | First Deployment | Update |
+|---|---|---|
+| Build | `npm run build` (with placeholder env vars) | Same |
+| node_modules | Build locally in `/tmp/specra-prod-deps/` | Same (skip if deps unchanged) |
+| Package | `tar -czf` with build/, node_modules/, static/, docs/, prisma/, server.ts, src/lib/server/db.ts, SDK tgz | Same |
+| Transfer | `scp` to `/home/kamau/specra/` | Same |
+| Server: extract | `tar -xzf` in `/home/kamau/specra/` | Same |
+| Server: prisma | `npx prisma generate && npx prisma db push && npx tsx scripts/seed-admin.ts` | `npx prisma generate` (+ `db push` only if schema changed) |
+| Server: start | `pm2 start "node --import tsx server.ts"` | `pm2 restart specra-docs` |
+| Caddy | Configure reverse proxy to `:3000` | No change |
+| .env | Create with all secrets | No change (unless adding new vars) |
