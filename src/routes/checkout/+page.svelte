@@ -50,7 +50,8 @@
   const planSlug = $derived($page.url.searchParams.get('plan') || '');
   const intervalParam = $derived($page.url.searchParams.get('interval') || 'monthly');
   const currencyParam = $derived($page.url.searchParams.get('currency') || 'usd');
-  const isTrial = $derived($page.url.searchParams.get('trial') === 'true');
+  const trialEnabled = $derived($page.data.trialEnabled ?? false);
+  const isTrial = $derived($page.url.searchParams.get('trial') === 'true' && trialEnabled);
 
   let interval = $state<'monthly' | 'annual'>('monthly');
   let billing = $state<BillingAddress>({

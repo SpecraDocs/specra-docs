@@ -7,6 +7,10 @@ const TRIAL_DAYS = 14;
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {
+    if (process.env.TRIAL_ENABLED !== 'true') {
+      return json({ error: 'Free trials are currently disabled' }, { status: 403 });
+    }
+
     const session = await locals.auth();
     if (!session?.user?.id) {
       return json({ error: 'Unauthorized' }, { status: 401 });

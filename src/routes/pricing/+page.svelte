@@ -169,11 +169,19 @@
     return `$${price}`;
   }
 
+  const trialEnabled = $derived($page.data.trialEnabled ?? false);
+
+  function getCta(tier: (typeof tiers)[number]) {
+    if (tier.slug === 'free') return 'Get Started';
+    if (tier.slug === 'enterprise') return 'Contact Sales';
+    if (trialEnabled) return 'Start Free Trial';
+    return `Get ${tier.name} Plan`;
+  }
+
   function handleSelectPlan(slug: string) {
     if (slug === 'free') return;
     if (slug === 'enterprise') return;
-    const tier = tiers.find((t) => t.slug === slug);
-    const isTrial = tier?.cta === 'Start Free Trial';
+    const isTrial = trialEnabled;
     window.location.href = `/checkout?plan=${slug}&interval=${interval}&currency=${currency}${isTrial ? '&trial=true' : ''}`;
   }
 </script>
@@ -236,24 +244,9 @@
         </button>
       </div>
 
-      <div class="flex items-center gap-2 rounded-lg border border-border bg-card p-1">
-        <button
-          onclick={() => (currency = 'usd')}
-          class="rounded-md px-3 py-2 text-sm font-medium transition-colors {currency === 'usd'
-            ? 'bg-primary text-primary-foreground'
-            : 'text-muted-foreground hover:text-foreground'}"
-        >
-          USD
-        </button>
-        <button
-          onclick={() => (currency = 'kes')}
-          class="rounded-md px-3 py-2 text-sm font-medium transition-colors {currency === 'kes'
-            ? 'bg-primary text-primary-foreground'
-            : 'text-muted-foreground hover:text-foreground'}"
-        >
-          KES
-        </button>
-      </div>
+      {#if currency === 'kes'}
+        <span class="text-xs text-muted-foreground">Prices in KES</span>
+      {/if}
     </div>
 
     <!-- Simplified plan cards (Free, Starter, Pro only) -->
@@ -297,7 +290,7 @@
               ? 'bg-primary text-primary-foreground hover:bg-primary/90'
               : 'border border-border bg-background text-foreground hover:bg-accent'}"
           >
-            {tier.cta}
+            {getCta(tier)}
           </button>
         </div>
       {/each}

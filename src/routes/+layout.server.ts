@@ -14,5 +14,6 @@ export const load: LayoutServerLoad = async ({ locals }) => {
     // Auth may not be configured yet (no database, etc.)
   }
   const geo = locals.geo ?? { country: null, detectedCurrency: 'usd' as const };
-  return { config, session, geo };
+  const trialEnabled = process.env.TRIAL_ENABLED === 'true';
+  return { config, session, geo, trialEnabled };
 };
