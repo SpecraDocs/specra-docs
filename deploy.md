@@ -128,51 +128,14 @@ rm specra-deploy.tar.gz
 
 ### 6. Create Environment File
 
+Copy `.env.sample` from the repo and fill in the real values:
+
 ```bash
-nano /home/kamau/specra/.env
+scp /home/kamau/Development/Projects/specra/specra-docs/.env.sample root@46.101.48.218:/home/kamau/specra/.env
+ssh root@46.101.48.218 'nano /home/kamau/specra/.env'
 ```
 
-```env
-# Database
-DATABASE_URL="postgresql://specra:your-secure-password@localhost:5432/specra"
-
-# Auth.js
-AUTH_SECRET="run: openssl rand -base64 32"
-AUTH_GITHUB_ID="your-github-oauth-id"
-AUTH_GITHUB_SECRET="your-github-oauth-secret"
-
-# Stripe
-STRIPE_SECRET_KEY="sk_live_..."
-PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_live_..."
-STRIPE_WEBHOOK_SECRET="whsec_..."
-
-# M-Pesa
-MPESA_CONSUMER_KEY="your-consumer-key"
-MPESA_CONSUMER_SECRET="your-consumer-secret"
-MPESA_SHORTCODE="your-business-shortcode"
-MPESA_PASSKEY="your-passkey"
-MPESA_CALLBACK_URL="https://specra-docs.com/api/mpesa/callback"
-MPESA_ENV="production"
-
-# App
-PUBLIC_APP_URL="https://specra-docs.com"
-
-# Admin
-ADMIN_EMAIL=kennkamau09@gmail.com
-ADMIN_PASSWORD=your-secure-admin-password
-
-# Email
-RESEND_API_KEY="re_..."
-
-# Cron
-CRON_SECRET="run: openssl rand -hex 16"
-
-# Invoice/Billing
-COMPANY_NAME="Your Company Name"
-COMPANY_ADDRESS="Your Company Address"
-COMPANY_EMAIL="billing@specra-docs.com"
-DEFAULT_TAX_RATE="0"
-```
+See `.env.sample` for all required variables and their descriptions.
 
 ---
 
@@ -443,7 +406,7 @@ pm2 monit               # real-time monitoring
 | Server: prisma | `npx prisma generate && npx prisma db push && npx tsx scripts/seed-admin.ts` | `npx prisma generate` (+ `db push` only if schema changed) |
 | Server: start | `pm2 start "node --import tsx server.ts"` | `pm2 restart specra-docs` |
 | Caddy | Configure reverse proxy to `:3000` | No change |
-| .env | Create with all secrets | No change (unless adding new vars) |
+| .env | Copy `.env.sample`, fill in real values | No change (unless adding new vars) |
 
 ---
 
@@ -532,19 +495,8 @@ curl localhost:2019/load \
 
 ### 6. Add Deployment Environment Variables
 
-Add these to `/home/kamau/specra/.env`:
+The deployment-related env vars are already included in `.env.sample` under the "User Project Deployment" section. If you set up `.env` before Part C existed, add the missing vars from `.env.sample` and restart:
 
-```env
-# User Project Deployment
-PROJECTS_DATA_DIR="/data/specra/projects"
-DOCS_BASE_DOMAIN="docs.specra-docs.com"
-DOCS_BASE_IMAGE="specra/docs-base:latest"
-CADDY_ADMIN_URL="http://localhost:2019"
-CADDY_SERVER_NAME="srv0"
-DOCKER_SOCKET_PATH="/var/run/docker.sock"
-```
-
-Restart the app:
 ```bash
 pm2 restart specra-docs
 ```
