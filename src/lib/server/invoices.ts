@@ -31,6 +31,9 @@ function formatAmount(amount: number, currency: string): string {
   if (currency === "KES") {
     return amount.toLocaleString()
   }
+  if (currency === "CRYPTO") {
+    return (amount / 100).toFixed(2)
+  }
   return (amount / 100).toFixed(2)
 }
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import { Check, X, ArrowLeft, ArrowRight } from 'lucide-svelte';
 
   const tiers = [
@@ -155,7 +156,7 @@
   };
 
   let interval = $state<'monthly' | 'annual'>('monthly');
-  let currency = $state<'usd' | 'kes'>('usd');
+  let currency = $state<'usd' | 'kes'>($page.data.geo?.detectedCurrency ?? 'usd');
 
   function getPrice(tier: (typeof tiers)[number]) {
     if (tier.slug === 'enterprise') return 'Custom';

@@ -59,6 +59,13 @@
 
         {#if data.subscription.paymentProvider === 'STRIPE'}
           <ManageSubscriptionButton />
+        {:else if data.subscription.paymentProvider === 'PESAPAL' || data.subscription.paymentProvider === 'NOWPAYMENTS' || data.subscription.paymentProvider === 'MPESA'}
+          <a
+            href="/pricing"
+            class="inline-block rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-accent transition-colors"
+          >
+            Renew Subscription
+          </a>
         {/if}
       </div>
     {:else}
@@ -110,10 +117,20 @@
                 <td class="py-3 px-4 text-foreground">
                   {payment.currency === 'KES'
                     ? `KES ${payment.amount.toLocaleString()}`
-                    : `$${(payment.amount / 100).toFixed(2)}`}
+                    : payment.currency === 'CRYPTO'
+                      ? `$${(payment.amount / 100).toFixed(2)} (crypto)`
+                      : `$${(payment.amount / 100).toFixed(2)}`}
                 </td>
                 <td class="py-3 px-4 text-foreground">
-                  {payment.provider === 'MPESA' ? 'M-Pesa' : 'Stripe'}
+                  {payment.provider === 'MPESA'
+                    ? 'M-Pesa'
+                    : payment.provider === 'PESAPAL'
+                      ? 'Pesapal'
+                      : payment.provider === 'NOWPAYMENTS'
+                        ? 'Crypto'
+                        : payment.provider === 'ADMIN'
+                          ? 'Admin'
+                          : 'Stripe'}
                 </td>
                 <td class="py-3 px-4">
                   <span

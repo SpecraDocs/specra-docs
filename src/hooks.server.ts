@@ -1,6 +1,21 @@
 import { sequence } from '@sveltejs/kit/hooks';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { handle as authHandle } from '$lib/server/auth.js';
+import { lookupIp } from '$lib/server/geo.js';
+
+const geoHandle: Handle = async ({ event, resolve }) => {
+  try {
+    const ip = event.getClientAddress();
+    const geo = lookupIp(ip);
+    event.locals.geo = {
+      country: geo.country,
+      detectedCurrency: geo.country === 'KE' ? 'kes' : 'usd',
+    };
+  } catch {
+    event.locals.geo = { country: null, detectedCurrency: 'usd' };
+  }
+  return resolve(event);
+};
 
 const protectionHandle: Handle = async ({ event, resolve }) => {
   const session = await event.locals.auth();
@@ -44,4 +59,4 @@ const protectionHandle: Handle = async ({ event, resolve }) => {
   return resolve(event);
 };
 
-export const handle = sequence(authHandle, protectionHandle);
+export const handle = sequence(authHandle, geoHandle, protectionHandle);

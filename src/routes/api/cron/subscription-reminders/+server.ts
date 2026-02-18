@@ -25,7 +25,7 @@ export const GET: RequestHandler = async ({ request }) => {
     const expiringSubs = await prisma.subscription.findMany({
       where: {
         status: 'ACTIVE',
-        paymentProvider: { in: ['MPESA', 'ADMIN'] },
+        paymentProvider: { in: ['MPESA', 'PESAPAL', 'NOWPAYMENTS', 'ADMIN'] },
         currentPeriodEnd: {
           gte: now,
           lte: threeDaysFromNow,
@@ -58,7 +58,7 @@ export const GET: RequestHandler = async ({ request }) => {
     const expiredSubs = await prisma.subscription.updateMany({
       where: {
         status: 'ACTIVE',
-        paymentProvider: { in: ['MPESA', 'ADMIN'] },
+        paymentProvider: { in: ['MPESA', 'PESAPAL', 'NOWPAYMENTS', 'ADMIN'] },
         currentPeriodEnd: { lt: now },
       },
       data: { status: 'CANCELLED' },

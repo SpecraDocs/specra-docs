@@ -13,5 +13,6 @@ export const load: LayoutServerLoad = async ({ locals }) => {
   } catch {
     // Auth may not be configured yet (no database, etc.)
   }
-  return { config, session };
+  const geo = locals.geo ?? { country: null, detectedCurrency: 'usd' as const };
+  return { config, session, geo };
 };

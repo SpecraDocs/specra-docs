@@ -109,6 +109,8 @@ model Subscription {
   grantReason          String?
   extraSeats              Int      @default(0)
   stripeExtraSeatItemId   String?
+  pesapalOrderTrackingId  String?
+  nowpaymentsInvoiceId    String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -119,6 +121,8 @@ model Subscription {
 
   @@index([userId])
   @@index([stripeSubscriptionId])
+  @@index([pesapalOrderTrackingId])
+  @@index([nowpaymentsInvoiceId])
 }
 
 model Payment {
@@ -128,10 +132,11 @@ model Payment {
   amount         Int             // smallest currency unit
   currency       Currency        @default(USD)
   provider       PaymentProvider @default(STRIPE)
-  providerTxId   String?
-  status         PaymentStatus   @default(PENDING)
-  couponCode     String?
-  taxAmount      Int?
+  providerTxId     String?
+  status           PaymentStatus   @default(PENDING)
+  couponCode       String?
+  taxAmount        Int?
+  providerMetadata Json?
 
   createdAt DateTime @default(now())
 
@@ -506,6 +511,8 @@ enum SubscriptionStatus {
 enum PaymentProvider {
   STRIPE
   MPESA
+  PESAPAL
+  NOWPAYMENTS
   ADMIN
 }
 
@@ -522,6 +529,7 @@ enum BillingInterval {
 enum Currency {
   USD
   KES
+  CRYPTO
 }
 
 enum PaymentStatus {

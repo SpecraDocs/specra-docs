@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { ArrowLeft, CreditCard, Phone, Check, Loader2, Sparkles } from 'lucide-svelte';
+  import { ArrowLeft, CreditCard, Check, Loader2, Sparkles, Bitcoin } from 'lucide-svelte';
 
   interface OrderSummary {
     subtotal: number;
@@ -65,7 +65,7 @@
   let appliedCoupon = $state('');
   let couponError = $state('');
   let orderSummary = $state<OrderSummary | null>(null);
-  let phoneNumber = $state('');
+  let phoneNumber = $state(''); // kept for legacy M-Pesa handler
   let loading = $state(true);
   let calculating = $state(false);
   let paying = $state(false);
@@ -74,10 +74,15 @@
   const planInfo = $derived(planPrices[planSlug]);
   const planName = $derived(planInfo?.name || planSlug.charAt(0).toUpperCase() + planSlug.slice(1));
 
-  // Initialize interval and country from URL params
+  // Initialize interval and country from URL params + geo detection
   $effect(() => {
     interval = intervalParam as 'monthly' | 'annual';
-    billing.country = currencyParam === 'kes' ? 'KE' : 'US';
+    const geoCountry = $page.data.geo?.country;
+    if (geoCountry) {
+      billing.country = geoCountry;
+    } else {
+      billing.country = currencyParam === 'kes' ? 'KE' : 'US';
+    }
   });
 
   function getLocalPrice() {
@@ -257,6 +262,60 @@
         window.location.href = '/dashboard?checkout=mpesa-pending';
       } else {
         alert(data.error || 'M-Pesa payment failed');
+      }
+    } finally {
+      paying = false;
+    }
+  }
+
+  async function handlePesapalCheckout() {
+    paying = true;
+    try {
+      await handleSaveBilling();
+
+      const res = await fetch('/api/pesapal/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planId: planSlug,
+          interval,
+          couponCode: appliedCoupon || undefined,
+          billingAddress: billing,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+      } else if (data.error) {
+        alert(data.error);
+      }
+    } finally {
+      paying = false;
+    }
+  }
+
+  async function handleCryptoCheckout() {
+    paying = true;
+    try {
+      await handleSaveBilling();
+
+      const res = await fetch('/api/nowpayments/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planId: planSlug,
+          interval,
+          couponCode: appliedCoupon || undefined,
+          billingAddress: billing,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+      } else if (data.error) {
+        alert(data.error);
       }
     } finally {
       paying = false;
@@ -477,44 +536,50 @@
             <!-- Payment Methods -->
             <div>
               <h2 class="text-lg font-semibold text-foreground mb-4">Payment Method</h2>
-              <div class="space-y-3">
-                <button
-                  onclick={handleStripeCheckout}
-                  disabled={paying}
-                  class="w-full flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
-                >
-                  {#if paying}
-                    <Loader2 class="h-4 w-4 animate-spin" />
-                  {:else}
-                    <CreditCard class="h-4 w-4" />
-                  {/if}
-                  Pay with Stripe
-                </button>
+              <div class="space-y-4">
+                <div>
+                  <button
+                    onclick={handlePesapalCheckout}
+                    disabled={paying}
+                    class="w-full flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
+                  >
+                    {#if paying}
+                      <Loader2 class="h-4 w-4 animate-spin" />
+                    {:else}
+                      <CreditCard class="h-4 w-4" />
+                    {/if}
+                    Pay with Pesapal
+                  </button>
+                  <p class="mt-1.5 text-xs text-muted-foreground text-center">
+                    Cards (Visa, Mastercard), M-Pesa, Airtel Money, Bank Transfer
+                  </p>
+                </div>
 
-                <div class="border-t border-border my-4"></div>
+                <div class="relative">
+                  <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-border"></div>
+                  </div>
+                  <div class="relative flex justify-center text-xs">
+                    <span class="bg-background px-2 text-muted-foreground">or</span>
+                  </div>
+                </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-foreground mb-2">M-Pesa Phone Number</label>
-                  <div class="flex gap-2">
-                    <input
-                      type="tel"
-                      bind:value={phoneNumber}
-                      placeholder="254712345678"
-                      class="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
-                    />
-                    <button
-                      onclick={handleMpesaPayment}
-                      disabled={paying || !phoneNumber}
-                      class="flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 transition-colors disabled:opacity-50"
-                    >
-                      {#if paying}
-                        <Loader2 class="h-4 w-4 animate-spin" />
-                      {:else}
-                        <Phone class="h-4 w-4" />
-                      {/if}
-                      Pay with M-Pesa
-                    </button>
-                  </div>
+                  <button
+                    onclick={handleCryptoCheckout}
+                    disabled={paying}
+                    class="w-full flex items-center justify-center gap-2 rounded-md border border-border bg-background px-4 py-3 text-sm font-medium text-foreground hover:bg-accent transition-colors disabled:opacity-50"
+                  >
+                    {#if paying}
+                      <Loader2 class="h-4 w-4 animate-spin" />
+                    {:else}
+                      <Bitcoin class="h-4 w-4" />
+                    {/if}
+                    Pay with Crypto
+                  </button>
+                  <p class="mt-1.5 text-xs text-muted-foreground text-center">
+                    BTC, ETH, USDT, and 100+ cryptocurrencies
+                  </p>
                 </div>
               </div>
             </div>
