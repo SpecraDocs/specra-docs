@@ -101,7 +101,7 @@ tar -czf specra-deploy.tar.gz \
   server.ts \
   specra.config.json \
   specra-0.2.9.tgz \
-  src/lib/server/db.ts \
+  src/lib/server/ \
   package.json \
   package-lock.json \
   --directory=/tmp/specra-prod-deps node_modules/
@@ -109,7 +109,7 @@ tar -czf specra-deploy.tar.gz \
 scp specra-deploy.tar.gz root@46.101.48.218:/home/kamau/specra/
 ```
 
-**Note**: `src/lib/server/db.ts` is included because `scripts/seed-admin.ts` imports from it.
+**Note**: `src/lib/server/` is included because `server.ts` imports `websocket.ts` (which imports `chat.ts` and `db.ts`), and `scripts/seed-admin.ts` imports `db.ts`.
 
 ---
 
@@ -318,7 +318,7 @@ tar -czf specra-deploy.tar.gz \
   server.ts \
   specra.config.json \
   specra-0.2.9.tgz \
-  src/lib/server/db.ts \
+  src/lib/server/ \
   package.json \
   package-lock.json \
   --directory=/tmp/specra-prod-deps node_modules/
@@ -383,7 +383,7 @@ tar -czf specra-deploy.tar.gz \
   server.ts \
   specra.config.json \
   specra-0.2.9.tgz \
-  src/lib/server/db.ts \
+  src/lib/server/ \
   package.json \
   package-lock.json \
   --directory=/tmp/specra-prod-deps node_modules/
@@ -437,7 +437,7 @@ pm2 monit               # real-time monitoring
 |---|---|---|
 | Build | `npm run build` (with placeholder env vars) | Same |
 | node_modules | Build locally in `/tmp/specra-prod-deps/` | Same (skip if deps unchanged) |
-| Package | `tar -czf` with build/, node_modules/, static/, docs/, prisma/, server.ts, src/lib/server/db.ts, SDK tgz | Same |
+| Package | `tar -czf` with build/, node_modules/, static/, docs/, prisma/, server.ts, src/lib/server/, SDK tgz | Same |
 | Transfer | `scp` to `/home/kamau/specra/` | Same |
 | Server: extract | `tar -xzf` in `/home/kamau/specra/` | Same |
 | Server: prisma | `npx prisma generate && npx prisma db push && npx tsx scripts/seed-admin.ts` | `npx prisma generate` (+ `db push` only if schema changed) |
