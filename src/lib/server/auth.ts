@@ -2,8 +2,13 @@ import { SvelteKitAuth } from '@auth/sveltekit';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import GitHub from '@auth/sveltekit/providers/github';
 import Credentials from '@auth/sveltekit/providers/credentials';
+import { CredentialsSignin } from '@auth/core/errors';
 import bcrypt from 'bcryptjs';
 import { prisma } from './db.js';
+
+class EmailNotVerifiedError extends CredentialsSignin {
+  code = 'EMAIL_NOT_VERIFIED';
+}
 
 declare module '@auth/core/types' {
   interface User {
@@ -50,6 +55,10 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 
         if (!isValid) {
           return null;
+        }
+
+        if (!user.emailVerified) {
+          throw new EmailNotVerifiedError();
         }
 
         return {

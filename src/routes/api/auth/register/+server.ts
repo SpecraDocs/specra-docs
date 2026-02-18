@@ -1,7 +1,9 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import { prisma } from '$lib/server/db.js';
+import { sendVerificationEmail } from '$lib/server/email.js';
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
@@ -39,11 +41,33 @@ export const POST: RequestHandler = async ({ request }) => {
         name,
         email,
         password: hashedPassword,
+        verificationAttempts: 1,
       },
     });
 
+    // Generate 6-digit verification code
+    const code = crypto.randomInt(100000, 999999).toString();
+    const expires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    await prisma.verificationToken.create({
+      data: {
+        identifier: email,
+        token: code,
+        expires,
+      },
+    });
+
+    await sendVerificationEmail({
+      to: email,
+      userName: name || 'there',
+      code,
+    });
+
     return json(
-      { user: { id: user.id, name: user.name, email: user.email } },
+      {
+        user: { id: user.id, name: user.name, email: user.email },
+        requiresVerification: true,
+      },
       { status: 201 }
     );
   } catch (error) {

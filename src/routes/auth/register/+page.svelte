@@ -1,17 +1,25 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { signIn } from '@auth/sveltekit/client';
-  import { Github } from 'lucide-svelte';
+  import { Github, Eye, EyeOff } from 'lucide-svelte';
 
   let name = $state('');
   let email = $state('');
   let password = $state('');
+  let confirmPassword = $state('');
+  let showPassword = $state(false);
   let error = $state('');
   let loading = $state(false);
 
   async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
     error = '';
+
+    if (password !== confirmPassword) {
+      error = 'Passwords do not match';
+      return;
+    }
+
     loading = true;
 
     try {
@@ -28,19 +36,8 @@
         return;
       }
 
-      // Auto sign in after registration
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        error = 'Account created but sign-in failed. Please log in.';
-        goto('/auth/login');
-      } else {
-        goto('/dashboard');
-      }
+      // Redirect to verification page
+      goto(`/auth/verify?email=${encodeURIComponent(email)}`);
     } catch {
       error = 'Something went wrong';
     } finally {
@@ -120,14 +117,43 @@
           <label for="password" class="text-sm font-medium text-foreground">
             Password
           </label>
+          <div class="relative">
+            <input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              bind:value={password}
+              required
+              minlength={8}
+              class="w-full rounded-md border border-border bg-background px-3 py-2 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              placeholder="At least 8 characters"
+            />
+            <button
+              type="button"
+              onclick={() => showPassword = !showPassword}
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              tabindex={-1}
+            >
+              {#if showPassword}
+                <EyeOff class="h-4 w-4" />
+              {:else}
+                <Eye class="h-4 w-4" />
+              {/if}
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label for="confirm-password" class="text-sm font-medium text-foreground">
+            Confirm Password
+          </label>
           <input
-            id="password"
+            id="confirm-password"
             type="password"
-            bind:value={password}
+            bind:value={confirmPassword}
             required
             minlength={8}
             class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            placeholder="At least 8 characters"
+            placeholder="Confirm your password"
           />
         </div>
 

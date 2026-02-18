@@ -32,10 +32,10 @@ const protectionHandle: Handle = async ({ event, resolve }) => {
 
   // Check if user is blocked
   if (isLoggedIn && (session.user as any)?.status === 'BLOCKED') {
-    const loginUrl = new URL('/auth/login', event.url.origin);
-    loginUrl.searchParams.set('error', 'AccountBlocked');
-    loginUrl.searchParams.set('message', 'Your account has been blocked. Please contact support.');
-    redirect(302, loginUrl.toString());
+    if (pathname !== '/auth/blocked') {
+      redirect(302, '/auth/blocked');
+    }
+    return resolve(event);
   }
 
   // Protect dashboard routes
@@ -56,9 +56,9 @@ const protectionHandle: Handle = async ({ event, resolve }) => {
     }
   }
 
-  // Redirect logged-in users away from auth pages (except CLI auth flow)
+  // Redirect logged-in users away from auth pages (except CLI auth flow and blocked page)
   if (pathname.startsWith('/auth/') && isLoggedIn) {
-    if (pathname === '/auth/cli') {
+    if (pathname === '/auth/cli' || pathname === '/auth/blocked') {
       return resolve(event);
     }
     redirect(302, '/dashboard');

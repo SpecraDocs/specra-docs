@@ -5,6 +5,7 @@
   import { Github } from 'lucide-svelte';
 
   const callbackUrl = $derived($page.url.searchParams.get('callbackUrl') || '/dashboard');
+  const verified = $derived($page.url.searchParams.get('verified') === 'true');
 
   let email = $state('');
   let password = $state('');
@@ -22,6 +23,11 @@
         password,
         redirect: false,
       });
+
+      if (result?.code === 'EMAIL_NOT_VERIFIED') {
+        goto(`/auth/verify?email=${encodeURIComponent(email)}`);
+        return;
+      }
 
       if (result?.error) {
         error = 'Invalid email or password';
@@ -50,6 +56,12 @@
     </div>
 
     <div class="rounded-lg border border-border bg-card p-8 shadow-sm space-y-6">
+      {#if verified}
+        <div class="rounded-md bg-green-500/10 border border-green-500/20 px-4 py-3 text-sm text-green-700 dark:text-green-400">
+          Email verified successfully. You can now sign in.
+        </div>
+      {/if}
+
       <button
         onclick={() => signIn('github', { callbackUrl })}
         class="w-full flex items-center justify-center gap-2 rounded-md border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-accent transition-colors"

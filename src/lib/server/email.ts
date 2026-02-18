@@ -6,6 +6,34 @@ const FROM_EMAIL = process.env.COMPANY_EMAIL || "billing@specra-docs.com"
 const COMPANY_NAME = process.env.COMPANY_NAME || "Specra"
 const APP_URL = process.env.PUBLIC_APP_URL || "https://specra-docs.com"
 
+export async function sendVerificationEmail({
+  to,
+  userName,
+  code,
+}: {
+  to: string
+  userName: string
+  code: string
+}) {
+  await resend.emails.send({
+    from: `${COMPANY_NAME} <${FROM_EMAIL}>`,
+    to,
+    subject: `${code} is your ${COMPANY_NAME} verification code`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>Verify your email</h2>
+        <p>Hi ${userName},</p>
+        <p>Enter the following code to verify your email address:</p>
+        <div style="margin: 24px 0; text-align: center;">
+          <span style="font-size: 32px; font-weight: bold; letter-spacing: 6px; background: #f4f4f5; padding: 16px 24px; border-radius: 8px; display: inline-block;">${code}</span>
+        </div>
+        <p style="color: #666; font-size: 14px;">This code expires in 15 minutes. If you didn't create an account, you can safely ignore this email.</p>
+        <p style="color: #999; font-size: 12px;">${COMPANY_NAME}</p>
+      </div>
+    `,
+  })
+}
+
 export async function sendInvoiceEmail({
   to,
   invoiceNumber,
