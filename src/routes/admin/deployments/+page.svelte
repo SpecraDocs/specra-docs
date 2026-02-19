@@ -4,8 +4,7 @@
   interface Deployment {
     id: string;
     status: string;
-    containerId: string | null;
-    port: number | null;
+    buildPath: string | null;
     trigger: string;
     createdAt: string;
     project: {
@@ -44,7 +43,7 @@
       Active Deployments
     </h1>
     <p class="text-muted-foreground mt-1">
-      {deployments.length} active containers
+      {deployments.length} active sites
     </p>
   </div>
 
@@ -63,7 +62,6 @@
             <th class="text-left px-4 py-3 font-medium text-muted-foreground">Status</th>
             <th class="text-left px-4 py-3 font-medium text-muted-foreground">Project</th>
             <th class="text-left px-4 py-3 font-medium text-muted-foreground">Owner</th>
-            <th class="text-left px-4 py-3 font-medium text-muted-foreground">Port</th>
             <th class="text-left px-4 py-3 font-medium text-muted-foreground">Trigger</th>
             <th class="text-left px-4 py-3 font-medium text-muted-foreground">Started</th>
           </tr>
@@ -91,9 +89,6 @@
               </td>
               <td class="px-4 py-3 text-muted-foreground">
                 {d.project.user.email}
-              </td>
-              <td class="px-4 py-3 text-muted-foreground font-mono">
-                {d.port || '\u2014'}
               </td>
               <td class="px-4 py-3 text-muted-foreground capitalize">
                 {d.trigger.toLowerCase()}

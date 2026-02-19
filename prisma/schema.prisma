@@ -301,8 +301,7 @@ model Deployment {
   id          String           @id @default(cuid())
   projectId   String
   status      DeploymentStatus @default(QUEUED)
-  containerId String?
-  port        Int?
+  buildPath   String?
   buildLogs   String?          @db.Text
   trigger     DeployTrigger    @default(MANUAL)
   commitSha   String?

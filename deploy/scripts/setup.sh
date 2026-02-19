@@ -99,6 +99,12 @@ sudo mkdir -p /var/www/specra-docs
 sudo chown -R $USER:$USER /var/www/specra-docs
 echo -e "${GREEN}✅ Application directory created${NC}"
 
+# Create sites directory for deployed docs
+echo -e "${YELLOW}📁 Creating sites directory...${NC}"
+sudo mkdir -p /var/www/sites
+sudo chown -R $USER:$USER /var/www/sites
+echo -e "${GREEN}✅ Sites directory created${NC}"
+
 # Create backup directory
 echo -e "${YELLOW}📁 Creating backup directory...${NC}"
 sudo mkdir -p /var/backups/specra-docs

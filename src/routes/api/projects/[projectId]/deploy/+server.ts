@@ -36,6 +36,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
   let configJson: string | undefined;
   let trigger: 'MANUAL' | 'CLI' | 'GITHUB' = 'MANUAL';
   let commitSha: string | undefined;
+  let preBuilt = false;
 
   if (contentType.includes('multipart/form-data')) {
     const formData = await request.formData();
@@ -50,10 +51,12 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
     configJson = formData.get('config')?.toString();
     trigger = (formData.get('trigger')?.toString() as typeof trigger) || 'MANUAL';
     commitSha = formData.get('commitSha')?.toString();
+    preBuilt = formData.get('preBuilt')?.toString() === 'true';
   } else {
     docsContent = Buffer.from(await request.arrayBuffer());
     trigger = (request.headers.get('x-deploy-trigger') as typeof trigger) || 'CLI';
     commitSha = request.headers.get('x-commit-sha') || undefined;
+    preBuilt = request.headers.get('x-pre-built') === 'true';
   }
 
   try {
@@ -62,6 +65,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
       configJson,
       trigger,
       commitSha,
+      preBuilt,
     });
 
     logAudit({

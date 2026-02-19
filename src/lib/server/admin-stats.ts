@@ -55,12 +55,12 @@ export async function getResourceUsage() {
   })
 
   return {
-    totalContainers: running.length,
+    totalSites: running.length,
     deployments: running.map((d) => ({
       id: d.id,
       projectName: d.project.name,
       subdomain: d.project.subdomain,
-      port: d.port,
+      buildPath: d.buildPath,
       createdAt: d.createdAt,
     })),
   }

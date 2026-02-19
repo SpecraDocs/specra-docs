@@ -2,6 +2,7 @@ import { sequence } from '@sveltejs/kit/hooks';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { handle as authHandle } from '$lib/server/auth.js';
 import { lookupIp } from '$lib/server/geo.js';
+import { isCaddyAvailable, syncAllRoutes } from '$lib/server/caddy.js';
 
 const GEO_DEFAULT_COUNTRY = process.env.GEO_DEFAULT_COUNTRY || '';
 
@@ -67,4 +68,22 @@ const protectionHandle: Handle = async ({ event, resolve }) => {
   return resolve(event);
 };
 
-export const handle = sequence(authHandle, geoHandle, protectionHandle);
+let caddySynced = false;
+
+const caddySyncHandle: Handle = async ({ event, resolve }) => {
+  if (!caddySynced) {
+    try {
+      const available = await isCaddyAvailable();
+      if (available) {
+        await syncAllRoutes();
+        caddySynced = true;
+        console.log('Caddy routes synced from database');
+      }
+    } catch (err) {
+      console.error('Caddy sync failed, will retry on next request:', err);
+    }
+  }
+  return resolve(event);
+};
+
+export const handle = sequence(authHandle, geoHandle, protectionHandle, caddySyncHandle);

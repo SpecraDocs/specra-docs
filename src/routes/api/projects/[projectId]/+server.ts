@@ -3,6 +3,11 @@ import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
 import { canAccessProject } from '$lib/server/auth-utils.js';
 import { logAudit } from '$lib/server/audit.js';
+import { removeRoute } from '$lib/server/caddy.js';
+import { rm } from 'fs/promises';
+import path from 'path';
+
+const SITES_DIR = process.env.SITES_DIR || '/var/www/sites';
 
 export const GET: RequestHandler = async ({ locals, params }) => {
   const session = await locals.auth();
@@ -84,17 +89,20 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
     return json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  // Stop running deployments
-  const runningDeploys = await prisma.deployment.findMany({
-    where: { projectId, status: 'RUNNING' },
-  });
+  // Remove Caddy routes
+  await removeRoute(`specra-${project.subdomain}`);
+  if (project.customDomain) {
+    await removeRoute(
+      `specra-custom-${project.customDomain.replace(/\./g, '-')}`
+    );
+  }
 
-  for (const deploy of runningDeploys) {
-    if (deploy.containerId) {
-      const { stopContainer, removeContainer } = await import('$lib/server/docker.js');
-      await stopContainer(deploy.containerId);
-      await removeContainer(deploy.containerId);
-    }
+  // Clean up site directory
+  const siteDir = path.join(SITES_DIR, project.subdomain);
+  try {
+    await rm(siteDir, { recursive: true, force: true });
+  } catch {
+    // Non-fatal: directory may not exist
   }
 
   await prisma.project.delete({ where: { id: projectId } });

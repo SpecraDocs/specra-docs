@@ -1,24 +1,20 @@
 import { prisma } from "./db.js"
-import {
-  allocatePort,
-  createContainer,
-  startContainer,
-  stopContainer,
-  removeContainer,
-  buildProjectImage,
-  healthCheck,
-} from "./docker.js"
+import { buildProjectImage } from "./builder.js"
 import { addSubdomainRoute, addCustomDomainRoute } from "./caddy.js"
-import { mkdir, readFile, writeFile } from "fs/promises"
+import { mkdir, readFile, writeFile, symlink, rename, readlink, readdir, rm } from "fs/promises"
+import { existsSync } from "fs"
 import path from "path"
 
 const PROJECTS_DIR = process.env.PROJECTS_DATA_DIR || "/data/specra/projects"
+const SITES_DIR = process.env.SITES_DIR || "/var/www/sites"
+const MAX_RELEASES = 5
 
 interface DeployOptions {
   docsContent: Buffer
   configJson?: string
   trigger: "MANUAL" | "CLI" | "GITHUB"
   commitSha?: string
+  preBuilt?: boolean
 }
 
 function buildEmbedScripts(project: { id: string; web3formsKey: string | null; chatEnabled: boolean }): string {
@@ -96,54 +92,69 @@ export async function deployProject(projectId: string, options: DeployOptions) {
       }
     }
 
-    // 4. Stop existing container if running
-    const existingDeployment = await prisma.deployment.findFirst({
+    // 4. Build if not pre-built
+    if (!options.preBuilt) {
+      buildLogs += await buildProjectImage(projectId)
+    } else {
+      buildLogs += "Skipping build (pre-built content)\n"
+    }
+
+    // 5. Deploy to sites directory
+    await updateStatus(deployment.id, "DEPLOYING")
+
+    const siteDir = path.join(SITES_DIR, project.subdomain)
+    const releasesDir = path.join(siteDir, "releases")
+    const releaseDir = path.join(releasesDir, deployment.id)
+    const currentLink = path.join(siteDir, "current")
+
+    await mkdir(releaseDir, { recursive: true })
+
+    // Copy build output to release directory
+    const buildDir = options.preBuilt ? sourceDir : path.join(projectDir, "build")
+    const { cp } = await import("fs/promises")
+    await cp(buildDir, releaseDir, { recursive: true })
+
+    // Verify index.html exists
+    const indexPath = path.join(releaseDir, "index.html")
+    if (!existsSync(indexPath)) {
+      throw new Error("Build output missing index.html")
+    }
+
+    // 6. Atomic symlink swap
+    const tempLink = `${currentLink}.tmp-${deployment.id}`
+    await symlink(releaseDir, tempLink)
+    await rename(tempLink, currentLink)
+
+    buildLogs += `Deployed to ${releaseDir}\n`
+
+    // 7. Mark previous RUNNING deployments as STOPPED
+    await prisma.deployment.updateMany({
       where: {
         projectId,
         status: "RUNNING",
         id: { not: deployment.id },
       },
+      data: { status: "STOPPED" },
     })
 
-    if (existingDeployment?.containerId) {
-      await stopContainer(existingDeployment.containerId)
-      await removeContainer(existingDeployment.containerId)
-      await prisma.deployment.update({
-        where: { id: existingDeployment.id },
-        data: { status: "STOPPED" },
-      })
-    }
-
-    // 5. Build project
-    buildLogs += await buildProjectImage(projectId)
-
-    // 6. Create and start container (DEPLOYING)
-    await updateStatus(deployment.id, "DEPLOYING")
-    const port = await allocatePort()
-    const containerId = await createContainer(projectId, port)
-    await startContainer(containerId)
-
-    await prisma.deployment.update({
-      where: { id: deployment.id },
-      data: { containerId, port },
-    })
-
-    // 7. Register Caddy routes
-    await addSubdomainRoute(project.subdomain, port)
+    // 8. Register Caddy routes
+    await addSubdomainRoute(project.subdomain)
     if (project.customDomain) {
-      await addCustomDomainRoute(project.customDomain, port)
+      await addCustomDomainRoute(project.customDomain, project.subdomain)
     }
 
-    // 8. Health check -> RUNNING or FAILED
-    const healthy = await healthCheck(port)
-    if (!healthy) {
-      throw new Error("Health check failed after deployment")
-    }
-
+    // 9. Mark as RUNNING
     await prisma.deployment.update({
       where: { id: deployment.id },
-      data: { status: "RUNNING", buildLogs },
+      data: {
+        status: "RUNNING",
+        buildPath: releaseDir,
+        buildLogs,
+      },
     })
+
+    // 10. Clean up old releases (keep last MAX_RELEASES)
+    await cleanupOldReleases(releasesDir, currentLink)
 
     return deployment.id
   } catch (err) {
@@ -165,4 +176,26 @@ async function updateStatus(
     where: { id: deploymentId },
     data: { status },
   })
+}
+
+async function cleanupOldReleases(releasesDir: string, currentLink: string) {
+  try {
+    const currentTarget = await readlink(currentLink)
+    const releases = await readdir(releasesDir)
+
+    // Sort by directory name (cuid is sortable by creation time)
+    const sorted = releases.sort()
+
+    if (sorted.length <= MAX_RELEASES) return
+
+    const toRemove = sorted.slice(0, sorted.length - MAX_RELEASES)
+    for (const release of toRemove) {
+      const releasePath = path.join(releasesDir, release)
+      // Never remove the currently active release
+      if (releasePath === currentTarget) continue
+      await rm(releasePath, { recursive: true, force: true })
+    }
+  } catch {
+    // Non-fatal: cleanup failure shouldn't break deployment
+  }
 }

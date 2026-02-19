@@ -44,8 +44,8 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 
   // If verified and there's a running deployment, add the Caddy route
   const runningDeploy = project.deployments[0];
-  if (runningDeploy?.port) {
-    await addCustomDomainRoute(project.customDomain, runningDeploy.port);
+  if (runningDeploy) {
+    await addCustomDomainRoute(project.customDomain, project.subdomain);
   }
 
   return json({ verified: true });

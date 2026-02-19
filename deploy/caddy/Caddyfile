@@ -1,3 +1,8 @@
+{
+    admin localhost:2019
+    persist_config on
+}
+
 # Caddyfile for Specra Docs
 # Replace specra-docs.com with your actual domain
 
@@ -5,7 +10,7 @@ specra-docs.com {
     # Automatic HTTPS
     # Caddy will automatically obtain and renew SSL certificates from Let's Encrypt
 
-    # Reverse proxy to Next.js app
+    # Reverse proxy to SvelteKit app
     reverse_proxy localhost:3000 {
         # Health check
         health_uri /

@@ -2,7 +2,6 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
 import { canAccessProject } from '$lib/server/auth-utils.js';
-import { getContainerLogs } from '$lib/server/docker.js';
 
 export const GET: RequestHandler = async ({ locals, params }) => {
   const session = await locals.auth();
@@ -24,10 +23,5 @@ export const GET: RequestHandler = async ({ locals, params }) => {
     return json({ error: 'Not found' }, { status: 404 });
   }
 
-  let containerLogs = '';
-  if (deployment.containerId && deployment.status === 'RUNNING') {
-    containerLogs = await getContainerLogs(deployment.containerId);
-  }
-
-  return json({ ...deployment, containerLogs });
+  return json(deployment);
 };
