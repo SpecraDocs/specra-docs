@@ -283,6 +283,7 @@ model Project {
   githubInstallId Int?
   web3formsKey   String?
   chatEnabled    Boolean  @default(false)
+  enforcedAt     DateTime?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

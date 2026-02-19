@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
 import { lookupIp, hashIp } from '$lib/server/geo.js';
+import { getUserSubscription } from '$lib/server/auth-utils.js';
 
 // Simple in-memory rate limiter
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -76,10 +77,16 @@ export const POST: RequestHandler = async ({ request }) => {
     // Verify project exists
     const project = await prisma.project.findUnique({
       where: { id: projectId },
-      select: { id: true },
+      select: { id: true, userId: true },
     });
     if (!project) {
       return new Response(null, { status: 404 });
+    }
+
+    // Drop analytics events for users without active subscription
+    const subscription = await getUserSubscription(project.userId);
+    if (!subscription) {
+      return new Response(null, { status: 204 });
     }
 
     const ua = request.headers.get('user-agent') || '';
