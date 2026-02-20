@@ -1,0 +1,111 @@
+---
+title: Doctor
+description: Validieren Sie Ihre Specra-Konfiguration und diagnostizieren Sie häufige Probleme
+sidebar_position: 4
+icon: stethoscope
+---
+
+# Doctor
+
+Der `doctor`-Befehl validiert Ihre `specra.config.json` und prüft Ihr Projekt-Setup auf häufige Probleme.
+
+```bash
+create-specra doctor
+```
+
+## Was geprüft wird
+
+Der Doctor führt folgende Diagnosen durch:
+
+| Prüfung | Typ | Beschreibung |
+|---------|-----|-------------|
+| `specra.config.json` | Erforderlich | Konfigurationsdatei existiert im Projektverzeichnis |
+| Config-Parsing | Erforderlich | Datei enthält gültiges JSON |
+| `site.title` | Erforderlich | Seitentitel ist gesetzt (String) |
+| `site.description` | Empfohlen | Beschreibung für SEO |
+| `site.url` | Empfohlen | Kanonische URL der Seite |
+| `docs/`-Verzeichnis | Erforderlich | Dokumentationsverzeichnis existiert |
+| Versionsverzeichnisse | Erforderlich | Mindestens ein Versionsordner in `docs/` (z.B. `v1.0.0`) |
+| `site.activeVersion` | Empfohlen | Stimmt mit einem existierenden Versionsverzeichnis überein |
+| Meilisearch-Config | Bedingt | Host und Indexname gesetzt bei Verwendung des Meilisearch-Providers |
+| i18n-Config | Bedingt | Standard-Locale und Locales-Array gesetzt wenn i18n aktiviert ist |
+| `specra`-Abhängigkeit | Erforderlich | Das `specra`-Paket ist in Ihrer `package.json` |
+| `navigation.tabGroups` | Bedingt | Jede Tab-Gruppe hat die erforderlichen `id`- und `label`-Felder |
+| Auth-Token in Config | Warnung | Token in `specra.config.json` gefunden (Sicherheitshinweis) |
+
+## Beispielausgabe
+
+### Alle Prüfungen bestanden
+
+```
+Specra Doctor
+Checking project in /home/user/my-docs
+
+  ✓ specra.config.json: Found
+  ✓ Config parsing: Valid JSON
+  ✓ site.title: Meine Dokumentation
+  ✓ site.description: Set
+  ✓ site.url: https://docs.example.com
+  ✓ docs/ directory: Found
+  ✓ Version directories: Found: v1.0.0, v2.0.0
+  ✓ site.activeVersion: v1.0.0
+  ✓ specra dependency: ^0.2.5
+  ✓ navigation.tabGroups: 2 tab group(s) configured
+
+  All 10 checks passed!
+```
+
+## Ein anderes Verzeichnis prüfen
+
+Standardmäßig prüft doctor das aktuelle Verzeichnis. Verwenden Sie `--dir`, um ein anderes Projekt zu prüfen:
+
+```bash
+create-specra doctor --dir ./mein-anderes-projekt
+```
+
+## Optionsreferenz
+
+| Option | Beschreibung |
+|--------|-------------|
+| `-d, --dir <directory>` | Zu prüfendes Projektverzeichnis (Standard: `.`) |
+
+## Häufige Probleme und Lösungen
+
+### Fehlendes `site.title`
+
+Jedes Specra-Projekt braucht einen Titel. Fügen Sie ihn zu Ihrer `specra.config.json` hinzu:
+
+```json
+{
+  "site": {
+    "title": "Meine Dokumentation"
+  }
+}
+```
+
+### Keine Versionsverzeichnisse
+
+Wenn Versionierung aktiviert ist (Standard), brauchen Sie mindestens einen Versionsordner unter `docs/`:
+
+```bash
+mkdir -p docs/v1.0.0
+```
+
+### `activeVersion`-Mismatch
+
+Der `site.activeVersion`-Wert muss mit dem Namen eines Verzeichnisses unter `docs/` übereinstimmen. Zum Beispiel, wenn Ihr Verzeichnis `docs/v1.0.0/` ist:
+
+```json
+{
+  "site": {
+    "activeVersion": "v1.0.0"
+  }
+}
+```
+
+### Auth-Token in Config
+
+Wenn Sie diese Warnung sehen, ist Ihr Authentifizierungstoken in `specra.config.json` gespeichert. Optionen:
+
+1. **Zu `.gitignore` hinzufügen**
+2. **Globalen Speicher verwenden** — Führen Sie `create-specra logout` und dann `create-specra login --global` aus

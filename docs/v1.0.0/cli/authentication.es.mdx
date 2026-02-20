@@ -1,0 +1,94 @@
+---
+title: Autenticación
+description: Inicia sesión en tu cuenta Specra y gestiona credenciales para desplegar documentación
+sidebar_position: 2
+icon: log-in
+---
+
+# Autenticación
+
+Antes de desplegar en Specra Cloud, necesitas autenticarte. El CLI abre tu navegador para iniciar sesión y almacena tu token para futuros comandos.
+
+## Iniciar sesión
+
+```bash
+create-specra login
+```
+
+Esto hará:
+1. Abrir tu navegador en la página de inicio de sesión de Specra
+2. Después de un inicio de sesión exitoso, redirigir de vuelta al CLI
+3. Guardar tu token de autenticación en el `specra.config.json` local
+
+<Callout type="info">
+Si el navegador no se abre automáticamente, el CLI muestra una URL que puedes copiar y pegar.
+</Callout>
+
+### Almacenamiento del token
+
+Por defecto, tu token se almacena **por proyecto** en `specra.config.json` bajo el campo `auth`. Esto significa que diferentes proyectos pueden usar diferentes cuentas Specra.
+
+```json
+{
+  "site": { "title": "Mis Docs" },
+  "auth": {
+    "token": "tu-token-aqui"
+  }
+}
+```
+
+<Callout type="warning">
+Si tu `specra.config.json` está commiteado en git, asegúrate de agregar la sección `auth` a tu `.gitignore` o usa el almacenamiento `--global` en su lugar. Puedes ejecutar `create-specra doctor` para verificar esto.
+</Callout>
+
+### Almacenamiento global
+
+Para almacenar credenciales en tu directorio home (`~/.specra/config.json`) en lugar del proyecto, usa la bandera `--global`:
+
+```bash
+create-specra login --global
+```
+
+Esto es útil cuando:
+- Usas la misma cuenta en todos los proyectos
+- No quieres tokens en el directorio del proyecto
+- Trabajas en un entorno CI/CD con un usuario compartido
+
+### Resolución del token
+
+Al ejecutar comandos que requieren autenticación, el CLI busca el token en este orden:
+
+<Steps>
+  <Step title="Configuración local">
+    Verifica `specra.config.json` en el directorio actual para `auth.token`
+  </Step>
+  <Step title="Configuración global">
+    Recurre a `~/.specra/config.json` si no se encuentra un token local
+  </Step>
+</Steps>
+
+## Cerrar sesión
+
+Eliminar tus credenciales almacenadas:
+
+```bash
+# Eliminar token local del proyecto (de specra.config.json)
+create-specra logout
+
+# Eliminar token global (de ~/.specra/config.json)
+create-specra logout --global
+```
+
+## Referencia de opciones
+
+### `login`
+
+| Opción | Descripción |
+|--------|-------------|
+| `-g, --global` | Almacenar credenciales en `~/.specra/` en lugar del `specra.config.json` local |
+
+### `logout`
+
+| Opción | Descripción |
+|--------|-------------|
+| `-g, --global` | Eliminar credenciales de `~/.specra/` en lugar del `specra.config.json` local |

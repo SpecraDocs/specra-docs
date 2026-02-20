@@ -1,0 +1,94 @@
+---
+title: Authentifizierung
+description: Melden Sie sich bei Ihrem Specra-Konto an und verwalten Sie Anmeldedaten für das Deployment
+sidebar_position: 2
+icon: log-in
+---
+
+# Authentifizierung
+
+Bevor Sie auf Specra Cloud bereitstellen können, müssen Sie sich authentifizieren. Das CLI öffnet Ihren Browser zum Einloggen und speichert Ihr Token für zukünftige Befehle.
+
+## Anmelden
+
+```bash
+create-specra login
+```
+
+Dies wird:
+1. Ihren Browser auf der Specra-Anmeldeseite öffnen
+2. Nach erfolgreicher Anmeldung zum CLI zurückleiten
+3. Ihr Authentifizierungstoken in der lokalen `specra.config.json` speichern
+
+<Callout type="info">
+Wenn sich der Browser nicht automatisch öffnet, gibt das CLI eine URL aus, die Sie kopieren und einfügen können.
+</Callout>
+
+### Token-Speicherung
+
+Standardmäßig wird Ihr Token **pro Projekt** in `specra.config.json` unter dem Feld `auth` gespeichert. Das bedeutet, verschiedene Projekte können verschiedene Specra-Konten verwenden.
+
+```json
+{
+  "site": { "title": "Meine Docs" },
+  "auth": {
+    "token": "ihr-token-hier"
+  }
+}
+```
+
+<Callout type="warning">
+Wenn Ihre `specra.config.json` in Git committed wird, stellen Sie sicher, den `auth`-Abschnitt zu Ihrer `.gitignore` hinzuzufügen oder verwenden Sie stattdessen den `--global`-Speicher. Sie können `create-specra doctor` ausführen, um dies zu überprüfen.
+</Callout>
+
+### Globaler Speicher
+
+Um Anmeldedaten in Ihrem Home-Verzeichnis (`~/.specra/config.json`) statt im Projekt zu speichern, verwenden Sie das `--global`-Flag:
+
+```bash
+create-specra login --global
+```
+
+Dies ist nützlich wenn:
+- Sie dasselbe Konto für alle Projekte verwenden
+- Sie keine Tokens im Projektverzeichnis haben möchten
+- Sie in einer CI/CD-Umgebung mit einem gemeinsamen Benutzer arbeiten
+
+### Token-Auflösung
+
+Bei der Ausführung von Befehlen, die Authentifizierung erfordern, prüft das CLI das Token in dieser Reihenfolge:
+
+<Steps>
+  <Step title="Lokale Konfiguration">
+    Prüft `specra.config.json` im aktuellen Verzeichnis auf `auth.token`
+  </Step>
+  <Step title="Globale Konfiguration">
+    Fällt auf `~/.specra/config.json` zurück, wenn kein lokales Token gefunden wird
+  </Step>
+</Steps>
+
+## Abmelden
+
+Gespeicherte Anmeldedaten löschen:
+
+```bash
+# Lokales Projekt-Token löschen (aus specra.config.json)
+create-specra logout
+
+# Globales Token löschen (aus ~/.specra/config.json)
+create-specra logout --global
+```
+
+## Optionsreferenz
+
+### `login`
+
+| Option | Beschreibung |
+|--------|-------------|
+| `-g, --global` | Anmeldedaten in `~/.specra/` statt in der lokalen `specra.config.json` speichern |
+
+### `logout`
+
+| Option | Beschreibung |
+|--------|-------------|
+| `-g, --global` | Anmeldedaten aus `~/.specra/` statt aus der lokalen `specra.config.json` löschen |

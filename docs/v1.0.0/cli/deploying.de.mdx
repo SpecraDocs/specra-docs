@@ -1,0 +1,129 @@
+---
+title: Bereitstellung
+description: Stellen Sie Ihre Dokumentation auf Specra Cloud bereit, verwalten Sie Projekte und sehen Sie Deployment-Logs
+sidebar_position: 3
+icon: upload-cloud
+---
+
+# Bereitstellung
+
+Das Specra CLI ermöglicht es Ihnen, Dokumentation auf Specra Cloud bereitzustellen, Ihre Projekte aufzulisten und Deployment-Logs anzuzeigen — alles vom Terminal aus.
+
+## Deploy
+
+```bash
+create-specra deploy
+```
+
+Dies verpackt Ihr Docs-Verzeichnis in ein Archiv und lädt es auf Specra Cloud hoch. Das CLI wird:
+
+1. Prüfen, ob Sie authentifiziert sind (führen Sie zuerst `create-specra login` aus)
+2. Die `projectId` aus Ihrer `specra.config.json` lesen
+3. Ein komprimiertes Archiv Ihrer Docs erstellen
+4. Hochladen und ein Deployment auslösen
+
+### Ein Projekt angeben
+
+Wenn Ihre `specra.config.json` ein `projectId`-Feld hat, wird es automatisch verwendet:
+
+```json
+{
+  "site": {
+    "title": "Meine Docs",
+    "projectId": "proj_abc123"
+  }
+}
+```
+
+Wenn keine `projectId` gefunden wird, ruft das CLI Ihre Projekte ab und fordert Sie auf, eines auszuwählen:
+
+```
+Wählen Sie ein Projekt zum Bereitstellen:
+  1. Meine Docs (my-docs.docs.specra.dev)
+  2. API-Referenz (api-ref.docs.specra.dev)
+```
+
+Sie können das Projekt auch direkt angeben:
+
+```bash
+create-specra deploy --project proj_abc123
+```
+
+### Ein anderes Verzeichnis bereitstellen
+
+Standardmäßig stellt das CLI aus dem aktuellen Verzeichnis bereit. Verwenden Sie `--dir`, um einen anderen Pfad anzugeben:
+
+```bash
+create-specra deploy --dir ./mein-docs-projekt
+```
+
+### Git-Integration
+
+Das CLI erkennt automatisch, ob Sie sich in einem Git-Repository befinden, und fügt den aktuellen Commit-SHA dem Deployment hinzu. Dies erscheint in Ihrem Deployment-Dashboard für die Nachverfolgbarkeit.
+
+### Optionsreferenz
+
+| Option | Beschreibung |
+|--------|-------------|
+| `-p, --project <id>` | Projekt-ID zum Bereitstellen (überspringt Abfrage) |
+| `-d, --dir <directory>` | Docs-Verzeichnis zum Bereitstellen (Standard: `.`) |
+
+## Projects
+
+Alle Ihre Specra Cloud-Projekte auflisten:
+
+```bash
+create-specra projects
+```
+
+## Logs
+
+Deployment-Logs für ein Projekt anzeigen:
+
+```bash
+create-specra logs <projectId>
+```
+
+Standardmäßig zeigt dies Logs für das **neueste Deployment**. Um ein bestimmtes Deployment anzuzeigen:
+
+```bash
+create-specra logs proj_abc123 --deployment dep_xyz789
+```
+
+### Optionsreferenz
+
+| Option | Beschreibung |
+|--------|-------------|
+| `--deployment <id>` | Logs für eine bestimmte Deployment-ID anzeigen |
+
+## CI/CD-Integration
+
+Sie können das Specra CLI in Ihren CI/CD-Pipelines verwenden. Hier ist ein Beispiel mit GitHub Actions:
+
+```yaml
+name: Deploy Docs
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm install -g create-specra@latest
+
+      - name: Auf Specra Cloud bereitstellen
+        run: specra deploy --project ${{ secrets.SPECRA_PROJECT_ID }}
+        env:
+          SPECRA_TOKEN: ${{ secrets.SPECRA_TOKEN }}
+```
+
+<Callout type="info">
+Für CI/CD speichern Sie Ihr Token mit `specra login --global` auf Ihrer lokalen Maschine, dann kopieren Sie das Token von `~/.specra/config.json` in Ihre CI-Secrets.
+</Callout>

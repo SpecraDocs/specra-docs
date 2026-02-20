@@ -14,13 +14,13 @@ Specra is built on SvelteKit, which means you can deploy it almost anywhere. Thi
 
 Specra supports two deployment modes:
 
-**Standalone Mode** (Node.js hosting)
-- Vercel, Railway, Render, Fly.io, AWS, Google Cloud
-- Dynamic server-side features
-- Best performance with edge caching
-- Default configuration
+**Specra Cloud** (Recommended)
+- One-command deploy with the Specra CLI
+- Automatic HTTPS with custom subdomains
+- Built-in analytics and feedback widgets
+- Managed infrastructure — no servers to configure
 
-**Static Export** (Static hosting)
+**Static Export** (Self-hosted)
 - GitHub Pages, Netlify, Cloudflare Pages
 - Pre-rendered HTML/CSS/JS
 - No server required
@@ -28,41 +28,50 @@ Specra supports two deployment modes:
 
 ## Quick Deployment
 
-### Vercel (Recommended)
+### Specra Cloud (Recommended)
 
-The easiest deployment option. One click and you're live:
+Deploy with two commands using the Specra CLI:
 
 <Steps>
-  <Step title="Push to GitHub">
-    Push your project to a GitHub repository:
+  <Step title="Install the CLI">
+    Install the Specra CLI globally:
 
 ```bash
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin https://github.com/username/repo.git
-git push -u origin main
+npm install -g specra-cli
 ```
   </Step>
 
-  <Step title="Deploy to Vercel">
-    Visit [vercel.com/new](https://vercel.com/new) and import your repository.
+  <Step title="Authenticate">
+    Log in with your API token. Generate one from your [Specra dashboard](https://specra-docs.com/dashboard) under **Settings > API Tokens**.
 
-    Vercel automatically detects SvelteKit and uses the correct settings:
-    - Build Command: `npm run build`
-    - Output Directory: `build`
-    - Install Command: `npm install`
+```bash
+specra login
+```
+
+    When prompted, paste your API token. The token is saved to `~/.specra/config.json`.
+
+    You can also set it manually:
+
+```json
+{
+  "token": "your-api-token-here"
+}
+```
   </Step>
 
-  <Step title="Done!">
-    Your site deploys in under a minute. Vercel gives you a URL like `your-project.vercel.app`.
+  <Step title="Deploy">
+    From your project directory, run:
 
-    Every git push to main triggers a new deployment automatically.
+```bash
+specra deploy
+```
+
+    The CLI builds your project and deploys it to Specra Cloud. You'll get a live URL like `your-project.docs.specra-docs.com`.
   </Step>
 </Steps>
 
 <Callout type="success">
-  No configuration needed! Specra's default settings work perfectly with Vercel.
+  That's it! Your docs are live with automatic HTTPS, analytics, and a custom subdomain.
 </Callout>
 
 ### GitHub Pages
@@ -203,26 +212,22 @@ Different platforms need different build commands:
 
 | Platform | Build Command | Output Directory |
 |----------|---------------|------------------|
-| Vercel, Railway | `npm run build` | `|
+| Specra Cloud | `specra deploy` (handles build) | Managed |
 | GitHub Pages | `npm run build:export` | `out` |
 | Netlify, Cloudflare Pages | `npm run build:export` | `out` |
-| Docker, VPS | `npm run build` + `npm start` | `|
+| Docker, VPS | `npm run build` + `npm start` | `build` |
 
 ## Configuration by Platform
 
-### Vercel
+### Specra Cloud
 
-```json
-{
-  "deployment": {
-    "target": "vercel"
-  }
-}
+No config file needed. The CLI reads your `specra.config.json` automatically.
+
+To customize the subdomain or project settings, use the Specra dashboard or pass options to the CLI:
+
+```bash
+specra deploy --name my-docs
 ```
-
-**Environment variables** (optional):
-- None required for basic setup
-- Add search/analytics keys in Vercel dashboard
 
 ### GitHub Pages (No Custom Domain)
 
@@ -429,8 +434,8 @@ MEILISEARCH_API_KEY=your-search-key
 
 **Analytics (optional):**
 ```bash
-NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
-NEXT_PUBLIC_PLAUSIBLE_DOMAIN=docs.example.com
+PUBLIC_GA_ID=G-XXXXXXXXXX
+PUBLIC_PLAUSIBLE_DOMAIN=docs.example.com
 ```
 
 **Custom env variables:**
@@ -446,12 +451,14 @@ Access them in your docs via frontmatter or MDX:
 
 ## Custom Domains
 
-### Vercel
+### Specra Cloud
 
-1. Go to your project settings
-2. Navigate to Domains
-3. Add your custom domain
-4. Update DNS records as shown
+Custom subdomains are automatic. For a fully custom domain:
+
+1. Go to your project settings in the Specra dashboard
+2. Add your custom domain (e.g., `docs.yoursite.com`)
+3. Add a CNAME record pointing to `docs.specra-docs.com`
+4. Specra automatically provisions an SSL certificate
 
 ### GitHub Pages
 
@@ -525,17 +532,6 @@ Check bundle size:
 npm install --save-dev vite-bundle-visualizer
 ```
 
-```javascript
-// svelte.config.js
-import bundleAnalyzer from 'vite-bundle-visualizer'
-
-const withBundleAnalyzer = bundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true',
-})
-
-export default // See vite.config.ts for bundle analysis
-```
-
 Run with:
 ```bash
 ANALYZE=true npm run build
@@ -555,15 +551,6 @@ Add redirects/rewrites in platform config:
   status = 200
 ```
 
-**Vercel (vercel.json):**
-```json
-{
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
-}
-```
-
 ### Assets Not Loading (GitHub Pages)
 
 Check your `basePath` matches your repo name exactly:
@@ -580,7 +567,7 @@ Check your `basePath` matches your repo name exactly:
 
 Common fixes:
 
-1. Clear `and `out` folders:
+1. Clear build artifacts:
 ```bash
 rm -rf .svelte-kit build node_modules
 npm install
@@ -600,10 +587,10 @@ Dive deeper into platform-specific deployment:
 
 <CardGrid cols={3}>
   <Card
-    icon="triangle"
-    title="Vercel"
-    description="Deploy with zero configuration"
-    href="/docs/v1.0.0/deployment/vercel"
+    icon="cloud"
+    title="Specra Cloud"
+    description="One-command deploy with the CLI"
+    href="/docs/v1.0.0/deployment/specra-cloud"
   />
   <Card
     icon="github"

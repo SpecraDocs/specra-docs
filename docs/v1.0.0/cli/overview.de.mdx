@@ -1,0 +1,124 @@
+---
+title: CLI-Übersicht
+description: Das Specra CLI ermöglicht es Ihnen, Ihre Dokumentationsseiten vom Terminal aus zu erstellen, bereitzustellen und zu verwalten
+sidebar_position: 1
+icon: terminal
+---
+
+# CLI-Übersicht
+
+Das Specra CLI bietet zwei Befehle, die zusammenarbeiten:
+
+- **`create-specra`** — Neue Projekte erstellen und Ihre Docs verwalten (Alles-in-einem)
+- **`specra`** — Verwaltungsorientiertes CLI für Deployment, Authentifizierung und Diagnose
+
+Beide Befehle teilen dieselben Unterbefehle. Verwenden Sie den, den Sie bevorzugen.
+
+## Installation
+
+Installieren Sie global, um `specra` und `create-specra` überall zu verwenden:
+
+<Tabs defaultValue="npm">
+  <Tab label="npm">
+```bash
+npm install -g create-specra@latest
+```
+  </Tab>
+  <Tab label="yarn">
+```bash
+yarn global add create-specra@latest
+```
+  </Tab>
+  <Tab label="pnpm">
+```bash
+pnpm add -g create-specra@latest
+```
+  </Tab>
+</Tabs>
+
+Oder führen Sie es ohne Installation mit `npx` aus:
+
+```bash
+npx create-specra@latest
+```
+
+## Befehle
+
+| Befehl | Beschreibung |
+|--------|--------------|
+| `create-specra init [dir]` | Neue Specra-Dokumentationsseite erstellen |
+| `create-specra login` | Mit Ihrem Specra-Konto authentifizieren |
+| `create-specra logout` | Gespeicherte Anmeldedaten löschen |
+| `create-specra deploy` | Ihre Docs auf Specra Cloud bereitstellen |
+| `create-specra projects` | Ihre Projekte auflisten |
+| `create-specra logs <projectId>` | Deployment-Logs anzeigen |
+| `create-specra doctor` | Ihre specra.config.json validieren |
+| `create-specra help` | Hilfe für alle Befehle anzeigen |
+
+<Callout type="info">
+Alle Befehle funktionieren auch mit `specra` statt `create-specra`. Zum Beispiel ist `specra login` dasselbe wie `create-specra login`.
+</Callout>
+
+## Schnellstart
+
+<Steps>
+  <Step title="Neues Projekt erstellen">
+```bash
+npx create-specra@latest my-docs
+```
+  </Step>
+
+  <Step title="Authentifizieren">
+```bash
+cd my-docs
+npx create-specra login
+```
+    Dies öffnet Ihren Browser zur Authentifizierung. Ihr Token wird in der lokalen `specra.config.json` gespeichert, sodass jedes Projekt ein anderes Konto verwenden kann.
+  </Step>
+
+  <Step title="Bereitstellen">
+```bash
+npx create-specra deploy
+```
+    Ihre Docs werden verpackt und auf Specra Cloud hochgeladen.
+  </Step>
+</Steps>
+
+## Hilfe erhalten
+
+Jeder Befehl unterstützt `--help`:
+
+```bash
+create-specra --help           # Alle Befehle anzeigen
+create-specra login --help     # Login-Optionen anzeigen
+create-specra deploy --help    # Deploy-Optionen anzeigen
+```
+
+## Nächste Schritte
+
+<CardGrid cols={2}>
+  <Card
+    icon="log-in"
+    title="Authentifizierung"
+    description="Login einrichten und Anmeldedaten projektübergreifend verwalten"
+    href="/docs/v1.0.0/cli/authentication"
+  />
+  <Card
+    icon="upload-cloud"
+    title="Bereitstellung"
+    description="Ihre Docs bereitstellen und Projekte verwalten"
+    href="/docs/v1.0.0/cli/deploying"
+  />
+  <Card
+    icon="stethoscope"
+    title="Doctor"
+    description="Ihre Konfiguration validieren"
+    href="/docs/v1.0.0/cli/doctor"
+  />
+  <Card
+    icon="book"
+    title="Projekt-Scaffolding"
+    description="Neue Projekte mit Vorlagen erstellen"
+    href="/docs/v1.0.0/create-specra"
+  />
+</CardGrid>

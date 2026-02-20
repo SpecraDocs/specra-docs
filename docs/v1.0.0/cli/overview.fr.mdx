@@ -1,0 +1,124 @@
+---
+title: Aperçu du CLI
+description: Le CLI Specra vous permet de créer, déployer et gérer vos sites de documentation depuis le terminal
+sidebar_position: 1
+icon: terminal
+---
+
+# Aperçu du CLI
+
+Le CLI Specra fournit deux commandes qui fonctionnent ensemble :
+
+- **`create-specra`** — Créer de nouveaux projets et gérer vos docs (tout-en-un)
+- **`specra`** — CLI axé sur la gestion pour le déploiement, l'authentification et les diagnostics
+
+Les deux commandes partagent les mêmes sous-commandes. Utilisez celle que vous préférez.
+
+## Installation
+
+Installez globalement pour utiliser `specra` et `create-specra` partout :
+
+<Tabs defaultValue="npm">
+  <Tab label="npm">
+```bash
+npm install -g create-specra@latest
+```
+  </Tab>
+  <Tab label="yarn">
+```bash
+yarn global add create-specra@latest
+```
+  </Tab>
+  <Tab label="pnpm">
+```bash
+pnpm add -g create-specra@latest
+```
+  </Tab>
+</Tabs>
+
+Ou exécutez sans installer avec `npx` :
+
+```bash
+npx create-specra@latest
+```
+
+## Commandes
+
+| Commande | Description |
+|----------|-------------|
+| `create-specra init [dir]` | Créer un nouveau site de documentation Specra |
+| `create-specra login` | S'authentifier avec votre compte Specra |
+| `create-specra logout` | Supprimer les identifiants stockés |
+| `create-specra deploy` | Déployer vos docs sur Specra Cloud |
+| `create-specra projects` | Lister vos projets |
+| `create-specra logs <projectId>` | Voir les logs de déploiement |
+| `create-specra doctor` | Valider votre specra.config.json |
+| `create-specra help` | Afficher l'aide pour toutes les commandes |
+
+<Callout type="info">
+Toutes les commandes fonctionnent aussi avec `specra` au lieu de `create-specra`. Par exemple, `specra login` est identique à `create-specra login`.
+</Callout>
+
+## Démarrage rapide
+
+<Steps>
+  <Step title="Créer un nouveau projet">
+```bash
+npx create-specra@latest my-docs
+```
+  </Step>
+
+  <Step title="S'authentifier">
+```bash
+cd my-docs
+npx create-specra login
+```
+    Cela ouvre votre navigateur pour vous authentifier. Votre token est sauvegardé dans le `specra.config.json` local pour que chaque projet puisse utiliser un compte différent.
+  </Step>
+
+  <Step title="Déployer">
+```bash
+npx create-specra deploy
+```
+    Vos docs sont empaquetées et envoyées sur Specra Cloud.
+  </Step>
+</Steps>
+
+## Obtenir de l'aide
+
+Chaque commande supporte `--help` :
+
+```bash
+create-specra --help           # Afficher toutes les commandes
+create-specra login --help     # Afficher les options de login
+create-specra deploy --help    # Afficher les options de deploy
+```
+
+## Étapes suivantes
+
+<CardGrid cols={2}>
+  <Card
+    icon="log-in"
+    title="Authentification"
+    description="Configurer la connexion et gérer les identifiants entre projets"
+    href="/docs/v1.0.0/cli/authentication"
+  />
+  <Card
+    icon="upload-cloud"
+    title="Déploiement"
+    description="Déployer vos docs et gérer vos projets"
+    href="/docs/v1.0.0/cli/deploying"
+  />
+  <Card
+    icon="stethoscope"
+    title="Doctor"
+    description="Valider votre configuration"
+    href="/docs/v1.0.0/cli/doctor"
+  />
+  <Card
+    icon="book"
+    title="Création de projet"
+    description="Créer de nouveaux projets avec des templates"
+    href="/docs/v1.0.0/create-specra"
+  />
+</CardGrid>

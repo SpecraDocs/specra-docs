@@ -1,0 +1,129 @@
+---
+title: Despliegue
+description: Despliega tu documentación en Specra Cloud, gestiona proyectos y consulta los logs de despliegue
+sidebar_position: 3
+icon: upload-cloud
+---
+
+# Despliegue
+
+El CLI de Specra te permite desplegar documentación en Specra Cloud, listar tus proyectos y ver logs de despliegue — todo desde la terminal.
+
+## Deploy
+
+```bash
+create-specra deploy
+```
+
+Esto empaqueta tu directorio docs en un archivo y lo sube a Specra Cloud. El CLI:
+
+1. Verifica que estés autenticado (ejecuta `create-specra login` primero)
+2. Lee el `projectId` de tu `specra.config.json`
+3. Crea un archivo comprimido de tus docs
+4. Sube y lanza un despliegue
+
+### Especificar un proyecto
+
+Si tu `specra.config.json` tiene un campo `projectId`, se usa automáticamente:
+
+```json
+{
+  "site": {
+    "title": "Mis Docs",
+    "projectId": "proj_abc123"
+  }
+}
+```
+
+Si no se encuentra un `projectId`, el CLI obtiene tus proyectos y te pide que elijas uno:
+
+```
+Selecciona un proyecto para desplegar:
+  1. Mis Docs (my-docs.docs.specra.dev)
+  2. Referencia API (api-ref.docs.specra.dev)
+```
+
+También puedes especificar el proyecto directamente:
+
+```bash
+create-specra deploy --project proj_abc123
+```
+
+### Desplegar un directorio diferente
+
+Por defecto, el CLI despliega desde el directorio actual. Usa `--dir` para especificar una ruta diferente:
+
+```bash
+create-specra deploy --dir ./mi-proyecto-docs
+```
+
+### Integración con Git
+
+El CLI detecta automáticamente si estás en un repositorio git e incluye el SHA del commit actual con el despliegue. Esto aparece en tu panel de despliegues para trazabilidad.
+
+### Referencia de opciones
+
+| Opción | Descripción |
+|--------|-------------|
+| `-p, --project <id>` | ID del proyecto a desplegar (omite el prompt) |
+| `-d, --dir <directory>` | Directorio docs a desplegar (por defecto: `.`) |
+
+## Projects
+
+Listar todos tus proyectos de Specra Cloud:
+
+```bash
+create-specra projects
+```
+
+## Logs
+
+Ver logs de despliegue para un proyecto:
+
+```bash
+create-specra logs <projectId>
+```
+
+Por defecto, esto muestra logs del **despliegue más reciente**. Para ver un despliegue específico:
+
+```bash
+create-specra logs proj_abc123 --deployment dep_xyz789
+```
+
+### Referencia de opciones
+
+| Opción | Descripción |
+|--------|-------------|
+| `--deployment <id>` | Ver logs para un ID de despliegue específico |
+
+## Integración CI/CD
+
+Puedes usar el CLI de Specra en tus pipelines CI/CD. Aquí hay un ejemplo con GitHub Actions:
+
+```yaml
+name: Deploy Docs
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm install -g create-specra@latest
+
+      - name: Desplegar en Specra Cloud
+        run: specra deploy --project ${{ secrets.SPECRA_PROJECT_ID }}
+        env:
+          SPECRA_TOKEN: ${{ secrets.SPECRA_TOKEN }}
+```
+
+<Callout type="info">
+Para CI/CD, almacena tu token usando `specra login --global` en tu máquina local, luego copia el token de `~/.specra/config.json` a tus secretos CI.
+</Callout>

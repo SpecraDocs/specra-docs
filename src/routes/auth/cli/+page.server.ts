@@ -34,6 +34,6 @@ export const load: PageServerLoad = async ({ url, locals }) => {
   });
 
   // Redirect to the desktop app's local auth server
-  const callbackUrl = `http://127.0.0.1:${port}/?token=${encodeURIComponent(rawToken)}&state=${encodeURIComponent(state)}`;
+  const callbackUrl = `http://127.0.0.1:${port}/callback?token=${encodeURIComponent(rawToken)}&state=${encodeURIComponent(state)}`;
   redirect(302, callbackUrl);
 };

@@ -1,0 +1,208 @@
+---
+title: Déployer sur Specra Cloud
+description: Déployez votre documentation sur Specra Cloud avec une seule commande
+sidebar_position: 2
+icon: cloud
+tab_group: guides
+---
+
+# Déployer sur Specra Cloud
+
+Specra Cloud est le moyen le plus simple de déployer votre documentation. Une seule commande et vos docs sont en ligne avec HTTPS automatique, sous-domaines personnalisés et analyses intégrées.
+
+## Pourquoi Specra Cloud ?
+
+- **Déploiement en une commande** — `specra deploy` gère tout
+- **HTTPS automatique** — Certificats SSL provisionnés automatiquement
+- **Sous-domaines personnalisés** — `votre-projet.docs.specra-docs.com` prêt à l'emploi
+- **Analyses intégrées** — Pages vues, visiteurs et métriques d'engagement
+- **Widgets de feedback** — Collectez les retours utilisateurs directement depuis vos docs
+- **Infrastructure gérée** — Pas de serveurs, pas de Docker, pas de CI/CD à configurer
+
+## Prérequis
+
+Vous avez besoin de :
+1. Un compte Specra sur [specra-docs.com](https://specra-docs.com)
+2. Un abonnement actif (plan Starter ou supérieur)
+3. Node.js 18+ installé localement
+
+## Déploiement rapide
+
+<Steps>
+  <Step title="Installer le CLI Specra">
+
+```bash
+npm install -g specra-cli
+```
+
+Ou utilisez npx sans installer :
+
+```bash
+npx specra-cli deploy
+```
+  </Step>
+
+  <Step title="Générer un jeton API">
+    1. Connectez-vous à votre [tableau de bord Specra](https://specra-docs.com/dashboard)
+    2. Allez dans **Paramètres > Jetons API**
+    3. Cliquez sur **Générer un jeton**
+    4. Copiez le jeton — vous ne le verrez qu'une seule fois
+  </Step>
+
+  <Step title="Authentifier le CLI">
+    Exécutez la commande de connexion et collez votre jeton :
+
+```bash
+specra login
+```
+
+    Le jeton est sauvegardé dans `~/.specra/config.json` :
+
+```json
+{
+  "token": "votre-jeton-api-ici"
+}
+```
+
+<Callout type="tip">
+  Vous pouvez aussi définir le jeton via la variable d'environnement `SPECRA_TOKEN` pour les pipelines CI/CD.
+</Callout>
+  </Step>
+
+  <Step title="Déployer">
+    Depuis le répertoire de votre projet :
+
+```bash
+specra deploy
+```
+
+    Le CLI va :
+    1. Lire votre `specra.config.json`
+    2. Construire votre projet
+    3. Télécharger le résultat de la construction
+    4. Déployer sur votre sous-domaine
+
+    Vous obtiendrez une URL en direct comme `votre-projet.docs.specra-docs.com`.
+  </Step>
+</Steps>
+
+<Callout type="success">
+C'est tout ! Votre documentation est en ligne avec HTTPS automatique, analyses et sous-domaine personnalisé.
+</Callout>
+
+## Configuration
+
+Le CLI lit votre `specra.config.json` pour les paramètres du projet. Aucun fichier de configuration supplémentaire n'est nécessaire.
+
+### Options du CLI
+
+```bash
+specra deploy [options]
+
+Options:
+  --name <nom>      Remplacer le nom du projet
+  --token <jeton>   Utiliser un jeton API spécifique
+  --dry-run         Construire sans déployer
+  -h, --help        Afficher l'aide
+```
+
+## Domaines personnalisés
+
+### Sous-domaine automatique
+
+Chaque projet obtient automatiquement un sous-domaine :
+
+```
+votre-projet.docs.specra-docs.com
+```
+
+### Domaine personnalisé
+
+Pour utiliser votre propre domaine (ex. `docs.votresite.com`) :
+
+<Steps>
+  <Step title="Ajouter le domaine dans le tableau de bord">
+    1. Allez dans votre projet dans le tableau de bord Specra
+    2. Naviguez vers **Paramètres > Domaine personnalisé**
+    3. Entrez votre domaine
+    4. Cliquez sur **Enregistrer**
+  </Step>
+
+  <Step title="Configurer le DNS">
+    Ajoutez un enregistrement CNAME chez votre fournisseur DNS :
+
+```
+Type: CNAME
+Nom: docs
+Valeur: docs.specra-docs.com
+```
+  </Step>
+
+  <Step title="Attendre le SSL">
+    Specra provisionne automatiquement un certificat SSL une fois le DNS vérifié.
+  </Step>
+</Steps>
+
+## Intégration CI/CD
+
+### GitHub Actions
+
+```yaml
+name: Déployer les docs
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Installer le CLI Specra
+        run: npm install -g specra-cli
+
+      - name: Déployer
+        run: specra deploy
+        env:
+          SPECRA_TOKEN: ${{ secrets.SPECRA_TOKEN }}
+```
+
+## Étapes suivantes
+
+<CardGrid cols={2}>
+  <Card
+    icon="github"
+    title="GitHub Pages"
+    description="Déployer en site statique sur GitHub Pages"
+    href="/docs/v1.0.0/deployment/github-pages"
+  />
+  <Card
+    icon="globe"
+    title="Netlify"
+    description="Plateforme d'hébergement statique alternative"
+    href="/docs/v1.0.0/deployment/netlify"
+  />
+  <Card
+    icon="arrow-left"
+    title="Aperçu du déploiement"
+    description="Retour aux options de déploiement"
+    href="/docs/v1.0.0/deployment/overview"
+  />
+  <Card
+    icon="zap"
+    title="Performance"
+    description="Optimiser votre documentation"
+    href="/docs/v1.0.0/performance"
+  />
+</CardGrid>

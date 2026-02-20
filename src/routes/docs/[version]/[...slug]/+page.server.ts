@@ -2,7 +2,6 @@ import {
   extractTableOfContents,
   getAdjacentDocs,
   isCategoryPage,
-  getCachedVersions,
   getCachedAllDocs,
   getCachedDocBySlug,
   getI18nConfig,
@@ -41,8 +40,9 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
     locale = slugParts[0];
   }
 
+  // allDocs used internally for adjacency/category checks — NOT returned to client
+  // (sidebar data comes from +layout.server.ts and is cached across navigations)
   const allDocs = await getCachedAllDocs(version, locale);
-  const versions = getCachedVersions();
   const config = getConfig();
   const isCategory = isCategoryPage(slug, allDocs);
   const doc = await getCachedDocBySlug(slug, version);
@@ -70,9 +70,6 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
     return {
       version,
       slug,
-      allDocs,
-      versions,
-      config,
       isCategory: true,
       isNotFound: false,
       isProtected: false,
@@ -94,9 +91,6 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
     return {
       version,
       slug,
-      allDocs,
-      versions,
-      config,
       isCategory: false,
       isNotFound: true,
       isProtected: false,
@@ -122,9 +116,6 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
       return {
         version,
         slug,
-        allDocs,
-        versions,
-        config,
         isCategory: false,
         isNotFound: false,
         isProtected: true,
@@ -175,9 +166,6 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
   return {
     version,
     slug,
-    allDocs,
-    versions,
-    config,
     isCategory: showCategoryIndex,
     isNotFound: false,
     isProtected: false,

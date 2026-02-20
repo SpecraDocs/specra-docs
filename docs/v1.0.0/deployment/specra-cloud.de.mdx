@@ -1,0 +1,208 @@
+---
+title: Bereitstellung auf Specra Cloud
+description: Stellen Sie Ihre Dokumentation mit einem einzigen Befehl auf Specra Cloud bereit
+sidebar_position: 2
+icon: cloud
+tab_group: guides
+---
+
+# Bereitstellung auf Specra Cloud
+
+Specra Cloud ist der einfachste Weg, Ihre Dokumentation bereitzustellen. Ein Befehl und Ihre Docs sind live mit automatischem HTTPS, benutzerdefinierten Subdomains und integrierten Analysen.
+
+## Warum Specra Cloud?
+
+- **Ein-Befehl-Bereitstellung** — `specra deploy` erledigt alles
+- **Automatisches HTTPS** — SSL-Zertifikate automatisch bereitgestellt
+- **Benutzerdefinierte Subdomains** — `ihr-projekt.docs.specra-docs.com` sofort einsatzbereit
+- **Integrierte Analysen** — Seitenaufrufe, Besucher und Engagement-Metriken
+- **Feedback-Widgets** — Sammeln Sie Benutzerfeedback direkt aus Ihren Docs
+- **Verwaltete Infrastruktur** — Keine Server, kein Docker, kein CI/CD zu konfigurieren
+
+## Voraussetzungen
+
+Sie benötigen:
+1. Ein Specra-Konto auf [specra-docs.com](https://specra-docs.com)
+2. Ein aktives Abonnement (Starter-Plan oder höher)
+3. Node.js 18+ lokal installiert
+
+## Schnellbereitstellung
+
+<Steps>
+  <Step title="Specra CLI installieren">
+
+```bash
+npm install -g specra-cli
+```
+
+Oder verwenden Sie npx ohne Installation:
+
+```bash
+npx specra-cli deploy
+```
+  </Step>
+
+  <Step title="API-Token generieren">
+    1. Melden Sie sich in Ihrem [Specra-Dashboard](https://specra-docs.com/dashboard) an
+    2. Gehen Sie zu **Einstellungen > API-Tokens**
+    3. Klicken Sie auf **Token generieren**
+    4. Kopieren Sie den Token — Sie sehen ihn nur einmal
+  </Step>
+
+  <Step title="CLI authentifizieren">
+    Führen Sie den Login-Befehl aus und fügen Sie Ihren Token ein:
+
+```bash
+specra login
+```
+
+    Der Token wird in `~/.specra/config.json` gespeichert:
+
+```json
+{
+  "token": "ihr-api-token-hier"
+}
+```
+
+<Callout type="tip">
+  Sie können den Token auch über die Umgebungsvariable `SPECRA_TOKEN` für CI/CD-Pipelines setzen.
+</Callout>
+  </Step>
+
+  <Step title="Bereitstellen">
+    Aus Ihrem Projektverzeichnis:
+
+```bash
+specra deploy
+```
+
+    Das CLI wird:
+    1. Ihre `specra.config.json` lesen
+    2. Ihr Projekt bauen
+    3. Das Build-Ergebnis hochladen
+    4. Auf Ihrer Subdomain bereitstellen
+
+    Sie erhalten eine Live-URL wie `ihr-projekt.docs.specra-docs.com`.
+  </Step>
+</Steps>
+
+<Callout type="success">
+Das war's! Ihre Dokumentation ist live mit automatischem HTTPS, Analysen und benutzerdefinierter Subdomain.
+</Callout>
+
+## Konfiguration
+
+Das CLI liest Ihre `specra.config.json` für Projekteinstellungen. Keine zusätzlichen Konfigurationsdateien erforderlich.
+
+### CLI-Optionen
+
+```bash
+specra deploy [options]
+
+Options:
+  --name <name>     Projektname überschreiben
+  --token <token>   Spezifischen API-Token verwenden
+  --dry-run         Bauen ohne Bereitstellung
+  -h, --help        Hilfe anzeigen
+```
+
+## Benutzerdefinierte Domains
+
+### Automatische Subdomain
+
+Jedes Projekt erhält automatisch eine Subdomain:
+
+```
+ihr-projekt.docs.specra-docs.com
+```
+
+### Benutzerdefinierte Domain
+
+Um Ihre eigene Domain zu verwenden (z.B. `docs.ihreseite.com`):
+
+<Steps>
+  <Step title="Domain im Dashboard hinzufügen">
+    1. Gehen Sie zu Ihrem Projekt im Specra-Dashboard
+    2. Navigieren Sie zu **Einstellungen > Benutzerdefinierte Domain**
+    3. Geben Sie Ihre Domain ein
+    4. Klicken Sie auf **Speichern**
+  </Step>
+
+  <Step title="DNS konfigurieren">
+    Fügen Sie einen CNAME-Eintrag bei Ihrem DNS-Anbieter hinzu:
+
+```
+Typ: CNAME
+Name: docs
+Wert: docs.specra-docs.com
+```
+  </Step>
+
+  <Step title="Auf SSL warten">
+    Specra stellt automatisch ein SSL-Zertifikat bereit, sobald DNS verifiziert ist.
+  </Step>
+</Steps>
+
+## CI/CD-Integration
+
+### GitHub Actions
+
+```yaml
+name: Docs bereitstellen
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node.js einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Abhängigkeiten installieren
+        run: npm ci
+
+      - name: Specra CLI installieren
+        run: npm install -g specra-cli
+
+      - name: Bereitstellen
+        run: specra deploy
+        env:
+          SPECRA_TOKEN: ${{ secrets.SPECRA_TOKEN }}
+```
+
+## Nächste Schritte
+
+<CardGrid cols={2}>
+  <Card
+    icon="github"
+    title="GitHub Pages"
+    description="Als statische Seite auf GitHub Pages bereitstellen"
+    href="/docs/v1.0.0/deployment/github-pages"
+  />
+  <Card
+    icon="globe"
+    title="Netlify"
+    description="Alternative statische Hosting-Plattform"
+    href="/docs/v1.0.0/deployment/netlify"
+  />
+  <Card
+    icon="arrow-left"
+    title="Bereitstellungsübersicht"
+    description="Zurück zu den Bereitstellungsoptionen"
+    href="/docs/v1.0.0/deployment/overview"
+  />
+  <Card
+    icon="zap"
+    title="Leistung"
+    description="Optimieren Sie Ihre Dokumentation"
+    href="/docs/v1.0.0/performance"
+  />
+</CardGrid>

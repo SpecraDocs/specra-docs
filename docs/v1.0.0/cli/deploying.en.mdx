@@ -1,0 +1,153 @@
+---
+title: Deploying
+description: Deploy your documentation to Specra Cloud, manage projects, and view deployment logs
+sidebar_position: 3
+icon: upload-cloud
+---
+
+# Deploying
+
+The Specra CLI lets you deploy documentation to Specra Cloud, list your projects, and view deployment logs — all from the terminal.
+
+## Deploy
+
+```bash
+create-specra deploy
+```
+
+This packages your docs directory into an archive and uploads it to Specra Cloud. The CLI will:
+
+1. Check that you're authenticated (run `create-specra login` first)
+2. Read `projectId` from your `specra.config.json`
+3. Create a compressed archive of your docs
+4. Upload and trigger a deployment
+
+### Specifying a Project
+
+If your `specra.config.json` has a `projectId` field, it's used automatically:
+
+```json
+{
+  "site": {
+    "title": "My Docs",
+    "projectId": "proj_abc123"
+  }
+}
+```
+
+If no `projectId` is found, the CLI fetches your projects and prompts you to pick one:
+
+```
+Select a project to deploy to:
+  1. My Docs (my-docs.docs.specra.dev)
+  2. API Reference (api-ref.docs.specra.dev)
+```
+
+You can also specify the project directly:
+
+```bash
+create-specra deploy --project proj_abc123
+```
+
+### Deploying a Different Directory
+
+By default, the CLI deploys from the current directory. Use `--dir` to specify a different path:
+
+```bash
+create-specra deploy --dir ./my-docs-project
+```
+
+### Git Integration
+
+The CLI automatically detects if you're in a git repository and includes the current commit SHA with the deployment. This appears in your deployment dashboard for traceability.
+
+### Options Reference
+
+| Option | Description |
+|--------|-------------|
+| `-p, --project <id>` | Project ID to deploy to (skips prompt) |
+| `-d, --dir <directory>` | Docs directory to deploy (default: `.`) |
+
+## Projects
+
+List all your Specra Cloud projects:
+
+```bash
+create-specra projects
+```
+
+Output:
+
+```
+Projects (2):
+
+  My Docs (proj_abc1)  running
+    my-docs.docs.specra.dev
+
+  API Reference (proj_def2)  not_deployed
+    api-ref.docs.specra.dev
+    docs.example.com
+```
+
+Each project shows:
+- **Name** and short ID
+- **Deployment status** (running, failed, building, not_deployed)
+- **Subdomain** on specra.dev
+- **Custom domain** if configured
+
+## Logs
+
+View deployment logs for a project:
+
+```bash
+create-specra logs <projectId>
+```
+
+By default, this shows logs for the **most recent deployment**. To view a specific deployment:
+
+```bash
+create-specra logs proj_abc123 --deployment dep_xyz789
+```
+
+The output includes:
+- Deployment ID, status, trigger source, and timestamp
+- **Build logs** — output from the build process
+- **Container logs** — runtime logs from the deployed container
+
+### Options Reference
+
+| Option | Description |
+|--------|-------------|
+| `--deployment <id>` | View logs for a specific deployment ID |
+
+## CI/CD Integration
+
+You can use the Specra CLI in your CI/CD pipelines. Here's an example with GitHub Actions:
+
+```yaml
+name: Deploy Docs
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm install -g create-specra@latest
+
+      - name: Deploy to Specra Cloud
+        run: specra deploy --project ${{ secrets.SPECRA_PROJECT_ID }}
+        env:
+          SPECRA_TOKEN: ${{ secrets.SPECRA_TOKEN }}
+```
+
+<Callout type="info">
+For CI/CD, store your token using `specra login --global` on your local machine, then copy the token from `~/.specra/config.json` to your CI secrets.
+</Callout>

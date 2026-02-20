@@ -1,0 +1,124 @@
+---
+title: CLI Overview
+description: The Specra CLI lets you create, deploy, and manage your documentation sites from the terminal
+sidebar_position: 1
+icon: terminal
+---
+
+# CLI Overview
+
+The Specra CLI provides two commands that work together:
+
+- **`create-specra`** — Scaffold new projects and manage your docs (all-in-one)
+- **`specra`** — Management-focused CLI for deploy, auth, and diagnostics
+
+Both commands share the same subcommands. Use whichever you prefer.
+
+## Installation
+
+Install globally to use `specra` and `create-specra` anywhere:
+
+<Tabs defaultValue="npm">
+  <Tab label="npm">
+```bash
+npm install -g create-specra@latest
+```
+  </Tab>
+  <Tab label="yarn">
+```bash
+yarn global add create-specra@latest
+```
+  </Tab>
+  <Tab label="pnpm">
+```bash
+pnpm add -g create-spectra@latest
+```
+  </Tab>
+</Tabs>
+
+Or run without installing using `npx`:
+
+```bash
+npx create-specra@latest
+```
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `create-specra init [dir]` | Create a new Specra documentation site |
+| `create-specra login` | Authenticate with your Specra account |
+| `create-specra logout` | Clear stored credentials |
+| `create-specra deploy` | Deploy your docs to Specra Cloud |
+| `create-specra projects` | List your projects |
+| `create-specra logs <projectId>` | View deployment logs |
+| `create-specra doctor` | Validate your specra.config.json |
+| `create-specra help` | Show help for all commands |
+
+<Callout type="info">
+All commands also work with `specra` instead of `create-specra`. For example, `specra login` is the same as `create-specra login`.
+</Callout>
+
+## Quick Start
+
+<Steps>
+  <Step title="Create a new project">
+```bash
+npx create-specra@latest my-docs
+```
+  </Step>
+
+  <Step title="Authenticate">
+```bash
+cd my-docs
+npx create-specra login
+```
+    This opens your browser to authenticate. Your token is saved to the local `specra.config.json` so each project can use a different account.
+  </Step>
+
+  <Step title="Deploy">
+```bash
+npx create-specra deploy
+```
+    Your docs are packaged and uploaded to Specra Cloud.
+  </Step>
+</Steps>
+
+## Getting Help
+
+Every command supports `--help`:
+
+```bash
+create-specra --help           # Show all commands
+create-specra login --help     # Show login options
+create-specra deploy --help    # Show deploy options
+```
+
+## Next Steps
+
+<CardGrid cols={2}>
+  <Card
+    icon="log-in"
+    title="Authentication"
+    description="Set up login and manage credentials across projects"
+    href="/docs/v1.0.0/cli/authentication"
+  />
+  <Card
+    icon="upload-cloud"
+    title="Deploying"
+    description="Deploy your docs and manage projects"
+    href="/docs/v1.0.0/cli/deploying"
+  />
+  <Card
+    icon="stethoscope"
+    title="Doctor"
+    description="Validate your configuration"
+    href="/docs/v1.0.0/cli/doctor"
+  />
+  <Card
+    icon="book"
+    title="Project Scaffolding"
+    description="Create new projects with templates"
+    href="/docs/v1.0.0/create-specra"
+  />
+</CardGrid>
