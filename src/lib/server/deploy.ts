@@ -108,7 +108,7 @@ export async function deployProject(projectId: string, options: DeployOptions) {
     // 5. Deploy to sites directory
     await updateStatus(deployment.id, "DEPLOYING")
 
-    const siteDir = path.join(SITES_DIR, project.subdomain)
+    const siteDir = path.join(SITES_DIR, project.userId, project.subdomain)
     const releasesDir = path.join(siteDir, "releases")
     const releaseDir = path.join(releasesDir, deployment.id)
     const currentLink = path.join(siteDir, "current")
@@ -144,9 +144,9 @@ export async function deployProject(projectId: string, options: DeployOptions) {
     })
 
     // 8. Register Caddy routes
-    await addSubdomainRoute(project.subdomain)
+    await addSubdomainRoute(project.subdomain, project.userId)
     if (project.customDomain) {
-      await addCustomDomainRoute(project.customDomain, project.subdomain)
+      await addCustomDomainRoute(project.customDomain, project.subdomain, project.userId)
     }
 
     // 9. Mark as RUNNING

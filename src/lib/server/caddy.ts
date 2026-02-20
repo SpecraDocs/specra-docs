@@ -29,10 +29,10 @@ export async function isCaddyAvailable(): Promise<boolean> {
   }
 }
 
-export async function addSubdomainRoute(subdomain: string) {
+export async function addSubdomainRoute(subdomain: string, userId: string) {
   const hostname = `${subdomain}.${BASE_DOMAIN}`
   const routeId = `specra-${subdomain}`
-  const root = `${SITES_DIR}/${subdomain}/current`
+  const root = `${SITES_DIR}/${userId}/${subdomain}/current`
 
   const route = {
     "@id": routeId,
@@ -53,9 +53,9 @@ export async function addSubdomainRoute(subdomain: string) {
   }
 }
 
-export async function addCustomDomainRoute(domain: string, subdomain: string) {
+export async function addCustomDomainRoute(domain: string, subdomain: string, userId: string) {
   const routeId = `specra-custom-${domain.replace(/\./g, "-")}`
-  const root = `${SITES_DIR}/${subdomain}/current`
+  const root = `${SITES_DIR}/${userId}/${subdomain}/current`
 
   const route = {
     "@id": routeId,
@@ -124,9 +124,9 @@ export async function syncAllRoutes() {
   for (const deployment of runningDeployments) {
     const { project } = deployment
     try {
-      await addSubdomainRoute(project.subdomain)
+      await addSubdomainRoute(project.subdomain, project.userId)
       if (project.customDomain) {
-        await addCustomDomainRoute(project.customDomain, project.subdomain)
+        await addCustomDomainRoute(project.customDomain, project.subdomain, project.userId)
       }
     } catch (err) {
       console.error(
