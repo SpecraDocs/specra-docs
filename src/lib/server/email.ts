@@ -5,9 +5,10 @@
 
 const MAILGUN_API_KEY = process.env.MAILGUN_API_KEY || ""
 const MAILGUN_DOMAIN = process.env.MAILGUN_DOMAIN || "specra-docs.com"
-const MAILGUN_API_URL = `https://api.mailgun.net/v3/${MAILGUN_DOMAIN}/messages`
+const MAILGUN_API_URL = `https://api.eu.mailgun.net/v3/${MAILGUN_DOMAIN}/messages`
 
-const FROM_EMAIL = process.env.COMPANY_EMAIL || "billing@specra-docs.com"
+const BILLING_EMAIL = process.env.COMPANY_EMAIL || "billing@specra-docs.com"
+const NOREPLY_EMAIL = `noreply@${MAILGUN_DOMAIN}`
 const COMPANY_NAME = process.env.COMPANY_NAME || "Specra"
 const APP_URL = process.env.PUBLIC_APP_URL || "https://specra-docs.com"
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@specra-docs.com"
@@ -78,7 +79,7 @@ export async function sendVerificationEmail({
   code: string
 }) {
   await sendMail({
-    from: `${COMPANY_NAME} <${FROM_EMAIL}>`,
+    from: `${COMPANY_NAME} <${NOREPLY_EMAIL}>`,
     to,
     subject: `${code} is your ${COMPANY_NAME} verification code`,
     html: wrap(`
@@ -101,7 +102,7 @@ export async function sendWelcomeEmail({
   userName: string
 }) {
   await sendMail({
-    from: `${COMPANY_NAME} <${FROM_EMAIL}>`,
+    from: `${COMPANY_NAME} <${NOREPLY_EMAIL}>`,
     to,
     subject: `Welcome to ${COMPANY_NAME}!`,
     html: wrap(`
@@ -117,7 +118,7 @@ export async function sendWelcomeEmail({
       <p style="margin: 24px 0;">
         <a href="${APP_URL}/dashboard" style="background-color: #0070f3; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; display: inline-block;">Go to Dashboard</a>
       </p>
-      <p style="color: #666; font-size: 14px;">If you have any questions, just reply to this email or reach out at ${FROM_EMAIL}.</p>
+      <p style="color: #666; font-size: 14px;">If you have any questions, just reply to this email or reach out at ${BILLING_EMAIL}.</p>
     `),
   })
 }
@@ -132,7 +133,7 @@ export async function sendSecurityCodeEmail({
   code: string
 }) {
   await sendMail({
-    from: `${COMPANY_NAME} Security <${FROM_EMAIL}>`,
+    from: `${COMPANY_NAME} Security <${NOREPLY_EMAIL}>`,
     to,
     subject: `${code} - Security verification required`,
     html: wrap(`
@@ -169,7 +170,7 @@ export async function sendInvoiceEmail({
   currency: string
 }) {
   await sendMail({
-    from: `${COMPANY_NAME} Billing <${FROM_EMAIL}>`,
+    from: `${COMPANY_NAME} Billing <${BILLING_EMAIL}>`,
     to,
     subject: `Invoice ${invoiceNumber} - ${COMPANY_NAME}`,
     html: wrap(`
@@ -190,7 +191,7 @@ export async function sendInvoiceEmail({
           <td style="padding: 8px; border-bottom: 1px solid #eee;">${invoiceNumber}</td>
         </tr>
       </table>
-      <p style="color: #666; font-size: 14px;">If you have any questions about this invoice, please contact us at ${FROM_EMAIL}.</p>
+      <p style="color: #666; font-size: 14px;">If you have any questions about this invoice, please contact us at ${BILLING_EMAIL}.</p>
     `),
     attachment: pdfBuffer.length > 0
       ? { filename: `${invoiceNumber}.pdf`, data: pdfBuffer }
@@ -214,7 +215,7 @@ export async function sendRenewalReminderEmail({
   currency: string
 }) {
   await sendMail({
-    from: `${COMPANY_NAME} Billing <${FROM_EMAIL}>`,
+    from: `${COMPANY_NAME} Billing <${BILLING_EMAIL}>`,
     to,
     subject: `Your ${COMPANY_NAME} subscription renews soon`,
     html: wrap(`
@@ -225,7 +226,7 @@ export async function sendRenewalReminderEmail({
       <p style="margin: 24px 0;">
         <a href="${APP_URL}/dashboard" style="background-color: #0070f3; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; display: inline-block;">Manage Subscription</a>
       </p>
-      <p style="color: #666; font-size: 14px;">If you have any questions, please contact us at ${FROM_EMAIL}.</p>
+      <p style="color: #666; font-size: 14px;">If you have any questions, please contact us at ${BILLING_EMAIL}.</p>
     `),
   })
 }
@@ -244,7 +245,7 @@ export async function sendPaymentFailedEmail({
   currency: string
 }) {
   await sendMail({
-    from: `${COMPANY_NAME} Billing <${FROM_EMAIL}>`,
+    from: `${COMPANY_NAME} Billing <${BILLING_EMAIL}>`,
     to,
     subject: `Payment failed for your ${COMPANY_NAME} subscription`,
     html: wrap(`
@@ -255,7 +256,7 @@ export async function sendPaymentFailedEmail({
       <p style="margin: 24px 0;">
         <a href="${APP_URL}/dashboard" style="background-color: #e53e3e; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; display: inline-block;">Update Payment Method</a>
       </p>
-      <p style="color: #666; font-size: 14px;">If you believe this is an error, please contact us at ${FROM_EMAIL}.</p>
+      <p style="color: #666; font-size: 14px;">If you believe this is an error, please contact us at ${BILLING_EMAIL}.</p>
     `),
   })
 }
@@ -272,7 +273,7 @@ export async function sendSubscriptionExpiringEmail({
   expiryDate: string
 }) {
   await sendMail({
-    from: `${COMPANY_NAME} Billing <${FROM_EMAIL}>`,
+    from: `${COMPANY_NAME} Billing <${BILLING_EMAIL}>`,
     to,
     subject: `Your ${COMPANY_NAME} subscription is expiring soon`,
     html: wrap(`
@@ -283,7 +284,7 @@ export async function sendSubscriptionExpiringEmail({
       <p style="margin: 24px 0;">
         <a href="${APP_URL}/pricing" style="background-color: #0070f3; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; display: inline-block;">Renew Subscription</a>
       </p>
-      <p style="color: #666; font-size: 14px;">If you have any questions, please contact us at ${FROM_EMAIL}.</p>
+      <p style="color: #666; font-size: 14px;">If you have any questions, please contact us at ${BILLING_EMAIL}.</p>
     `),
   })
 }
@@ -304,7 +305,7 @@ export async function sendOrgInvitationEmail({
   inviteUrl: string
 }) {
   await sendMail({
-    from: `${COMPANY_NAME} <${FROM_EMAIL}>`,
+    from: `${COMPANY_NAME} <${NOREPLY_EMAIL}>`,
     to,
     subject: `You've been invited to join ${orgName} on ${COMPANY_NAME}`,
     html: wrap(`
@@ -330,7 +331,7 @@ export async function sendContactNotificationEmail({
   message: string
 }) {
   await sendMail({
-    from: `${COMPANY_NAME} <${FROM_EMAIL}>`,
+    from: `${COMPANY_NAME} <${NOREPLY_EMAIL}>`,
     to: ADMIN_EMAIL,
     subject: `New contact form submission from ${senderName}`,
     html: wrap(`

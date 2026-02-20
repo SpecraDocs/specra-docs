@@ -1,4 +1,6 @@
-# Specra Docs - Deployment Guide
+# Specra Docs - Docker Deployment Guide (Alternative)
+
+> **Note:** The actual production deployment uses **Bun + systemd + Caddy** (no Docker for the main app). See `../deploy.md` for the production deployment guide. This Docker-based setup is an alternative method.
 
 Complete guide for deploying Specra Docs to production using Docker and Caddy.
 

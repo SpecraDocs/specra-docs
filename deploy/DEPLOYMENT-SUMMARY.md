@@ -1,6 +1,8 @@
-# Deployment Files Summary
+# Deployment Files Summary (Docker Alternative)
 
-This folder contains all the necessary files and scripts for deploying Specra Docs to production using Docker and Caddy.
+> **Note:** The actual production deployment uses **Bun + systemd + Caddy** (no Docker for the main app). See `../deploy.md` for the production deployment guide. This folder contains a Docker-based alternative.
+
+This folder contains files and scripts for deploying Specra Docs using Docker and Caddy.
 
 ## 📁 Files Overview
 

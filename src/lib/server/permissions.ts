@@ -120,7 +120,7 @@ export async function checkPlanLimits(userId: string) {
     maxProjects: limits.maxProjects,
     maxSeats: limits.maxSeats,
     currentProjects: projectCount,
-    canDeploy: planSlug !== "free",
+    canDeploy: true,
     canCreateProject: projectCount < limits.maxProjects,
   }
 }

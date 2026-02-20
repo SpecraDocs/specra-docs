@@ -1,12 +1,15 @@
 # Specra-Docs Deployment Guide
 
-specra-docs is a full SaaS app (API routes, database, auth, payments) built on SvelteKit with `@sveltejs/adapter-node`. It requires a running Node.js server with Caddy as a reverse proxy.
+specra-docs is a full SaaS app (API routes, database, auth, payments) built on SvelteKit with `@sveltejs/adapter-node`. It runs on **Bun** with **systemd** and **Caddy** as a reverse proxy.
 
 **Server**: `ssh root@46.101.48.218` (user: `kamau`)
+**Runtime**: Bun (handles TypeScript natively, `.js`→`.ts` import resolution)
+**Process manager**: systemd (`specra-docs.service`)
+**Reverse proxy**: Caddy (automatic HTTPS)
 
 **Important notes**:
 - The server has limited RAM — `npm install` will get OOM-killed. All `node_modules` must be built locally and included in the deployment tarball.
-- The server may run a different Node.js version than local. `npx prisma generate` must run on the server to produce a compatible Prisma client.
+- `npx prisma generate` must run on the server to produce a compatible Prisma client for the server runtime.
 - Stripe and Resend SDKs initialize eagerly at build time — placeholder env vars must be provided during `npm run build`.
 
 ---
@@ -45,9 +48,11 @@ GRANT ALL PRIVILEGES ON DATABASE specra TO specra;
 \q
 ```
 
-**Install PM2 and tsx globally**:
+**Install Bun**:
 ```bash
-sudo npm install -g pm2 tsx
+curl -fsSL https://bun.sh/install | bash
+source ~/.bashrc
+bun --version  # verify
 ```
 
 ---
@@ -158,24 +163,39 @@ npx tsx scripts/seed-admin.ts
 
 ---
 
-### 8. Start the App with PM2
+### 8. Create systemd Service
 
-The app uses a custom `server.ts` entry point (for WebSocket support):
+The app uses a custom `server.ts` entry point (for WebSocket support), run with Bun:
 
 ```bash
-cd /home/kamau/specra
+cat > /etc/systemd/system/specra-docs.service << EOF
+[Unit]
+Description=Specra Docs
+After=network.target postgresql.service
 
-pm2 start "node --import tsx server.ts" \
-  --name specra-docs \
-  --cwd /home/kamau/specra
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/kamau/specra
+ExecStart=/root/.bun/bin/bun run server.ts
+Restart=on-failure
+RestartSec=5
+EnvironmentFile=/home/kamau/specra/.env
+Environment=NODE_ENV=production
 
-pm2 save
-pm2 startup  # follow the printed command to enable on boot
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable specra-docs
+systemctl start specra-docs
 ```
 
 The app runs on **port 3000**. Verify:
 ```bash
 curl http://localhost:3000
+systemctl status specra-docs
 ```
 
 ---
@@ -225,7 +245,7 @@ In Stripe Dashboard:
 2. Add endpoint: `https://specra-docs.com/api/webhooks/stripe`
 3. Select events: `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.updated`, `customer.subscription.deleted`
 4. Copy webhook signing secret → update `STRIPE_WEBHOOK_SECRET` in `~/specra/.env`
-5. Restart: `pm2 restart specra-docs`
+5. Restart: `systemctl restart specra-docs`
 
 ---
 
@@ -235,7 +255,7 @@ In Stripe Dashboard:
 2. Set **Homepage URL**: `https://specra-docs.com`
 3. Set **Authorization callback URL**: `https://specra-docs.com/api/auth/callback/github`
 4. Update `AUTH_GITHUB_ID` and `AUTH_GITHUB_SECRET` in `~/specra/.env`
-5. Restart: `pm2 restart specra-docs`
+5. Restart: `systemctl restart specra-docs`
 
 ---
 
@@ -298,86 +318,45 @@ cd /home/kamau/specra
 tar -xzf specra-deploy.tar.gz
 rm specra-deploy.tar.gz
 
-# Regenerate Prisma client for server's Node version
+# Regenerate Prisma client for the server runtime
 npx prisma generate
 
 # Only if schema changed:
 npx prisma db push
 
 # Restart the app
-pm2 restart specra-docs
+systemctl restart specra-docs
 ```
 
 ### Quick One-Liner (after scp, no schema changes)
 
 ```bash
-ssh root@46.101.48.218 'cd /home/kamau/specra && tar -xzf specra-deploy.tar.gz && rm specra-deploy.tar.gz && npx prisma generate && pm2 restart specra-docs'
+ssh root@46.101.48.218 'cd /home/kamau/specra && tar -xzf specra-deploy.tar.gz && rm specra-deploy.tar.gz && npx prisma generate && systemctl restart specra-docs'
 ```
 
 ### deploy.sh Script
 
-Save this in the project root for quick redeployments:
+The `deploy.sh` script in the project root automates the full process:
 
 ```bash
-#!/bin/bash
-set -e
-
-cd /home/kamau/Development/Projects/specra/specra-docs
-
-echo "Building..."
-npx prisma generate
-STRIPE_SECRET_KEY="sk_test_placeholder" RESEND_API_KEY="re_placeholder" npm run build
-
-echo "Building prod node_modules..."
-rm -rf /tmp/specra-prod-deps
-mkdir -p /tmp/specra-prod-deps
-cp package.json package-lock.json specra-0.2.9.tgz /tmp/specra-prod-deps/
-cd /tmp/specra-prod-deps && npm install --omit=dev
-cd /home/kamau/Development/Projects/specra/specra-docs
-
-echo "Packaging..."
-tar -czf specra-deploy.tar.gz \
-  build/ \
-  static/ \
-  docs/ \
-  prisma/ \
-  prisma.config.ts \
-  scripts/ \
-  server.ts \
-  specra.config.json \
-  specra-0.2.9.tgz \
-  src/lib/server/ \
-  package.json \
-  package-lock.json \
-  --directory=/tmp/specra-prod-deps node_modules/
-
-echo "Uploading..."
-scp specra-deploy.tar.gz root@46.101.48.218:/home/kamau/specra/
-
-echo "Deploying on server..."
-ssh root@46.101.48.218 'cd /home/kamau/specra && tar -xzf specra-deploy.tar.gz && rm specra-deploy.tar.gz && npx prisma generate && pm2 restart specra-docs'
-
-echo "Cleaning up..."
-rm specra-deploy.tar.gz
-
-echo "Done! App redeployed."
+./deploy.sh              # Quick deploy (no dep changes)
+./deploy.sh --deps       # Rebuild prod node_modules
+./deploy.sh --schema     # Run prisma db push on server
+./deploy.sh --deps --schema  # Both
 ```
 
-```bash
-chmod +x deploy.sh
-./deploy.sh
-```
+It handles: local build, packaging, upload, extraction, prisma generate, systemctl restart, and health check verification.
 
 ---
 
-## PM2 Useful Commands
+## Useful Server Commands
 
 ```bash
-pm2 status              # check if app is running
-pm2 logs specra-docs    # view app logs
-pm2 restart specra-docs # restart after env changes
-pm2 stop specra-docs    # stop the app
-pm2 monit               # real-time monitoring
+systemctl status specra-docs              # check if app is running
+journalctl -u specra-docs -f              # view logs (live)
+journalctl -u specra-docs -n 50          # last 50 log lines
+systemctl restart specra-docs             # restart after env changes
+systemctl stop specra-docs                # stop the app
 ```
 
 ---
@@ -387,7 +366,7 @@ pm2 monit               # real-time monitoring
 | Problem | Cause | Fix |
 |---|---|---|
 | `npm install` killed on server | OOM — server has limited RAM | Build node_modules locally, include in tarball |
-| `PrismaClient` import error on server | Node version mismatch (local vs server) | Run `npx prisma generate` on the server after extracting |
+| `PrismaClient` import error on server | Runtime mismatch (local build vs server) | Run `npx prisma generate` on the server after extracting |
 | `seed-admin.ts` can't find `db` module | `src/lib/server/db.ts` not in tarball | Include `src/lib/server/db.ts` in tar command |
 | Build fails with "Missing API key" | Stripe/Resend init at build time | Pass `STRIPE_SECRET_KEY` and `RESEND_API_KEY` as env vars during build |
 | Tarball extracts to wrong location | `scp` target path vs `tar -xzf` path mismatch | `scp` directly into `/home/kamau/specra/`, then `cd` there before extracting |
@@ -404,7 +383,7 @@ pm2 monit               # real-time monitoring
 | Transfer | `scp` to `/home/kamau/specra/` | Same |
 | Server: extract | `tar -xzf` in `/home/kamau/specra/` | Same |
 | Server: prisma | `npx prisma generate && npx prisma db push && npx tsx scripts/seed-admin.ts` | `npx prisma generate` (+ `db push` only if schema changed) |
-| Server: start | `pm2 start "node --import tsx server.ts"` | `pm2 restart specra-docs` |
+| Server: start | `systemctl start specra-docs` | `systemctl restart specra-docs` |
 | Caddy | Configure reverse proxy to `:3000` | No change |
 | .env | Copy `.env.sample`, fill in real values | No change (unless adding new vars) |
 
@@ -498,7 +477,7 @@ curl localhost:2019/load \
 The deployment-related env vars are already included in `.env.sample` under the "User Project Deployment" section. If you set up `.env` before Part C existed, add the missing vars from `.env.sample` and restart:
 
 ```bash
-pm2 restart specra-docs
+systemctl restart specra-docs
 ```
 
 ### 7. Verification

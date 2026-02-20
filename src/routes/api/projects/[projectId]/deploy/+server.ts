@@ -2,23 +2,13 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { canDeploy } from '$lib/server/permissions.js';
 import { deployProject } from '$lib/server/deploy.js';
-import { authenticateApiRequest } from '$lib/server/api-auth.js';
+import { resolveUserId } from '$lib/server/api-auth.js';
 import { logAudit } from '$lib/server/audit.js';
 
 export const POST: RequestHandler = async ({ request, locals, params }) => {
   const { projectId } = params;
 
-  // Support both session auth and API token auth (for CLI)
-  let userId: string | null = null;
-
-  const session = await locals.auth();
-  if (session?.user?.id) {
-    userId = session.user.id;
-  } else {
-    const apiUser = await authenticateApiRequest(request.headers.get('authorization'));
-    if (apiUser) userId = apiUser.id;
-  }
-
+  const userId = await resolveUserId(locals, request);
   if (!userId) {
     return json({ error: 'Unauthorized' }, { status: 401 });
   }

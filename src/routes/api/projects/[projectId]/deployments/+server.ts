@@ -3,16 +3,17 @@ import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
 import { canAccessProject } from '$lib/server/auth-utils.js';
 import { getVersionHistoryLimit } from '$lib/server/permissions.js';
+import { resolveUserId } from '$lib/server/api-auth.js';
 
-export const GET: RequestHandler = async ({ locals, url, params }) => {
-  const session = await locals.auth();
-  if (!session?.user?.id) {
+export const GET: RequestHandler = async ({ locals, request, url, params }) => {
+  const userId = await resolveUserId(locals, request);
+  if (!userId) {
     return json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { projectId } = params;
 
-  if (!(await canAccessProject(session.user.id, projectId))) {
+  if (!(await canAccessProject(userId, projectId))) {
     return json({ error: 'Forbidden' }, { status: 403 });
   }
 
@@ -20,7 +21,7 @@ export const GET: RequestHandler = async ({ locals, url, params }) => {
   const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 50);
   const skip = (page - 1) * limit;
 
-  const { cutoffDate } = await getVersionHistoryLimit(session.user.id);
+  const { cutoffDate } = await getVersionHistoryLimit(userId);
 
   const where = {
     projectId,

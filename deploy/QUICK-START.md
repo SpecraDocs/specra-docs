@@ -1,4 +1,6 @@
-# Specra Docs - Quick Start Guide
+# Specra Docs - Quick Start Guide (Docker Alternative)
+
+> **Note:** The actual production deployment uses **Bun + systemd + Caddy**. See `../deploy.md` and `../deploy.sh` for the production deployment. This guide covers the Docker-based alternative.
 
 Fast deployment guide for experienced users. For detailed instructions, see [README.md](./README.md).
 

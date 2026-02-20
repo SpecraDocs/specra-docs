@@ -3,18 +3,19 @@ import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
 import { checkPlanLimits } from '$lib/server/permissions.js';
 import { logAudit } from '$lib/server/audit.js';
+import { resolveUserId } from '$lib/server/api-auth.js';
 
-export const GET: RequestHandler = async ({ locals }) => {
-  const session = await locals.auth();
-  if (!session?.user?.id) {
+export const GET: RequestHandler = async ({ locals, request }) => {
+  const userId = await resolveUserId(locals, request);
+  if (!userId) {
     return json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const projects = await prisma.project.findMany({
     where: {
       OR: [
-        { userId: session.user.id },
-        { organization: { members: { some: { userId: session.user.id } } } },
+        { userId },
+        { organization: { members: { some: { userId } } } },
       ],
     },
     include: {
@@ -32,12 +33,12 @@ export const GET: RequestHandler = async ({ locals }) => {
 };
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-  const session = await locals.auth();
-  if (!session?.user?.id) {
+  const userId = await resolveUserId(locals, request);
+  if (!userId) {
     return json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const limits = await checkPlanLimits(session.user.id);
+  const limits = await checkPlanLimits(userId);
   if (!limits.canCreateProject) {
     return json(
       { error: `Project limit reached (${limits.maxProjects} max for ${limits.planSlug} plan)` },
@@ -66,7 +67,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   // Validate org membership if orgId is provided
   if (orgId) {
     const membership = await prisma.organizationMember.findUnique({
-      where: { userId_orgId: { userId: session.user.id, orgId } },
+      where: { userId_orgId: { userId: userId, orgId } },
     });
     if (!membership) {
       return json(
@@ -89,13 +90,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       name,
       slug,
       subdomain: slug,
-      userId: session.user.id,
+      userId: userId,
       orgId: orgId || null,
     },
   });
 
   logAudit({
-    userId: session.user.id,
+    userId: userId,
     orgId: orgId || null,
     action: 'PROJECT.CREATE',
     target: project.id,
