@@ -69,8 +69,14 @@ export async function deployProject(projectId: string, options: DeployOptions) {
     // Extract tar.gz content
     const tar = await import("tar")
     const { Readable } = await import("stream")
+    const { pipeline } = await import("stream/promises")
+
+    if (options.docsContent.length === 0) {
+      throw new Error("Empty archive — nothing to deploy")
+    }
+
     const stream = Readable.from(options.docsContent)
-    await stream.pipe(tar.extract({ cwd: sourceDir, strip: 1 }))
+    await pipeline(stream, tar.extract({ cwd: sourceDir, strip: 1 }))
 
     if (options.configJson) {
       await writeFile(
