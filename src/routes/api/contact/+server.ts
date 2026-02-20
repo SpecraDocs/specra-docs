@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
+import { sendContactNotificationEmail } from '$lib/server/email.js';
 
 export const POST: RequestHandler = async ({ request }) => {
   const body = await request.json();
@@ -27,6 +28,12 @@ export const POST: RequestHandler = async ({ request }) => {
       source: 'CONTACT_FORM',
     },
   });
+
+  sendContactNotificationEmail({
+    senderName: name.trim(),
+    senderEmail: email.trim(),
+    message: message.trim(),
+  }).catch((err) => console.error('Contact notification email failed:', err));
 
   return json({ success: true });
 };

@@ -5,6 +5,6 @@ export default defineConfig({
 	plugins: [sveltekit()],
 	ssr: {
 		// These packages have CJS/ESM issues - externalize them for SSR
-		external: ['dockerode', 'ssh2', 'geoip-lite']
+		external: ['dockerode', 'ssh2', 'geoip-lite', 'jsonwebtoken']
 	}
 });

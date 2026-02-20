@@ -3,6 +3,7 @@ import { redirect, type Handle } from '@sveltejs/kit';
 import { handle as authHandle } from '$lib/server/auth.js';
 import { lookupIp } from '$lib/server/geo.js';
 import { isCaddyAvailable, syncAllRoutes } from '$lib/server/caddy.js';
+import { checkRateLimit } from '$lib/server/rate-limit.js';
 
 const GEO_DEFAULT_COUNTRY = process.env.GEO_DEFAULT_COUNTRY || '';
 
@@ -86,4 +87,12 @@ const caddySyncHandle: Handle = async ({ event, resolve }) => {
   return resolve(event);
 };
 
-export const handle = sequence(authHandle, geoHandle, protectionHandle, caddySyncHandle);
+const rateLimitHandle: Handle = async ({ event, resolve }) => {
+  const result = checkRateLimit(event.request, () => event.getClientAddress());
+  if (result.blocked && result.response) {
+    return result.response;
+  }
+  return resolve(event);
+};
+
+export const handle = sequence(rateLimitHandle, authHandle, geoHandle, protectionHandle, caddySyncHandle);

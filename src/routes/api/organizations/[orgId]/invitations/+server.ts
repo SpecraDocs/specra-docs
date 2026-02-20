@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
 import { logAudit } from '$lib/server/audit.js';
 import { getOrgSeatInfo } from '$lib/server/permissions.js';
+import { sendOrgInvitationEmail } from '$lib/server/email.js';
 
 export const GET: RequestHandler = async ({ locals, params }) => {
   const session = await locals.auth();
@@ -109,13 +110,24 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
     metadata: { email, role: role || 'MEMBER' },
   });
 
-  // In production, send email with invitation link
-  // For now, return the token
+  const appUrl = process.env.PUBLIC_APP_URL || '';
+  const inviteUrl = `${appUrl}/invitations/accept?token=${invitation.token}`;
+
+  const org = await prisma.organization.findUnique({
+    where: { id: orgId },
+    select: { name: true },
+  });
+
+  sendOrgInvitationEmail({
+    to: email,
+    inviterName: session.user.name || 'A team member',
+    orgName: org?.name || 'an organization',
+    role: role || 'MEMBER',
+    inviteUrl,
+  }).catch((err) => console.error('Org invitation email failed:', err));
+
   return json(
-    {
-      ...invitation,
-      inviteUrl: `${process.env.NEXTAUTH_URL || ''}/invitations/accept?token=${invitation.token}`,
-    },
+    { ...invitation, inviteUrl },
     { status: 201 }
   );
 };

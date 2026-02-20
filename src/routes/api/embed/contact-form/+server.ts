@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
 import { getUserSubscription } from '$lib/server/auth-utils.js';
+import { sendContactNotificationEmail } from '$lib/server/email.js';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -23,7 +24,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
   const project = await prisma.project.findUnique({
     where: { id: projectId },
-    select: { id: true },
+    select: { id: true, userId: true },
   });
 
   if (!project) {
@@ -39,6 +40,19 @@ export const POST: RequestHandler = async ({ request }) => {
       source: 'CONTACT_FORM',
     },
   });
+
+  // Notify the project owner
+  const owner = await prisma.user.findUnique({
+    where: { id: project.userId },
+    select: { email: true },
+  });
+  if (owner?.email) {
+    sendContactNotificationEmail({
+      senderName: String(name),
+      senderEmail: String(email),
+      message: String(message),
+    }).catch((err) => console.error('Embed contact notification failed:', err));
+  }
 
   return json({ success: true }, { headers: corsHeaders });
 };
