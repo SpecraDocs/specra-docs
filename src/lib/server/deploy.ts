@@ -120,9 +120,10 @@ export async function deployProject(projectId: string, options: DeployOptions) {
     const { cp } = await import("fs/promises")
     await cp(buildDir, releaseDir, { recursive: true })
 
-    // Verify index.html exists
-    const indexPath = path.join(releaseDir, "index.html")
-    if (!existsSync(indexPath)) {
+    // Verify an entry point exists (index.html or 404.html fallback)
+    const hasIndex = existsSync(path.join(releaseDir, "index.html"))
+    const hasFallback = existsSync(path.join(releaseDir, "404.html"))
+    if (!hasIndex && !hasFallback) {
       throw new Error("Build output missing index.html")
     }
 
