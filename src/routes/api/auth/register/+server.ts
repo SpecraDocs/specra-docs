@@ -3,7 +3,7 @@ import type { RequestHandler } from './$types';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { prisma } from '$lib/server/db.js';
-import { sendVerificationEmail, sendWelcomeEmail } from '$lib/server/email.js';
+import { sendVerificationEmail } from '$lib/server/email.js';
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
@@ -62,11 +62,6 @@ export const POST: RequestHandler = async ({ request }) => {
       userName: name || 'there',
       code,
     });
-
-    // Send welcome email (non-blocking — don't fail registration if it errors)
-    sendWelcomeEmail({ to: email, userName: name || 'there' }).catch((err) =>
-      console.error('Welcome email failed:', err)
-    );
 
     return json(
       {

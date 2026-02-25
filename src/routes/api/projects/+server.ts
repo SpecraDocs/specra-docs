@@ -1,5 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { Prisma } from '@prisma/client';
 import { prisma } from '$lib/server/db.js';
 import { checkPlanLimits } from '$lib/server/permissions.js';
 import { logAudit } from '$lib/server/audit.js';
@@ -82,18 +83,28 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     where: { OR: [{ slug }, { subdomain: slug }] },
   });
   if (existing) {
-    return json({ error: 'Slug already taken' }, { status: 409 });
+    return json({ error: 'Subdomain already taken' }, { status: 409 });
   }
 
-  const project = await prisma.project.create({
-    data: {
-      name,
-      slug,
-      subdomain: slug,
-      userId: userId,
-      orgId: orgId || null,
-    },
-  });
+  // Create with try/catch to handle race conditions — the @unique
+  // constraint on slug/subdomain is the true guard against duplicates.
+  let project;
+  try {
+    project = await prisma.project.create({
+      data: {
+        name,
+        slug,
+        subdomain: slug,
+        userId: userId,
+        orgId: orgId || null,
+      },
+    });
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
+      return json({ error: 'Subdomain already taken' }, { status: 409 });
+    }
+    throw e;
+  }
 
   logAudit({
     userId: userId,

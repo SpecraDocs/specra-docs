@@ -81,7 +81,7 @@ export async function sendVerificationEmail({
   await sendMail({
     from: `${COMPANY_NAME} <${NOREPLY_EMAIL}>`,
     to,
-    subject: `${code} is your ${COMPANY_NAME} verification code`,
+    subject: `${code} — Verify your email`,
     html: wrap(`
       <h2>Verify your email</h2>
       <p>Hi ${userName},</p>
