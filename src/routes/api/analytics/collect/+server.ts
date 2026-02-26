@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
 import { lookupIp, hashIp } from '$lib/server/geo.js';
 import { getUserSubscription } from '$lib/server/auth-utils.js';
+import { isAdmin } from '$lib/server/permissions.js';
 
 // Simple in-memory rate limiter
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -83,10 +84,12 @@ export const POST: RequestHandler = async ({ request }) => {
       return new Response(null, { status: 404 });
     }
 
-    // Drop analytics events for users without active subscription
-    const subscription = await getUserSubscription(project.userId);
-    if (!subscription) {
-      return new Response(null, { status: 204 });
+    // Drop analytics events for users without active subscription (admins always allowed)
+    if (!(await isAdmin(project.userId))) {
+      const subscription = await getUserSubscription(project.userId);
+      if (!subscription) {
+        return new Response(null, { status: 204 });
+      }
     }
 
     const ua = request.headers.get('user-agent') || '';

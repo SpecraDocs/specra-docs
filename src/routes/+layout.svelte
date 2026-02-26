@@ -21,6 +21,7 @@
   <meta name="twitter:title" content={data?.config?.site?.title || 'Documentation'} />
   <meta name="twitter:description" content={data?.config?.site?.description || ''} />
   <link rel="llms-txt" href="/llms.txt" />
+  <script src="/tracker.js" data-project="specra-docs-platform" data-endpoint="/api/analytics/collect"></script>
 </svelte:head>
 
 {#if data?.config}
