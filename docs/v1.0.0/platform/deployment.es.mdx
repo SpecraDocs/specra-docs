@@ -1,0 +1,120 @@
+---
+title: Despliegue
+description: Despliega tu documentación usando la CLI, integración con GitHub o carga manual — con historial de versiones y rollback
+sidebar_position: 7
+icon: upload
+tab_group: platform
+---
+
+# Despliegue
+
+Specra Platform ofrece tres formas de desplegar tu documentación: la CLI, integración con GitHub o carga manual. Cada despliegue pasa por un pipeline con historial completo de versiones y soporte de rollback.
+
+## Métodos de Despliegue
+
+### Despliegue con CLI
+
+La forma más rápida de desplegar. Compila localmente y sube con un solo comando:
+
+```bash
+specra deploy
+```
+
+Esto compila tu documentación y la sube a Specra Platform. Asegúrate de estar conectado primero:
+
+```bash
+specra login
+```
+
+<Callout type="tip">
+  Ejecuta `specra doctor` para verificar que tu entorno local está correctamente configurado antes de desplegar.
+</Callout>
+
+### Integración con GitHub
+
+Disponible en planes **Pro** y **Enterprise**. Conecta un repositorio de GitHub para desplegar automáticamente en cada push.
+
+<Steps>
+  <Step title="Conectar Repositorio">
+    Ve a **Configuración del Proyecto > GitHub** y autoriza la aplicación Specra GitHub App.
+  </Step>
+  <Step title="Seleccionar Rama">
+    Elige qué rama activa los despliegues (típicamente `main`).
+  </Step>
+  <Step title="Despliegue Automático">
+    Cada push a la rama configurada activa automáticamente un nuevo despliegue.
+  </Step>
+</Steps>
+
+### Carga Manual
+
+Sube un paquete de documentación precompilado a través del panel de control:
+
+1. Compila tus docs localmente: `npm run build`
+2. Ve a **Configuración del Proyecto > Despliegues**
+3. Haz clic en **Subir Build** y selecciona tu directorio de salida del build
+
+## Pipeline de Despliegue
+
+Cada despliegue pasa por cuatro etapas:
+
+| Etapa | Descripción |
+|-------|-------------|
+| **QUEUED** | Despliegue recibido y esperando ser procesado |
+| **BUILDING** | Compilando tu documentación desde el código fuente |
+| **DEPLOYING** | Copiando archivos compilados a la infraestructura de alojamiento |
+| **RUNNING** | Despliegue está en vivo y sirviendo tráfico |
+
+Puedes monitorear la etapa actual en tiempo real desde la pestaña **Despliegues** en el panel de tu proyecto.
+
+### Registros de Build
+
+Los registros completos de build están disponibles para cada despliegue. Haz clic en cualquier despliegue para ver:
+
+- Salida del build y advertencias
+- Duración del despliegue
+- Recuento de archivos y tamaño total
+
+## Historial de Versiones
+
+Cada despliegue exitoso se guarda como una versión. El número de versiones retenidas depende de tu plan:
+
+| Plan | Historial de Versiones |
+|------|----------------------|
+| Free | 7 días |
+| Starter | 30 días |
+| Pro | Ilimitado |
+| Enterprise | Ilimitado |
+
+## Rollback
+
+Puedes volver a cualquier versión anterior dentro de tu ventana de retención:
+
+1. Ve a **Proyecto > Despliegues**
+2. Encuentra la versión que deseas restaurar
+3. Haz clic en **Volver a esta versión**
+4. La versión seleccionada se vuelve a desplegar inmediatamente
+
+<Callout type="info">
+  Hacer rollback crea una nueva entrada de despliegue en tu historial. La versión anterior se vuelve a desplegar, no se restaura en su lugar.
+</Callout>
+
+## Notificaciones de Despliegue
+
+Configura notificaciones para mantenerte informado sobre el estado del despliegue:
+
+- **Correo electrónico** — recibe un email cuando los despliegues son exitosos o fallan
+- **Webhook** — envía eventos de despliegue a tu propio endpoint
+
+Configura las notificaciones en **Configuración del Proyecto > Notificaciones**.
+
+## Solución de Problemas
+
+**¿El despliegue se queda en QUEUED?**
+Esto usualmente se resuelve en pocos minutos. Si persiste por más de 10 minutos, intenta cancelar y volver a desplegar.
+
+**¿Falló el build?**
+Revisa los registros de build para ver los errores. Problemas comunes incluyen dependencias faltantes, configuración inválida o errores de sintaxis en archivos MDX.
+
+**¿Rollback no disponible?**
+Tu versión puede haber expirado basándose en la ventana de retención de tu plan. Mejora tu plan para un historial de versiones más largo (o ilimitado).

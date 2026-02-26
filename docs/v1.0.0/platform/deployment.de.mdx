@@ -1,0 +1,120 @@
+---
+title: Bereitstellung
+description: Stellen Sie Ihre Dokumentation über CLI, GitHub-Integration oder manuellen Upload bereit — mit Versionshistorie und Rollback
+sidebar_position: 7
+icon: upload
+tab_group: platform
+---
+
+# Bereitstellung
+
+Specra Platform bietet drei Möglichkeiten, Ihre Dokumentation bereitzustellen: die CLI, GitHub-Integration oder manuellen Upload. Jede Bereitstellung durchläuft eine Pipeline mit vollständiger Versionshistorie und Rollback-Unterstützung.
+
+## Bereitstellungsmethoden
+
+### CLI-Bereitstellung
+
+Der schnellste Weg zur Bereitstellung. Lokal bauen und mit einem einzigen Befehl pushen:
+
+```bash
+specra deploy
+```
+
+Dies baut Ihre Dokumentation und lädt sie auf die Specra Platform hoch. Stellen Sie sicher, dass Sie vorher eingeloggt sind:
+
+```bash
+specra login
+```
+
+<Callout type="tip">
+  Führen Sie `specra doctor` aus, um zu überprüfen, ob Ihre lokale Umgebung korrekt konfiguriert ist, bevor Sie bereitstellen.
+</Callout>
+
+### GitHub-Integration
+
+Verfügbar in **Pro**- und **Enterprise**-Tarifen. Verbinden Sie ein GitHub-Repository, um bei jedem Push automatisch bereitzustellen.
+
+<Steps>
+  <Step title="Repository verbinden">
+    Gehen Sie zu **Projekteinstellungen > GitHub** und autorisieren Sie die Specra GitHub App.
+  </Step>
+  <Step title="Branch auswählen">
+    Wählen Sie, welcher Branch Bereitstellungen auslöst (typischerweise `main`).
+  </Step>
+  <Step title="Automatische Bereitstellung">
+    Jeder Push zum konfigurierten Branch löst automatisch eine neue Bereitstellung aus.
+  </Step>
+</Steps>
+
+### Manueller Upload
+
+Laden Sie ein vorgefertigtes Dokumentationspaket über das Dashboard hoch:
+
+1. Bauen Sie Ihre Docs lokal: `npm run build`
+2. Gehen Sie zu **Projekteinstellungen > Bereitstellungen**
+3. Klicken Sie auf **Build hochladen** und wählen Sie Ihr Build-Ausgabeverzeichnis
+
+## Bereitstellungs-Pipeline
+
+Jede Bereitstellung durchläuft vier Phasen:
+
+| Phase | Beschreibung |
+|-------|-------------|
+| **QUEUED** | Bereitstellung empfangen und wartet auf Verarbeitung |
+| **BUILDING** | Baut Ihre Dokumentation aus dem Quellcode |
+| **DEPLOYING** | Kopiert die gebauten Dateien auf die Hosting-Infrastruktur |
+| **RUNNING** | Bereitstellung ist live und bedient Traffic |
+
+Sie können die aktuelle Phase in Echtzeit im **Bereitstellungen**-Tab in Ihrem Projekt-Dashboard verfolgen.
+
+### Build-Logs
+
+Vollständige Build-Logs sind für jede Bereitstellung verfügbar. Klicken Sie auf eine beliebige Bereitstellung, um zu sehen:
+
+- Build-Ausgabe und Warnungen
+- Bereitstellungsdauer
+- Dateianzahl und Gesamtgröße
+
+## Versionshistorie
+
+Jede erfolgreiche Bereitstellung wird als Version gespeichert. Die Anzahl der aufbewahrten Versionen hängt von Ihrem Tarif ab:
+
+| Tarif | Versionshistorie |
+|-------|-----------------|
+| Free | 7 Tage |
+| Starter | 30 Tage |
+| Pro | Unbegrenzt |
+| Enterprise | Unbegrenzt |
+
+## Rollback
+
+Sie können innerhalb Ihres Aufbewahrungszeitraums zu jeder vorherigen Version zurückkehren:
+
+1. Gehen Sie zu **Projekt > Bereitstellungen**
+2. Finden Sie die Version, die Sie wiederherstellen möchten
+3. Klicken Sie auf **Zu dieser Version zurückkehren**
+4. Die ausgewählte Version wird sofort erneut bereitgestellt
+
+<Callout type="info">
+  Ein Rollback erstellt einen neuen Bereitstellungseintrag in Ihrer Historie. Die vorherige Version wird erneut bereitgestellt, nicht an Ort und Stelle wiederhergestellt.
+</Callout>
+
+## Bereitstellungsbenachrichtigungen
+
+Konfigurieren Sie Benachrichtigungen, um über den Bereitstellungsstatus informiert zu bleiben:
+
+- **E-Mail** — erhalten Sie eine E-Mail, wenn Bereitstellungen erfolgreich sind oder fehlschlagen
+- **Webhook** — senden Sie Bereitstellungsereignisse an Ihren eigenen Endpunkt
+
+Richten Sie Benachrichtigungen unter **Projekteinstellungen > Benachrichtigungen** ein.
+
+## Fehlerbehebung
+
+**Bereitstellung bleibt in QUEUED stecken?**
+Dies löst sich normalerweise innerhalb weniger Minuten. Wenn es länger als 10 Minuten anhält, versuchen Sie, abzubrechen und erneut bereitzustellen.
+
+**Build fehlgeschlagen?**
+Überprüfen Sie die Build-Logs auf Fehler. Häufige Probleme sind fehlende Abhängigkeiten, ungültige Konfiguration oder Syntaxfehler in MDX-Dateien.
+
+**Rollback nicht verfügbar?**
+Ihre Version ist möglicherweise basierend auf dem Aufbewahrungszeitraum Ihres Tarifs abgelaufen. Upgraden Sie Ihren Tarif für eine längere (oder unbegrenzte) Versionshistorie.

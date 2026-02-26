@@ -1,0 +1,90 @@
+---
+title: Projets
+description: Créez et gérez des projets de documentation avec des domaines personnalisés, l'intégration GitHub et des fonctionnalités intégrées
+sidebar_position: 2
+icon: folder
+tab_group: platform
+---
+
+# Projets
+
+Un projet est un seul site de documentation sur Specra Platform. Chaque projet obtient son propre sous-domaine, pipeline de déploiement, analyses et paramètres.
+
+## Créer un Projet
+
+Vous pouvez créer un nouveau projet depuis le tableau de bord ou en utilisant la CLI :
+
+<Tabs defaultValue="dashboard">
+  <Tab label="Tableau de bord">
+    1. Allez sur votre [tableau de bord](https://specra-docs.com/dashboard)
+    2. Cliquez sur **Nouveau Projet**
+    3. Entrez un nom de projet et une description optionnelle
+    4. Choisissez votre méthode de déploiement (CLI, GitHub ou manuel)
+  </Tab>
+  <Tab label="CLI">
+```bash
+specra init my-docs
+```
+  Cela crée un nouveau projet et lie votre répertoire local à celui-ci.
+  </Tab>
+</Tabs>
+
+## Sous-domaines et Domaines Personnalisés
+
+Chaque projet obtient automatiquement un sous-domaine :
+
+```
+votre-projet.specra-docs.com
+```
+
+### Domaines Personnalisés
+
+Vous pouvez connecter votre propre domaine à n'importe quel projet. Les domaines personnalisés sont disponibles sur tous les forfaits, y compris Free.
+
+<Steps>
+  <Step title="Ajoutez votre Domaine">
+    Allez dans **Paramètres du Projet > Domaines** et entrez votre domaine (ex. `docs.votreentreprise.com`).
+  </Step>
+  <Step title="Configurez le DNS">
+    Ajoutez un enregistrement CNAME pointant vers `cname.specra-docs.com` chez votre fournisseur DNS.
+  </Step>
+  <Step title="Vérifiez">
+    Specra vérifie automatiquement votre configuration DNS et provisionne un certificat SSL via Let's Encrypt.
+  </Step>
+</Steps>
+
+<Callout type="info">
+  Les certificats SSL sont provisionnés automatiquement et renouvelés avant expiration. Aucune configuration manuelle nécessaire.
+</Callout>
+
+## Intégration GitHub
+
+Connectez un dépôt GitHub pour activer les déploiements automatiques à chaque push. Disponible sur les forfaits **Pro** et **Enterprise**.
+
+1. Allez dans **Paramètres du Projet > GitHub**
+2. Autorisez l'application Specra GitHub App
+3. Sélectionnez votre dépôt et branche
+4. Chaque push vers la branche configurée déclenche un nouveau déploiement
+
+<Callout type="tip">
+  Vous pouvez configurer quelle branche déclenche les déploiements. La plupart des équipes utilisent `main` pour les docs de production.
+</Callout>
+
+## Formulaires de Contact
+
+Les projets sur les forfaits **Starter** et supérieurs peuvent activer un formulaire de contact intégré sur leur site de documentation. Les soumissions de formulaire sont livrées à votre adresse e-mail configurée et stockées dans le tableau de bord.
+
+## Chat en Direct
+
+Les forfaits **Pro** et **Enterprise** incluent un widget de chat en direct intégrable. Les visiteurs peuvent poser des questions directement depuis vos docs, et votre équipe répond depuis le tableau de bord Specra.
+
+## Limites du Projet par Forfait
+
+| Fonctionnalité | Free | Starter | Pro | Enterprise |
+|---------------|------|---------|-----|------------|
+| Projets max. | 1 | 4 | 20 | Illimités |
+| Domaines personnalisés | Oui | Oui | Oui | Oui |
+| Sync GitHub | - | - | Oui | Oui |
+| Formulaire de contact | - | Oui | Oui | Oui |
+| Chat en direct | - | - | Oui | Oui |
+| Historique des versions | 7 jours | 30 jours | Illimité | Illimité |

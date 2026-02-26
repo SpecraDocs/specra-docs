@@ -1,0 +1,8 @@
+{
+  "label": "Platform",
+  "position": 6,
+  "collapsible": true,
+  "collapsed": false,
+  "icon": "rocket",
+  "tab_group": "platform"
+}

@@ -1,0 +1,90 @@
+---
+title: Projekte
+description: Erstellen und verwalten Sie Dokumentationsprojekte mit eigenen Domains, GitHub-Integration und integrierten Features
+sidebar_position: 2
+icon: folder
+tab_group: platform
+---
+
+# Projekte
+
+Ein Projekt ist eine einzelne Dokumentationsseite auf der Specra Platform. Jedes Projekt erhält seine eigene Subdomain, Bereitstellungs-Pipeline, Analysen und Einstellungen.
+
+## Projekt erstellen
+
+Sie können ein neues Projekt über das Dashboard oder mit der CLI erstellen:
+
+<Tabs defaultValue="dashboard">
+  <Tab label="Dashboard">
+    1. Gehen Sie zu Ihrem [Dashboard](https://specra-docs.com/dashboard)
+    2. Klicken Sie auf **Neues Projekt**
+    3. Geben Sie einen Projektnamen und eine optionale Beschreibung ein
+    4. Wählen Sie Ihre Bereitstellungsmethode (CLI, GitHub oder manuell)
+  </Tab>
+  <Tab label="CLI">
+```bash
+specra init my-docs
+```
+  Dies erstellt ein neues Projekt und verknüpft Ihr lokales Verzeichnis damit.
+  </Tab>
+</Tabs>
+
+## Subdomains und eigene Domains
+
+Jedes Projekt erhält automatisch eine Subdomain:
+
+```
+ihr-projekt.specra-docs.com
+```
+
+### Eigene Domains
+
+Sie können Ihre eigene Domain mit jedem Projekt verbinden. Eigene Domains sind in allen Tarifen verfügbar, einschließlich Free.
+
+<Steps>
+  <Step title="Domain hinzufügen">
+    Gehen Sie zu **Projekteinstellungen > Domains** und geben Sie Ihre Domain ein (z.B. `docs.ihrfirma.com`).
+  </Step>
+  <Step title="DNS konfigurieren">
+    Fügen Sie einen CNAME-Eintrag hinzu, der auf `cname.specra-docs.com` bei Ihrem DNS-Anbieter zeigt.
+  </Step>
+  <Step title="Verifizieren">
+    Specra verifiziert automatisch Ihre DNS-Konfiguration und stellt ein SSL-Zertifikat über Let's Encrypt bereit.
+  </Step>
+</Steps>
+
+<Callout type="info">
+  SSL-Zertifikate werden automatisch bereitgestellt und vor Ablauf erneuert. Keine manuelle Konfiguration erforderlich.
+</Callout>
+
+## GitHub-Integration
+
+Verbinden Sie ein GitHub-Repository, um automatische Bereitstellungen bei jedem Push zu ermöglichen. Verfügbar in **Pro**- und **Enterprise**-Tarifen.
+
+1. Gehen Sie zu **Projekteinstellungen > GitHub**
+2. Autorisieren Sie die Specra GitHub App
+3. Wählen Sie Ihr Repository und den Branch
+4. Jeder Push zum konfigurierten Branch löst eine neue Bereitstellung aus
+
+<Callout type="tip">
+  Sie können konfigurieren, welcher Branch Bereitstellungen auslöst. Die meisten Teams verwenden `main` für Produktions-Docs.
+</Callout>
+
+## Kontaktformulare
+
+Projekte ab dem **Starter**-Tarif können ein integriertes Kontaktformular auf ihrer Dokumentationsseite aktivieren. Formulareinreichungen werden an Ihre konfigurierte E-Mail-Adresse gesendet und im Dashboard gespeichert.
+
+## Live-Chat
+
+**Pro**- und **Enterprise**-Tarife beinhalten ein einbettbares Live-Chat-Widget. Besucher können Fragen direkt aus Ihren Docs stellen, und Ihr Team antwortet über das Specra Dashboard.
+
+## Projektlimits nach Tarif
+
+| Feature | Free | Starter | Pro | Enterprise |
+|---------|------|---------|-----|------------|
+| Max. Projekte | 1 | 4 | 20 | Unbegrenzt |
+| Eigene Domains | Ja | Ja | Ja | Ja |
+| GitHub-Sync | - | - | Ja | Ja |
+| Kontaktformular | - | Ja | Ja | Ja |
+| Live-Chat | - | - | Ja | Ja |
+| Versionshistorie | 7 Tage | 30 Tage | Unbegrenzt | Unbegrenzt |

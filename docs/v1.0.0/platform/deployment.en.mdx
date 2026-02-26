@@ -1,0 +1,120 @@
+---
+title: Deployment
+description: Deploy your documentation using the CLI, GitHub integration, or manual upload — with version history and rollback
+sidebar_position: 7
+icon: upload
+tab_group: platform
+---
+
+# Deployment
+
+Specra Platform offers three ways to deploy your documentation: the CLI, GitHub integration, or manual upload. Every deployment goes through a pipeline with full version history and rollback support.
+
+## Deployment Methods
+
+### CLI Deploy
+
+The fastest way to deploy. Build locally and push with a single command:
+
+```bash
+specra deploy
+```
+
+This builds your documentation and uploads it to Specra Platform. Make sure you're logged in first:
+
+```bash
+specra login
+```
+
+<Callout type="tip">
+  Run `specra doctor` to check that your local environment is correctly configured before deploying.
+</Callout>
+
+### GitHub Integration
+
+Available on **Pro** and **Enterprise** plans. Connect a GitHub repository to automatically deploy on every push.
+
+<Steps>
+  <Step title="Connect Repository">
+    Go to **Project Settings > GitHub** and authorize the Specra GitHub App.
+  </Step>
+  <Step title="Select Branch">
+    Choose which branch triggers deployments (typically `main`).
+  </Step>
+  <Step title="Auto Deploy">
+    Every push to the configured branch triggers a new deployment automatically.
+  </Step>
+</Steps>
+
+### Manual Upload
+
+Upload a pre-built documentation bundle through the dashboard:
+
+1. Build your docs locally: `npm run build`
+2. Go to **Project Settings > Deployments**
+3. Click **Upload Build** and select your build output directory
+
+## Deployment Pipeline
+
+Every deployment goes through four stages:
+
+| Stage | Description |
+|-------|-------------|
+| **QUEUED** | Deployment received and waiting to be processed |
+| **BUILDING** | Building your documentation from source |
+| **DEPLOYING** | Copying built files to the hosting infrastructure |
+| **RUNNING** | Deployment is live and serving traffic |
+
+You can monitor the current stage in real time from the **Deployments** tab in your project dashboard.
+
+### Build Logs
+
+Full build logs are available for each deployment. Click on any deployment to view:
+
+- Build output and warnings
+- Deployment duration
+- File count and total size
+
+## Version History
+
+Every successful deployment is saved as a version. The number of versions retained depends on your plan:
+
+| Plan | Version History |
+|------|----------------|
+| Free | 7 days |
+| Starter | 30 days |
+| Pro | Unlimited |
+| Enterprise | Unlimited |
+
+## Rollback
+
+You can roll back to any previous version within your retention window:
+
+1. Go to **Project > Deployments**
+2. Find the version you want to restore
+3. Click **Rollback to this version**
+4. The selected version is redeployed immediately
+
+<Callout type="info">
+  Rolling back creates a new deployment entry in your history. The previous version is redeployed, not restored in place.
+</Callout>
+
+## Deployment Notifications
+
+Configure notifications to stay informed about deployment status:
+
+- **Email** — receive an email when deployments succeed or fail
+- **Webhook** — send deployment events to your own endpoint
+
+Set up notifications in **Project Settings > Notifications**.
+
+## Troubleshooting
+
+**Deployment stuck in QUEUED?**
+This usually resolves within a few minutes. If it persists for more than 10 minutes, try cancelling and redeploying.
+
+**Build failed?**
+Check the build logs for errors. Common issues include missing dependencies, invalid configuration, or syntax errors in MDX files.
+
+**Rollback not available?**
+Your version may have expired based on your plan's retention window. Upgrade your plan for longer (or unlimited) version history.

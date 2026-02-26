@@ -1,0 +1,90 @@
+---
+title: Projects
+description: Create and manage documentation projects with custom domains, GitHub integration, and built-in features
+sidebar_position: 2
+icon: folder
+tab_group: platform
+---
+
+# Projects
+
+A project is a single documentation site on the Specra Platform. Each project gets its own subdomain, deployment pipeline, analytics, and settings.
+
+## Creating a Project
+
+You can create a new project from the dashboard or using the CLI:
+
+<Tabs defaultValue="dashboard">
+  <Tab label="Dashboard">
+    1. Go to your [dashboard](https://specra-docs.com/dashboard)
+    2. Click **New Project**
+    3. Enter a project name and optional description
+    4. Choose your deployment method (CLI, GitHub, or manual)
+  </Tab>
+  <Tab label="CLI">
+```bash
+specra init my-docs
+```
+  This creates a new project and links your local directory to it.
+  </Tab>
+</Tabs>
+
+## Subdomains and Custom Domains
+
+Every project automatically gets a subdomain:
+
+```
+your-project.specra-docs.com
+```
+
+### Custom Domains
+
+You can connect your own domain to any project. Custom domains are available on all plans, including Free.
+
+<Steps>
+  <Step title="Add Your Domain">
+    Go to **Project Settings > Domains** and enter your domain (e.g., `docs.yourcompany.com`).
+  </Step>
+  <Step title="Configure DNS">
+    Add a CNAME record pointing to `cname.specra-docs.com` at your DNS provider.
+  </Step>
+  <Step title="Verify">
+    Specra automatically verifies your DNS configuration and provisions an SSL certificate via Let's Encrypt.
+  </Step>
+</Steps>
+
+<Callout type="info">
+  SSL certificates are provisioned automatically and renewed before expiry. No manual configuration needed.
+</Callout>
+
+## GitHub Integration
+
+Connect a GitHub repository to enable automatic deployments on every push. Available on **Pro** and **Enterprise** plans.
+
+1. Go to **Project Settings > GitHub**
+2. Authorize the Specra GitHub App
+3. Select your repository and branch
+4. Every push to the configured branch triggers a new deployment
+
+<Callout type="tip">
+  You can configure which branch triggers deployments. Most teams use `main` for production docs.
+</Callout>
+
+## Contact Forms
+
+Projects on **Starter** plans and above can enable a built-in contact form on their documentation site. Form submissions are delivered to your configured email address and stored in the dashboard.
+
+## Live Chat
+
+**Pro** and **Enterprise** plans include an embeddable live chat widget. Visitors can ask questions directly from your docs, and your team responds from the Specra dashboard.
+
+## Project Limits by Plan
+
+| Feature | Free | Starter | Pro | Enterprise |
+|---------|------|---------|-----|------------|
+| Max projects | 1 | 4 | 20 | Unlimited |
+| Custom domains | Yes | Yes | Yes | Yes |
+| GitHub sync | - | - | Yes | Yes |
+| Contact form | - | Yes | Yes | Yes |
+| Live chat | - | - | Yes | Yes |
+| Version history | 7 days | 30 days | Unlimited | Unlimited |

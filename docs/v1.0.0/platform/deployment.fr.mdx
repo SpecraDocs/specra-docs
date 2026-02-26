@@ -1,0 +1,120 @@
+---
+title: Déploiement
+description: Déployez votre documentation avec la CLI, l'intégration GitHub ou le téléchargement manuel — avec historique des versions et rollback
+sidebar_position: 7
+icon: upload
+tab_group: platform
+---
+
+# Déploiement
+
+Specra Platform offre trois façons de déployer votre documentation : la CLI, l'intégration GitHub ou le téléchargement manuel. Chaque déploiement passe par un pipeline avec un historique complet des versions et un support de rollback.
+
+## Méthodes de Déploiement
+
+### Déploiement par CLI
+
+La façon la plus rapide de déployer. Compilez localement et publiez avec une seule commande :
+
+```bash
+specra deploy
+```
+
+Cela compile votre documentation et la télécharge sur Specra Platform. Assurez-vous d'être connecté d'abord :
+
+```bash
+specra login
+```
+
+<Callout type="tip">
+  Exécutez `specra doctor` pour vérifier que votre environnement local est correctement configuré avant de déployer.
+</Callout>
+
+### Intégration GitHub
+
+Disponible sur les forfaits **Pro** et **Enterprise**. Connectez un dépôt GitHub pour déployer automatiquement à chaque push.
+
+<Steps>
+  <Step title="Connecter le Dépôt">
+    Allez dans **Paramètres du Projet > GitHub** et autorisez l'application Specra GitHub App.
+  </Step>
+  <Step title="Sélectionner la Branche">
+    Choisissez quelle branche déclenche les déploiements (typiquement `main`).
+  </Step>
+  <Step title="Déploiement Automatique">
+    Chaque push vers la branche configurée déclenche automatiquement un nouveau déploiement.
+  </Step>
+</Steps>
+
+### Téléchargement Manuel
+
+Téléchargez un bundle de documentation pré-compilé via le tableau de bord :
+
+1. Compilez vos docs localement : `npm run build`
+2. Allez dans **Paramètres du Projet > Déploiements**
+3. Cliquez sur **Télécharger le Build** et sélectionnez votre répertoire de sortie du build
+
+## Pipeline de Déploiement
+
+Chaque déploiement passe par quatre étapes :
+
+| Étape | Description |
+|-------|-------------|
+| **QUEUED** | Déploiement reçu et en attente de traitement |
+| **BUILDING** | Compilation de votre documentation depuis le code source |
+| **DEPLOYING** | Copie des fichiers compilés vers l'infrastructure d'hébergement |
+| **RUNNING** | Le déploiement est en ligne et sert le trafic |
+
+Vous pouvez surveiller l'étape actuelle en temps réel depuis l'onglet **Déploiements** dans le tableau de bord de votre projet.
+
+### Journaux de Build
+
+Les journaux de build complets sont disponibles pour chaque déploiement. Cliquez sur n'importe quel déploiement pour voir :
+
+- Sortie du build et avertissements
+- Durée du déploiement
+- Nombre de fichiers et taille totale
+
+## Historique des Versions
+
+Chaque déploiement réussi est sauvegardé comme une version. Le nombre de versions conservées dépend de votre forfait :
+
+| Forfait | Historique des Versions |
+|---------|----------------------|
+| Free | 7 jours |
+| Starter | 30 jours |
+| Pro | Illimité |
+| Enterprise | Illimité |
+
+## Rollback
+
+Vous pouvez revenir à n'importe quelle version précédente dans votre fenêtre de rétention :
+
+1. Allez dans **Projet > Déploiements**
+2. Trouvez la version que vous souhaitez restaurer
+3. Cliquez sur **Revenir à cette version**
+4. La version sélectionnée est redéployée immédiatement
+
+<Callout type="info">
+  Un rollback crée une nouvelle entrée de déploiement dans votre historique. La version précédente est redéployée, pas restaurée sur place.
+</Callout>
+
+## Notifications de Déploiement
+
+Configurez des notifications pour rester informé de l'état des déploiements :
+
+- **E-mail** — recevez un e-mail lorsque les déploiements réussissent ou échouent
+- **Webhook** — envoyez les événements de déploiement vers votre propre endpoint
+
+Configurez les notifications dans **Paramètres du Projet > Notifications**.
+
+## Dépannage
+
+**Le déploiement reste bloqué sur QUEUED ?**
+Cela se résout généralement en quelques minutes. Si cela persiste pendant plus de 10 minutes, essayez d'annuler et de redéployer.
+
+**Le build a échoué ?**
+Vérifiez les journaux de build pour les erreurs. Les problèmes courants incluent des dépendances manquantes, une configuration invalide ou des erreurs de syntaxe dans les fichiers MDX.
+
+**Rollback non disponible ?**
+Votre version a peut-être expiré en fonction de la fenêtre de rétention de votre forfait. Mettez à niveau votre forfait pour un historique des versions plus long (ou illimité).

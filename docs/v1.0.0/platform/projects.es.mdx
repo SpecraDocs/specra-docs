@@ -1,0 +1,90 @@
+---
+title: Proyectos
+description: Crea y gestiona proyectos de documentación con dominios personalizados, integración con GitHub y funciones integradas
+sidebar_position: 2
+icon: folder
+tab_group: platform
+---
+
+# Proyectos
+
+Un proyecto es un único sitio de documentación en la Specra Platform. Cada proyecto obtiene su propio subdominio, pipeline de despliegue, analíticas y configuración.
+
+## Crear un Proyecto
+
+Puedes crear un nuevo proyecto desde el panel de control o usando la CLI:
+
+<Tabs defaultValue="dashboard">
+  <Tab label="Panel de control">
+    1. Ve a tu [panel de control](https://specra-docs.com/dashboard)
+    2. Haz clic en **Nuevo Proyecto**
+    3. Ingresa un nombre de proyecto y una descripción opcional
+    4. Elige tu método de despliegue (CLI, GitHub o manual)
+  </Tab>
+  <Tab label="CLI">
+```bash
+specra init my-docs
+```
+  Esto crea un nuevo proyecto y vincula tu directorio local con él.
+  </Tab>
+</Tabs>
+
+## Subdominios y Dominios Personalizados
+
+Cada proyecto obtiene automáticamente un subdominio:
+
+```
+tu-proyecto.specra-docs.com
+```
+
+### Dominios Personalizados
+
+Puedes conectar tu propio dominio a cualquier proyecto. Los dominios personalizados están disponibles en todos los planes, incluyendo Free.
+
+<Steps>
+  <Step title="Agrega tu Dominio">
+    Ve a **Configuración del Proyecto > Dominios** e ingresa tu dominio (ej. `docs.tuempresa.com`).
+  </Step>
+  <Step title="Configura DNS">
+    Agrega un registro CNAME apuntando a `cname.specra-docs.com` en tu proveedor de DNS.
+  </Step>
+  <Step title="Verifica">
+    Specra verifica automáticamente tu configuración DNS y provisiona un certificado SSL vía Let's Encrypt.
+  </Step>
+</Steps>
+
+<Callout type="info">
+  Los certificados SSL se provisionan automáticamente y se renuevan antes de expirar. No se necesita configuración manual.
+</Callout>
+
+## Integración con GitHub
+
+Conecta un repositorio de GitHub para habilitar despliegues automáticos en cada push. Disponible en planes **Pro** y **Enterprise**.
+
+1. Ve a **Configuración del Proyecto > GitHub**
+2. Autoriza la aplicación Specra GitHub App
+3. Selecciona tu repositorio y rama
+4. Cada push a la rama configurada activa un nuevo despliegue
+
+<Callout type="tip">
+  Puedes configurar qué rama activa los despliegues. La mayoría de los equipos usan `main` para los docs de producción.
+</Callout>
+
+## Formularios de Contacto
+
+Los proyectos en planes **Starter** y superiores pueden habilitar un formulario de contacto integrado en su sitio de documentación. Los envíos del formulario se entregan a tu dirección de correo electrónico configurada y se almacenan en el panel de control.
+
+## Chat en Vivo
+
+Los planes **Pro** y **Enterprise** incluyen un widget de chat en vivo incrustable. Los visitantes pueden hacer preguntas directamente desde tus docs, y tu equipo responde desde el panel de Specra.
+
+## Límites del Proyecto por Plan
+
+| Característica | Free | Starter | Pro | Enterprise |
+|---------------|------|---------|-----|------------|
+| Proyectos máx. | 1 | 4 | 20 | Ilimitados |
+| Dominios personalizados | Sí | Sí | Sí | Sí |
+| Sincronización GitHub | - | - | Sí | Sí |
+| Formulario de contacto | - | Sí | Sí | Sí |
+| Chat en vivo | - | - | Sí | Sí |
+| Historial de versiones | 7 días | 30 días | Ilimitado | Ilimitado |

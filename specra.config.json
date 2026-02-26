@@ -37,6 +37,11 @@
         "id": "components",
         "label": "Components",
         "icon": "layers"
+      },
+      {
+        "id": "platform",
+        "label": "Platform",
+        "icon": "rocket"
       }
     ]
   },
