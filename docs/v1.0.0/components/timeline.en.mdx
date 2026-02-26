@@ -1,0 +1,86 @@
+---
+title: Timeline
+description: Display events and milestones in a vertical timeline
+sidebar_position: 15
+---
+
+The Timeline component displays a series of events or milestones in a vertical layout, perfect for changelogs, roadmaps, and project histories.
+
+## Usage
+
+```mdx
+<Timeline>
+  <TimelineItem title="First Event">
+    Description of the first event.
+  </TimelineItem>
+
+  <TimelineItem title="Second Event">
+    Description of the second event.
+  </TimelineItem>
+</Timeline>
+```
+
+## Live Examples
+
+### Basic Timeline
+
+<Timeline>
+  <TimelineItem title="Project Kickoff">
+    The team gathered to define the project scope and initial requirements.
+  </TimelineItem>
+
+  <TimelineItem title="Design Phase">
+    Created wireframes and design mockups for the application interface.
+  </TimelineItem>
+
+  <TimelineItem title="Development Sprint">
+    Built the core features and integrated the backend services.
+  </TimelineItem>
+
+  <TimelineItem title="Launch">
+    Deployed the application to production and announced the public release.
+  </TimelineItem>
+</Timeline>
+
+### Timeline with Dates
+
+<Timeline>
+  <TimelineItem title="v1.0 Released" date="January 2026">
+    Initial release with core documentation features including versioning and search.
+  </TimelineItem>
+
+  <TimelineItem title="v1.1 Released" date="February 2026">
+    Added Timeline component, improved sidebar navigation, and bug fixes.
+  </TimelineItem>
+
+  <TimelineItem title="v2.0 Planned" date="Q2 2026">
+    Major update with API playground, enhanced theming, and plugin system.
+  </TimelineItem>
+</Timeline>
+
+## Props
+
+### Timeline
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `Snippet` | required | TimelineItem components |
+
+### TimelineItem
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | required | Event title/heading |
+| `date` | `string` | — | Optional date or time label |
+| `children` | `Snippet` | required | Event content |
+
+## Features
+
+- **Automatic Numbering** — Events are numbered automatically using CSS counters
+- **Visual Connector** — A vertical line connects all events in sequence
+- **Date Labels** — Optionally display dates or time periods for each event
+- **Rich Content** — Each event supports full MDX content including code blocks and components
+
+<Callout type="tip">
+Use Timeline for changelogs, release histories, and project roadmaps. For step-by-step instructions, use the Steps component instead.
+</Callout>

@@ -1,0 +1,86 @@
+---
+title: Zeitleiste (Timeline)
+description: Zeigen Sie Ereignisse und Meilensteine in einer vertikalen Zeitleiste an
+sidebar_position: 15
+---
+
+Die Timeline-Komponente zeigt eine Reihe von Ereignissen oder Meilensteinen in einem vertikalen Layout an, perfekt für Changelogs, Roadmaps und Projektgeschichten.
+
+## Verwendung
+
+```mdx
+<Timeline>
+  <TimelineItem title="Erstes Ereignis">
+    Beschreibung des ersten Ereignisses.
+  </TimelineItem>
+
+  <TimelineItem title="Zweites Ereignis">
+    Beschreibung des zweiten Ereignisses.
+  </TimelineItem>
+</Timeline>
+```
+
+## Live-Beispiele
+
+### Einfache Zeitleiste
+
+<Timeline>
+  <TimelineItem title="Projektstart">
+    Das Team kam zusammen, um den Projektumfang und die ersten Anforderungen zu definieren.
+  </TimelineItem>
+
+  <TimelineItem title="Designphase">
+    Erstellung von Wireframes und Design-Mockups für die Anwendungsoberfläche.
+  </TimelineItem>
+
+  <TimelineItem title="Entwicklungssprint">
+    Entwicklung der Kernfunktionen und Integration der Backend-Dienste.
+  </TimelineItem>
+
+  <TimelineItem title="Veröffentlichung">
+    Bereitstellung der Anwendung in der Produktion und Ankündigung der öffentlichen Version.
+  </TimelineItem>
+</Timeline>
+
+### Zeitleiste mit Daten
+
+<Timeline>
+  <TimelineItem title="v1.0 Veröffentlicht" date="Januar 2026">
+    Erstveröffentlichung mit Kern-Dokumentationsfunktionen einschließlich Versionierung und Suche.
+  </TimelineItem>
+
+  <TimelineItem title="v1.1 Veröffentlicht" date="Februar 2026">
+    Timeline-Komponente hinzugefügt, verbesserte Sidebar-Navigation und Fehlerbehebungen.
+  </TimelineItem>
+
+  <TimelineItem title="v2.0 Geplant" date="Q2 2026">
+    Großes Update mit API-Playground, verbessertem Theming und Plugin-System.
+  </TimelineItem>
+</Timeline>
+
+## Props
+
+### Timeline
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `children` | `Snippet` | erforderlich | TimelineItem-Komponenten |
+
+### TimelineItem
+
+| Prop | Typ | Standard | Beschreibung |
+|------|-----|----------|--------------|
+| `title` | `string` | erforderlich | Ereignistitel/-überschrift |
+| `date` | `string` | — | Optionales Datum oder Zeitangabe |
+| `children` | `Snippet` | erforderlich | Ereignisinhalt |
+
+## Funktionen
+
+- **Automatische Nummerierung** — Ereignisse werden automatisch mit CSS-Zählern nummeriert
+- **Visuelle Verbindung** — Eine vertikale Linie verbindet alle Ereignisse in Reihenfolge
+- **Datumsangaben** — Optional können Daten oder Zeiträume für jedes Ereignis angezeigt werden
+- **Reiche Inhalte** — Jedes Ereignis unterstützt vollständigen MDX-Inhalt einschließlich Codeblöcken
+
+<Callout type="tip">
+Verwenden Sie Timeline für Changelogs, Versionsverläufe und Projekt-Roadmaps. Für Schritt-für-Schritt-Anleitungen verwenden Sie stattdessen die Steps-Komponente.
+</Callout>

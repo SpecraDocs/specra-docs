@@ -1,0 +1,86 @@
+---
+title: Línea de Tiempo (Timeline)
+description: Muestre eventos e hitos en una línea de tiempo vertical
+sidebar_position: 15
+---
+
+El componente Timeline muestra una serie de eventos o hitos en un diseño vertical, perfecto para registros de cambios, hojas de ruta y historiales de proyectos.
+
+## Uso
+
+```mdx
+<Timeline>
+  <TimelineItem title="Primer Evento">
+    Descripción del primer evento.
+  </TimelineItem>
+
+  <TimelineItem title="Segundo Evento">
+    Descripción del segundo evento.
+  </TimelineItem>
+</Timeline>
+```
+
+## Ejemplos en Vivo
+
+### Línea de Tiempo Básica
+
+<Timeline>
+  <TimelineItem title="Inicio del Proyecto">
+    El equipo se reunió para definir el alcance del proyecto y los requisitos iniciales.
+  </TimelineItem>
+
+  <TimelineItem title="Fase de Diseño">
+    Se crearon wireframes y maquetas de diseño para la interfaz de la aplicación.
+  </TimelineItem>
+
+  <TimelineItem title="Sprint de Desarrollo">
+    Se construyeron las funcionalidades principales y se integraron los servicios backend.
+  </TimelineItem>
+
+  <TimelineItem title="Lanzamiento">
+    Se desplegó la aplicación en producción y se anunció el lanzamiento público.
+  </TimelineItem>
+</Timeline>
+
+### Línea de Tiempo con Fechas
+
+<Timeline>
+  <TimelineItem title="v1.0 Publicada" date="Enero 2026">
+    Lanzamiento inicial con funciones principales de documentación, incluyendo versionado y búsqueda.
+  </TimelineItem>
+
+  <TimelineItem title="v1.1 Publicada" date="Febrero 2026">
+    Se agregó el componente Timeline, navegación lateral mejorada y correcciones de errores.
+  </TimelineItem>
+
+  <TimelineItem title="v2.0 Planificada" date="Q2 2026">
+    Actualización importante con playground de API, temas mejorados y sistema de plugins.
+  </TimelineItem>
+</Timeline>
+
+## Props
+
+### Timeline
+
+| Prop | Tipo | Predeterminado | Descripción |
+|------|------|----------------|-------------|
+| `children` | `Snippet` | requerido | Componentes TimelineItem |
+
+### TimelineItem
+
+| Prop | Tipo | Predeterminado | Descripción |
+|------|------|----------------|-------------|
+| `title` | `string` | requerido | Título del evento |
+| `date` | `string` | — | Etiqueta de fecha o período opcional |
+| `children` | `Snippet` | requerido | Contenido del evento |
+
+## Características
+
+- **Numeración Automática** — Los eventos se numeran automáticamente usando contadores CSS
+- **Conector Visual** — Una línea vertical conecta todos los eventos en secuencia
+- **Etiquetas de Fecha** — Opcionalmente muestre fechas o períodos de tiempo para cada evento
+- **Contenido Enriquecido** — Cada evento soporta contenido MDX completo incluyendo bloques de código
+
+<Callout type="tip">
+Use Timeline para registros de cambios, historiales de versiones y hojas de ruta de proyectos. Para instrucciones paso a paso, use el componente Steps en su lugar.
+</Callout>

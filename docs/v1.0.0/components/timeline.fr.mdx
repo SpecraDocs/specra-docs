@@ -1,0 +1,86 @@
+---
+title: Chronologie (Timeline)
+description: Affichez des événements et jalons dans une chronologie verticale
+sidebar_position: 15
+---
+
+Le composant Timeline affiche une série d'événements ou de jalons dans une mise en page verticale, parfait pour les journaux de modifications, les feuilles de route et les historiques de projets.
+
+## Utilisation
+
+```mdx
+<Timeline>
+  <TimelineItem title="Premier Événement">
+    Description du premier événement.
+  </TimelineItem>
+
+  <TimelineItem title="Deuxième Événement">
+    Description du deuxième événement.
+  </TimelineItem>
+</Timeline>
+```
+
+## Exemples en Direct
+
+### Chronologie Simple
+
+<Timeline>
+  <TimelineItem title="Lancement du Projet">
+    L'équipe s'est réunie pour définir la portée du projet et les exigences initiales.
+  </TimelineItem>
+
+  <TimelineItem title="Phase de Conception">
+    Création de maquettes filaires et de maquettes de design pour l'interface de l'application.
+  </TimelineItem>
+
+  <TimelineItem title="Sprint de Développement">
+    Construction des fonctionnalités principales et intégration des services backend.
+  </TimelineItem>
+
+  <TimelineItem title="Lancement">
+    Déploiement de l'application en production et annonce de la version publique.
+  </TimelineItem>
+</Timeline>
+
+### Chronologie avec Dates
+
+<Timeline>
+  <TimelineItem title="v1.0 Publiée" date="Janvier 2026">
+    Version initiale avec les fonctionnalités principales de documentation, y compris le versionnage et la recherche.
+  </TimelineItem>
+
+  <TimelineItem title="v1.1 Publiée" date="Février 2026">
+    Ajout du composant Timeline, amélioration de la navigation latérale et corrections de bugs.
+  </TimelineItem>
+
+  <TimelineItem title="v2.0 Prévue" date="Q2 2026">
+    Mise à jour majeure avec playground API, thèmes améliorés et système de plugins.
+  </TimelineItem>
+</Timeline>
+
+## Props
+
+### Timeline
+
+| Prop | Type | Défaut | Description |
+|------|------|--------|-------------|
+| `children` | `Snippet` | requis | Composants TimelineItem |
+
+### TimelineItem
+
+| Prop | Type | Défaut | Description |
+|------|------|--------|-------------|
+| `title` | `string` | requis | Titre de l'événement |
+| `date` | `string` | — | Date ou période optionnelle |
+| `children` | `Snippet` | requis | Contenu de l'événement |
+
+## Fonctionnalités
+
+- **Numérotation Automatique** — Les événements sont numérotés automatiquement avec des compteurs CSS
+- **Connecteur Visuel** — Une ligne verticale relie tous les événements en séquence
+- **Étiquettes de Date** — Affichez optionnellement des dates ou des périodes pour chaque événement
+- **Contenu Riche** — Chaque événement prend en charge le contenu MDX complet, y compris les blocs de code
+
+<Callout type="tip">
+Utilisez Timeline pour les journaux de modifications, les historiques de versions et les feuilles de route de projets. Pour des instructions étape par étape, utilisez plutôt le composant Steps.
+</Callout>
