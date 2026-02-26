@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { MessageSquare, AlertCircle, CheckCircle } from 'lucide-svelte';
+  import { MessageSquare, AlertCircle, CheckCircle, Trash2 } from 'lucide-svelte';
   import { onMount } from 'svelte';
 
   interface FeedbackItem {
@@ -35,6 +35,23 @@
     loading = false;
   }
 
+  async function updateItem(id: string, data: Record<string, string>) {
+    const res = await fetch(`/api/admin/feedback/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (res.ok) await loadItems();
+  }
+
+  async function deleteItem(id: string) {
+    if (!confirm('Delete this feedback item?')) return;
+    const res = await fetch(`/api/admin/feedback/${id}`, {
+      method: 'DELETE',
+    });
+    if (res.ok) await loadItems();
+  }
+
   onMount(() => {
     loadItems();
   });
@@ -58,9 +75,6 @@
 
 <div class="space-y-6">
   <h1 class="text-2xl font-bold text-foreground">All Feedback & Issues</h1>
-  <p class="text-sm text-muted-foreground">
-    Read-only view of all feedback and issues across all projects and the landing page.
-  </p>
 
   <!-- Filter Tabs -->
   <div class="flex gap-1 border-b border-border">
@@ -96,6 +110,7 @@
             <th class="text-left py-3 px-4 font-medium text-muted-foreground">Status</th>
             <th class="text-left py-3 px-4 font-medium text-muted-foreground">Source</th>
             <th class="text-left py-3 px-4 font-medium text-muted-foreground">Date</th>
+            <th class="py-3 px-4 font-medium text-muted-foreground">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -137,6 +152,51 @@
               </td>
               <td class="py-3 px-4 text-xs text-muted-foreground whitespace-nowrap">
                 {formatDate(item.createdAt)}
+              </td>
+              <td class="py-3 px-4">
+                <div class="flex items-center gap-1">
+                  {#if item.type === 'FEEDBACK'}
+                    <button
+                      onclick={() => updateItem(item.id, { type: 'ISSUE' })}
+                      title="Mark as Issue"
+                      class="p-1 text-muted-foreground hover:text-red-600 transition-colors"
+                    >
+                      <AlertCircle class="h-4 w-4" />
+                    </button>
+                  {:else}
+                    <button
+                      onclick={() => updateItem(item.id, { type: 'FEEDBACK' })}
+                      title="Mark as Feedback"
+                      class="p-1 text-muted-foreground hover:text-blue-600 transition-colors"
+                    >
+                      <MessageSquare class="h-4 w-4" />
+                    </button>
+                  {/if}
+                  {#if item.status === 'OPEN'}
+                    <button
+                      onclick={() => updateItem(item.id, { status: 'RESOLVED' })}
+                      title="Resolve"
+                      class="p-1 text-muted-foreground hover:text-green-600 transition-colors"
+                    >
+                      <CheckCircle class="h-4 w-4" />
+                    </button>
+                  {:else}
+                    <button
+                      onclick={() => updateItem(item.id, { status: 'OPEN' })}
+                      title="Reopen"
+                      class="p-1 text-muted-foreground hover:text-yellow-600 transition-colors"
+                    >
+                      <AlertCircle class="h-4 w-4" />
+                    </button>
+                  {/if}
+                  <button
+                    onclick={() => deleteItem(item.id)}
+                    title="Delete"
+                    class="p-1 text-muted-foreground hover:text-destructive transition-colors"
+                  >
+                    <Trash2 class="h-4 w-4" />
+                  </button>
+                </div>
               </td>
             </tr>
           {/each}

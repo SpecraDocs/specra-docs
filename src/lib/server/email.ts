@@ -330,28 +330,45 @@ export async function sendContactNotificationEmail({
   senderEmail: string
   message: string
 }) {
-  await sendMail({
-    from: `${COMPANY_NAME} <${NOREPLY_EMAIL}>`,
-    to: ADMIN_EMAIL,
-    subject: `New contact form submission from ${senderName}`,
-    html: wrap(`
-      <h2>New Contact Form Submission</h2>
-      <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
-        <tr>
-          <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; width: 100px;">Name</td>
-          <td style="padding: 8px; border-bottom: 1px solid #eee;">${senderName}</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Email</td>
-          <td style="padding: 8px; border-bottom: 1px solid #eee;"><a href="mailto:${senderEmail}">${senderEmail}</a></td>
-        </tr>
-      </table>
-      <div style="background: #f9fafb; padding: 16px; border-radius: 8px; margin: 16px 0;">
-        <p style="margin: 0; white-space: pre-wrap;">${message}</p>
-      </div>
-      <p style="margin: 24px 0;">
-        <a href="${APP_URL}/admin/feedback" style="background-color: #0070f3; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; display: inline-block;">View in Admin Panel</a>
-      </p>
-    `),
+  const { prisma } = await import("$lib/server/db.js")
+
+  // Collect all recipient emails: primary admin + active notification recipients
+  const additionalRecipients = await prisma.notificationRecipient.findMany({
+    where: { active: true },
+    select: { email: true },
   })
+
+  const allEmails = [ADMIN_EMAIL, ...additionalRecipients.map((r) => r.email)]
+  const uniqueEmails = [...new Set(allEmails)]
+
+  const html = wrap(`
+    <h2>New Contact Form Submission</h2>
+    <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+      <tr>
+        <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; width: 100px;">Name</td>
+        <td style="padding: 8px; border-bottom: 1px solid #eee;">${senderName}</td>
+      </tr>
+      <tr>
+        <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Email</td>
+        <td style="padding: 8px; border-bottom: 1px solid #eee;"><a href="mailto:${senderEmail}">${senderEmail}</a></td>
+      </tr>
+    </table>
+    <div style="background: #f9fafb; padding: 16px; border-radius: 8px; margin: 16px 0;">
+      <p style="margin: 0; white-space: pre-wrap;">${message}</p>
+    </div>
+    <p style="margin: 24px 0;">
+      <a href="${APP_URL}/admin/feedback" style="background-color: #0070f3; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; display: inline-block;">View in Admin Panel</a>
+    </p>
+  `)
+
+  await Promise.allSettled(
+    uniqueEmails.map((to) =>
+      sendMail({
+        from: `${COMPANY_NAME} <${NOREPLY_EMAIL}>`,
+        to,
+        subject: `New contact form submission from ${senderName}`,
+        html,
+      })
+    )
+  )
 }

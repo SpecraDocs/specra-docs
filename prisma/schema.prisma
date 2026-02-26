@@ -464,6 +464,18 @@ model FeedbackItem {
   @@index([projectId, createdAt])
 }
 
+// ─── Notification Models ──────────────────────────────────────────────────────
+
+model NotificationRecipient {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([active])
+}
+
 // ─── Enums ──────────────────────────────────────────────────────────────────
 
 enum UserRole {
