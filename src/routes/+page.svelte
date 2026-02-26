@@ -69,7 +69,7 @@
         <Logo logo={config.site.logo} alt={config.site.title} className="w-18 object-contain" />
         <span class="font-semibold text-lg text-foreground">Specra</span>
       </a>
-      <div class="flex items-center gap-6">
+      <div class="flex items-center gap-5">
         <a href={docsUrl} class="text-sm text-muted-foreground hover:text-foreground transition-colors">
           Documentation
         </a>
@@ -82,13 +82,10 @@
           </a>
         {/if}
         {#if session}
-          <a href="/dashboard" class="{btnOutline} {btnSm}">Dashboard</a>
+          <a href="/dashboard" class="{btnDefault} {btnSm}">Dashboard</a>
         {:else}
-          <a href="/auth/login" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Sign In
-          </a>
+          <a href="/auth/login" class="{btnDefault} {btnSm}">Sign In</a>
         {/if}
-        <a href={docsUrl} class="{btnDefault} {btnSm}">Get Started</a>
       </div>
     </div>
   </header>

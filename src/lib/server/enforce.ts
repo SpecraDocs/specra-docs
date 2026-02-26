@@ -67,12 +67,17 @@ export async function removeBanner(siteDir: string): Promise<number> {
   return modified
 }
 
+const GRACE_PERIOD_DAYS = 30
+
 export async function enforceExpiredSubscriptions(): Promise<{
   enforced: number
   restored: number
+  hidden: number
+  deleted: number
+  unhidden: number
   errors: string[]
 }> {
-  const results = { enforced: 0, restored: 0, errors: [] as string[] }
+  const results = { enforced: 0, restored: 0, hidden: 0, deleted: 0, unhidden: 0, errors: [] as string[] }
 
   // --- Enforce: projects with running deployments, no active sub, not yet enforced ---
   const projectsToEnforce = await prisma.project.findMany({
@@ -176,6 +181,163 @@ export async function enforceExpiredSubscriptions(): Promise<{
     } catch (err) {
       results.errors.push(
         `Failed to restore project ${project.id} (${project.subdomain}): ${err}`
+      )
+    }
+  }
+
+  // --- Hide: excess projects for users with no active sub (keep oldest, hide rest) ---
+  const usersWithExcessProjects = await prisma.user.findMany({
+    where: {
+      subscriptions: {
+        none: { status: { in: ["ACTIVE", "TRIALING"] } },
+      },
+      projects: {
+        some: { hidden: false },
+      },
+    },
+    select: {
+      id: true,
+      projects: {
+        where: { hidden: false },
+        orderBy: { createdAt: "asc" },
+        select: {
+          id: true,
+          subdomain: true,
+          customDomain: true,
+        },
+      },
+    },
+  })
+
+  for (const user of usersWithExcessProjects) {
+    if (user.projects.length <= 1) continue
+
+    const excessProjects = user.projects.slice(1) // keep the oldest (first)
+    const gracePeriodEndsAt = new Date(Date.now() + GRACE_PERIOD_DAYS * 24 * 60 * 60 * 1000)
+
+    for (const project of excessProjects) {
+      try {
+        // Remove Caddy routes
+        const subdomainRouteId = `specra-${project.subdomain}`
+        await removeRoute(subdomainRouteId)
+        if (project.customDomain) {
+          const customRouteId = `specra-custom-${project.customDomain.replace(/\./g, "-")}`
+          await removeRoute(customRouteId)
+        }
+
+        await prisma.project.update({
+          where: { id: project.id },
+          data: { hidden: true, gracePeriodEndsAt },
+        })
+
+        logAudit({
+          userId: user.id,
+          action: "SUBSCRIPTION.HIDE_PROJECT",
+          target: project.id,
+          metadata: {
+            subdomain: project.subdomain,
+            customDomain: project.customDomain,
+            gracePeriodEndsAt: gracePeriodEndsAt.toISOString(),
+          },
+        })
+
+        results.hidden++
+      } catch (err) {
+        results.errors.push(
+          `Failed to hide project ${project.id} (${project.subdomain}): ${err}`
+        )
+      }
+    }
+  }
+
+  // --- Delete: hidden projects past grace period ---
+  const expiredProjects = await prisma.project.findMany({
+    where: {
+      hidden: true,
+      gracePeriodEndsAt: { lt: new Date() },
+    },
+    select: {
+      id: true,
+      subdomain: true,
+      customDomain: true,
+      userId: true,
+    },
+  })
+
+  for (const project of expiredProjects) {
+    try {
+      // Remove Caddy routes (may already be gone, but ensure cleanup)
+      const subdomainRouteId = `specra-${project.subdomain}`
+      await removeRoute(subdomainRouteId)
+      if (project.customDomain) {
+        const customRouteId = `specra-custom-${project.customDomain.replace(/\./g, "-")}`
+        await removeRoute(customRouteId)
+      }
+
+      await prisma.project.delete({ where: { id: project.id } })
+
+      logAudit({
+        userId: project.userId,
+        action: "SUBSCRIPTION.DELETE_PROJECT",
+        target: project.id,
+        metadata: {
+          subdomain: project.subdomain,
+          customDomain: project.customDomain,
+        },
+      })
+
+      results.deleted++
+    } catch (err) {
+      results.errors.push(
+        `Failed to delete expired project ${project.id} (${project.subdomain}): ${err}`
+      )
+    }
+  }
+
+  // --- Unhide: hidden projects whose owner resubscribed ---
+  const projectsToUnhide = await prisma.project.findMany({
+    where: {
+      hidden: true,
+      user: {
+        subscriptions: {
+          some: { status: { in: ["ACTIVE", "TRIALING"] } },
+        },
+      },
+    },
+    select: {
+      id: true,
+      subdomain: true,
+      customDomain: true,
+      userId: true,
+    },
+  })
+
+  for (const project of projectsToUnhide) {
+    try {
+      await addSubdomainRoute(project.subdomain)
+      if (project.customDomain) {
+        await addCustomDomainRoute(project.customDomain, project.subdomain)
+      }
+
+      await prisma.project.update({
+        where: { id: project.id },
+        data: { hidden: false, gracePeriodEndsAt: null },
+      })
+
+      logAudit({
+        userId: project.userId,
+        action: "SUBSCRIPTION.UNHIDE_PROJECT",
+        target: project.id,
+        metadata: {
+          subdomain: project.subdomain,
+          customDomain: project.customDomain,
+        },
+      })
+
+      results.unhidden++
+    } catch (err) {
+      results.errors.push(
+        `Failed to unhide project ${project.id} (${project.subdomain}): ${err}`
       )
     }
   }

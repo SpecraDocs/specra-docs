@@ -56,6 +56,8 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
       name: p.name,
       subdomain: p.subdomain,
       customDomain: p.customDomain,
+      hidden: p.hidden,
+      gracePeriodEndsAt: p.gracePeriodEndsAt?.toISOString() ?? null,
       organization: p.organization ? { name: p.organization.name } : null,
       latestDeployStatus: p.deployments[0]?.status || 'NO_DEPLOY',
     })),

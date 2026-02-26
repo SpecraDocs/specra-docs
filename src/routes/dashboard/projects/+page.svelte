@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Plus, Globe, Circle } from 'lucide-svelte';
+  import { Plus, Globe, Circle, EyeOff } from 'lucide-svelte';
   import type { PageData } from './$types';
 
   const statusColors: Record<string, string> = {
@@ -64,11 +64,20 @@
         {@const status = project.latestDeployStatus as string}
         <a
           href="/dashboard/projects/{project.id}"
-          class="rounded-lg border border-border bg-card p-6 hover:border-foreground/20 transition-colors"
+          class="rounded-lg border {project.hidden ? 'border-destructive/50 bg-destructive/5' : 'border-border bg-card'} p-6 hover:border-foreground/20 transition-colors"
         >
+          {#if project.hidden}
+            <div class="flex items-center gap-2 mb-3 rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              <EyeOff class="h-4 w-4 shrink-0" />
+              <span>
+                Hidden — will be permanently deleted on {project.gracePeriodEndsAt ? new Date(project.gracePeriodEndsAt).toLocaleDateString() : 'N/A'}.
+                <a href="/pricing" class="underline font-medium">Resubscribe</a> to restore.
+              </span>
+            </div>
+          {/if}
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="font-semibold text-foreground">
+              <h3 class="font-semibold text-foreground {project.hidden ? 'opacity-60' : ''}">
                 {project.name}
               </h3>
               <p class="text-sm text-muted-foreground mt-1">

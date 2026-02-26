@@ -15,6 +15,9 @@ export const GET: RequestHandler = async ({ request }) => {
       success: true,
       enforced: results.enforced,
       restored: results.restored,
+      hidden: results.hidden,
+      deleted: results.deleted,
+      unhidden: results.unhidden,
       errors: results.errors,
     });
   } catch (error) {
