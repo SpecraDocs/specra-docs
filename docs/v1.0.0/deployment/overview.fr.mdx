@@ -33,32 +33,42 @@ Specra prend en charge deux modes de déploiement :
 Déployez avec deux commandes en utilisant le CLI Specra :
 
 <Steps>
-  <Step title="Installer le CLI">
-    Installez le CLI Specra globalement :
-
-```bash
-npm install -g specra-cli
-```
-  </Step>
-
   <Step title="S'authentifier">
-    Connectez-vous avec votre jeton API. Générez-en un depuis votre [tableau de bord Specra](https://specra-docs.com/dashboard) sous **Paramètres > Jetons API**.
+    Connectez-vous avec votre compte Specra. Cela ouvre une fenêtre de navigateur pour l'authentification :
 
 ```bash
-specra login
+npx create-specra login
 ```
 
-    Collez votre jeton API lorsque demandé. Le jeton est sauvegardé dans `~/.specra/config.json`.
+    Après la connexion, le jeton d'authentification est enregistré dans le fichier `.env` de votre projet sous `SPECRA_TOKEN`. Cela garde les identifiants locaux à chaque projet.
+
+    Pour stocker le jeton globalement (partagé entre tous les projets), utilisez le flag `--global` :
+
+```bash
+npx create-specra login --global
+```
+
+    Cela enregistre le jeton dans `~/.specra/config.json`.
+
+<Callout type="info">
+  Les jetons `.env` au niveau du projet ont la priorité sur la configuration globale. Ajoutez `.env` à votre `.gitignore` pour garder les jetons hors du contrôle de version.
+</Callout>
   </Step>
 
   <Step title="Déployer">
     Depuis le répertoire de votre projet :
 
 ```bash
-specra deploy
+npx create-specra deploy
 ```
 
-    Le CLI construit votre projet et le déploie sur Specra Cloud. Vous obtiendrez une URL comme `votre-projet.docs.specra-docs.com`.
+    Le CLI construit votre projet et le déploie sur Specra Cloud. Vous obtiendrez une URL en direct comme `votre-projet.docs.specra-docs.com`.
+
+    Utilisez `--verbose` pour voir la sortie complète du build :
+
+```bash
+npx create-specra deploy --verbose
+```
   </Step>
 </Steps>
 
@@ -204,7 +214,7 @@ Différentes plateformes nécessitent différentes commandes de build :
 
 | Plateforme | Commande de build | Répertoire de sortie |
 |------------|-------------------|----------------------|
-| Specra Cloud | `specra deploy` (gère le build) | Géré |
+| Specra Cloud | `npx create-specra deploy` (gère le build) | Géré |
 | GitHub Pages | `npm run build:export` | `out` |
 | Netlify, Cloudflare Pages | `npm run build:export` | `out` |
 | Docker, VPS | `npm run build` + `npm start` | `build` |
@@ -214,6 +224,12 @@ Différentes plateformes nécessitent différentes commandes de build :
 ### Specra Cloud
 
 Aucun fichier de configuration nécessaire. Le CLI lit automatiquement votre `specra.config.json`.
+
+Pour personnaliser le sous-domaine ou les paramètres du projet, utilisez le tableau de bord Specra ou passez des options au CLI :
+
+```bash
+npx create-specra deploy --project my-docs
+```
 
 ### GitHub Pages (Pas de domaine personnalisé)
 

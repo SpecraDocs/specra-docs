@@ -188,28 +188,6 @@ cd my-docs
 ```
   </Step>
 
-  <Step title="Install dependencies">
-    The CLI doesn't auto-install dependencies. Run:
-
-<Tabs defaultValue="npm">
-  <Tab label="npm">
-```bash
-npm install
-```
-  </Tab>
-  <Tab label="yarn">
-```bash
-yarn install
-```
-  </Tab>
-  <Tab label="pnpm">
-```bash
-pnpm install
-```
-  </Tab>
-</Tabs>
-  </Step>
-
   <Step title="Start the dev server">
 <Tabs defaultValue="npm">
   <Tab label="npm">
@@ -242,7 +220,7 @@ The generated `specra.config.json` includes sensible defaults:
   "site": {
     "title": "My Documentation",
     "description": "Documentation site built with Specra",
-    "url": "https://example.com",
+    "url": "http://localhost:5173",
     "baseUrl": "/",
     "activeVersion": "v1.0.0"
   },
@@ -261,9 +239,6 @@ The generated `specra.config.json` includes sensible defaults:
     "showLastUpdated": true,
     "showReadingTime": true,
     "versioning": true
-  },
-  "deployment": {
-    "target": "vercel"
   }
 }
 ```

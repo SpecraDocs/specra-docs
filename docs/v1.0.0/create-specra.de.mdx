@@ -10,6 +10,10 @@ tab_group: guides
 
 `create-specra` ist das offizielle CLI-Tool zum Erstellen neuer Specra-Dokumentationsseiten. Es richtet alles, was Sie benötigen, in Sekunden ein: Projektstruktur, Abhängigkeiten, Konfiguration und Beispielinhalte.
 
+<Callout type="info">
+`create-specra` enthält auch Befehle für Bereitstellung, Authentifizierung und Diagnose. Siehe die vollständige [CLI-Referenz](/docs/v1.0.0/cli/overview) für alle verfügbaren Befehle.
+</Callout>
+
 ## Schnellstart
 
 Der schnellste Weg, eine neue Dokumentationsseite zu erstellen:
@@ -40,38 +44,90 @@ Wenn Sie `create-specra` ausführen, erhalten Sie folgendes:
 
 ```txt
 my-docs/
-├── app/
-│   ├── layout.tsx              # Root-Layout mit Specra-Setup
-│   ├── page.tsx                # Landing-Page
-│   ├── globals.css             # Globale Stile
-│   └── docs/
-│       └── [...slug]/
-│           └── page.tsx        # Dokumentationsseiten-Renderer
+├── src/
+│   ├── app.css                    # Globale Stile (importiert specra/styles)
+│   ├── app.html                   # HTML-Vorlage
+│   └── routes/
+│       ├── +layout.server.ts      # Specra-Konfiguration laden
+│       ├── +layout.svelte         # Root-Layout mit Specra-Komponenten
+│       ├── +page.server.ts        # Startseiten-Weiterleitung
+│       └── docs/
+│           └── [version]/
+│               └── [...slug]/
+│                   ├── +page.server.ts   # Dokumentdaten laden
+│                   └── +page.svelte      # Dokumentseiten-Renderer
 ├── docs/
-│   └── v1.0.0/
-│       ├── about.mdx           # Beispiel-Über-Seite
-│       ├── getting-started.mdx # Beispiel-Erste-Schritte-Anleitung
-│       └── components/         # Komponenten-Beispiele
+│   ├── v1.0.0/                    # Version 1 Docs (MDX-Dateien)
+│   └── v2.0.0/                    # Version 2 Docs (MDX-Dateien)
 ├── public/
-│   ├── icon-light-32x32.png   # Favicon (heller Modus)
-│   └── icon-dark-32x32.png    # Favicon (dunkler Modus)
-├── specra.config.json          # Specra-Konfiguration
-├── package.json                # Abhängigkeiten und Skripte
-├── svelte.config.js             # SvelteKit-Konfiguration
-├── tailwind.config.ts          # Tailwind-CSS-Konfig
-├── tsconfig.json               # TypeScript-Konfig
-├── .gitignore
-└── README.md
+│   └── api-specs/                 # API-Spezifikationsdateien (OpenAPI, Postman)
+├── specra.config.json             # Specra-Konfiguration
+├── package.json                   # Abhängigkeiten und Skripte
+├── svelte.config.js               # SvelteKit-Konfiguration
+├── vite.config.ts                 # Vite-Konfiguration
+├── postcss.config.mjs             # PostCSS (für Tailwind)
+├── tsconfig.json                  # TypeScript-Konfig
+└── .gitignore
+```
+
+## Vorlagen
+
+`create-specra` bietet drei Vorlagen zur Auswahl:
+
+### Minimal (Standard)
+
+Sauberer Ausgangspunkt mit grundlegender Struktur:
+- System-Theme (folgt der Betriebssystem-Einstellung)
+- Kartenförmige Seitenleiste mit abgerundetem Container
+- Inhaltsverzeichnis aktiviert
+- Einfache Docs: Über-Seite, Erste-Schritte-Anleitung, Komponentenbeispiele
+
+```bash
+npx create-specra my-docs --template minimal
+```
+
+### Book Docs
+
+Wissensbasis-Stil inspiriert von Plattformen wie GitBook:
+- Dunkles Theme als Standard
+- Bündige Seitenleiste (am Bildschirmrand befestigt)
+- Kategorisierte Seitenleiste mit Abschnittsüberschriften (Inhalt, Anpassung)
+- Seitenweites Banner
+- Versionsbadge in der Seitenleiste
+- Reichhaltiger Beispielinhalt mit Karten auf der Startseite
+
+```bash
+npx create-specra my-docs --template book-docs
+```
+
+### JBrains Docs
+
+Referenzdokumentationsstil mit Tab-Navigation:
+- Helles Theme als Standard
+- Bündige Seitenleiste (am Bildschirmrand befestigt)
+- Tab-Gruppen zur Organisation von Inhalten (Sprache, Multiplattform)
+- Zusammenklappbare Baumstruktur-Seitenleiste
+- Kein Inhaltsverzeichnis (rechtes Panel)
+- Versionsbadge in der Seitenleiste
+
+```bash
+npx create-specra my-docs --template jbrains-docs
 ```
 
 ## Interaktives Setup
 
-Wenn Sie `create-specra` ausführen, werden Sie möglicherweise aufgefordert zu:
+Wenn Sie `create-specra` ohne Optionen ausführen, werden Sie aufgefordert:
 
 **Projektname** (falls nicht als Argument angegeben)
 ```bash
 npx create-specra@latest
 # Aufforderung: What is your project named?
+```
+
+**Vorlage** (falls nicht über `--template` angegeben)
+```bash
+# Wird fragen: Which template do you want to use?
+# Optionen: Minimal, Book Docs, JBrains Docs
 ```
 
 **Bevorzugter Paketmanager** (falls mehrere erkannt werden)
@@ -102,11 +158,23 @@ npx create-specra@latest my-awesome-docs
 npx create-specra@latest .
 ```
 
+**Eine bestimmte Vorlage verwenden:**
+```bash
+npx create-specra@latest my-docs --template minimal
+npx create-specra@latest my-docs --template book-docs
+npx create-specra@latest my-docs --template jbrains-docs
+```
+
 **Einen bestimmten Paketmanager verwenden:**
 ```bash
 npx create-specra@latest my-docs --use-npm
 npx create-specra@latest my-docs --use-yarn
 npx create-specra@latest my-docs --use-pnpm
+```
+
+**Paketinstallation überspringen:**
+```bash
+npx create-specra@latest my-docs --skip-install
 ```
 
 ## Was als Nächstes passiert
@@ -118,28 +186,6 @@ Nachdem das Scaffolding abgeschlossen ist, befolgen Sie diese Schritte:
 ```bash
 cd my-docs
 ```
-  </Step>
-
-  <Step title="Abhängigkeiten installieren">
-    Das CLI installiert Abhängigkeiten nicht automatisch. Führen Sie aus:
-
-<Tabs defaultValue="npm">
-  <Tab label="npm">
-```bash
-npm install
-```
-  </Tab>
-  <Tab label="yarn">
-```bash
-yarn install
-```
-  </Tab>
-  <Tab label="pnpm">
-```bash
-pnpm install
-```
-  </Tab>
-</Tabs>
   </Step>
 
   <Step title="Starten Sie den Entwicklungsserver">
@@ -161,7 +207,7 @@ pnpm dev
   </Tab>
 </Tabs>
 
-    Öffnen Sie [http://localhost:3000](http://localhost:3000), um Ihre Seite zu sehen.
+    Öffnen Sie [http://localhost:5173](http://localhost:5173), um Ihre Seite zu sehen.
   </Step>
 </Steps>
 
@@ -174,7 +220,7 @@ Die generierte `specra.config.json` enthält sinnvolle Standardwerte:
   "site": {
     "title": "My Documentation",
     "description": "Documentation site built with Specra",
-    "url": "https://example.com",
+    "url": "http://localhost:5173",
     "baseUrl": "/",
     "activeVersion": "v1.0.0"
   },
@@ -193,9 +239,6 @@ Die generierte `specra.config.json` enthält sinnvolle Standardwerte:
     "showLastUpdated": true,
     "showReadingTime": true,
     "versioning": true
-  },
-  "deployment": {
-    "target": "vercel"
   }
 }
 ```
@@ -204,13 +247,13 @@ Sie können jede dieser Einstellungen anpassen. Siehe [Konfiguration](/docs/v1.0
 
 ## Beispielinhalte
 
-Das erstellte Projekt enthält Beispieldokumentation, die Ihnen den Einstieg erleichtert:
+Jede Vorlage enthält Beispieldokumentation, die Ihnen den Einstieg erleichtert. Der Inhalt variiert je nach Vorlage:
 
-**Über-Seite** - Beispiel einer einfachen Informationsseite
-**Erste Schritte** - Zeigt, wie man Tutorials mit Schritten strukturiert
-**Komponenten-Beispiele** - Demonstriert alle verfügbaren MDX-Komponenten
+**Minimal** — Über-Seite, Erste-Schritte-Anleitung und Komponentenbeispiele
+**Book Docs** — Einführung mit Kartengitter, Schnellstart, Konzepte und kategorisierte Abschnitte (Inhalt, Anpassung)
+**JBrains Docs** — Startseite mit Karten, Erste Schritte und Tab-Abschnitte (Grundlagen, Fortgeschritten, Tools)
 
-Fühlen Sie sich frei, diese Seiten zu löschen oder zu ändern. Sie sind nur dazu da, Ihnen zu zeigen, was möglich ist.
+Alle Vorlagen enthalten zwei Dokumentversionen (`v1.0.0` und `v2.0.0`), um das Versionierungssystem zu demonstrieren. Sie können beliebige Beispielseiten löschen oder ändern.
 
 ## Verfügbare Skripte
 
@@ -219,10 +262,9 @@ Die generierte `package.json` enthält diese Skripte:
 | Skript | Befehl | Beschreibung |
 |--------|---------|-------------|
 | `dev` | `vite dev` | Startet Entwicklungsserver mit Hot Reload |
-| `build` | `vite build` | Build für Produktion (Vercel, Node.js-Hosting) |
-| `start` | `node build` | Startet Produktionsserver (nach `build`) |
-| `build:export` | `vite build (with adapter-static)` | Build statische Seite (GitHub Pages, Netlify) |
-| `lint` | `npm run check` | Führt ESLint aus, um Codequalität zu prüfen |
+| `build` | `vite build` | Build für Produktion (verwendet standardmäßig adapter-node) |
+| `preview` | `vite preview` | Vorschau des Produktions-Builds lokal |
+| `check` | `svelte-kit sync && svelte-check` | Typprüfung ausführen |
 
 ## Specra aktualisieren
 
@@ -317,7 +359,13 @@ Jetzt, da Sie eine Specra-Seite eingerichtet haben:
   <Card
     icon="rocket"
     title="In Produktion bereitstellen"
-    description="Versenden Sie Ihre Dokumente nach Vercel, GitHub Pages oder Netlify"
+    description="Versenden Sie Ihre Docs nach Specra Cloud, GitHub Pages oder Netlify"
     href="/docs/v1.0.0/deployment/overview"
+  />
+  <Card
+    icon="terminal"
+    title="CLI-Referenz"
+    description="Anmelden, bereitstellen, diagnostizieren und verwalten über das Terminal"
+    href="/docs/v1.0.0/cli/overview"
   />
 </CardGrid>

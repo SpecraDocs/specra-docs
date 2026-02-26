@@ -10,6 +10,10 @@ tab_group: guides
 
 `create-specra` est l'outil CLI officiel pour créer de nouveaux sites de documentation Specra. Il configure tout ce dont vous avez besoin en quelques secondes : structure du projet, dépendances, configuration et exemple de contenu.
 
+<Callout type="info">
+`create-specra` inclut également des commandes pour le déploiement, l'authentification et les diagnostics. Consultez la [Référence CLI](/docs/v1.0.0/cli/overview) complète pour toutes les commandes disponibles.
+</Callout>
+
 ## Démarrage rapide
 
 La façon la plus rapide de créer un nouveau site de documentation :
@@ -40,38 +44,90 @@ Lorsque vous exécutez `create-specra`, voici ce que vous obtenez :
 
 ```txt
 my-docs/
-├── app/
-│   ├── layout.tsx              # Mise en page racine avec configuration Specra
-│   ├── page.tsx                # Page d'accueil
-│   ├── globals.css             # Styles globaux
-│   └── docs/
-│       └── [...slug]/
-│           └── page.tsx        # Moteur de rendu des pages de documentation
+├── src/
+│   ├── app.css                    # Styles globaux (importe specra/styles)
+│   ├── app.html                   # Modèle HTML
+│   └── routes/
+│       ├── +layout.server.ts      # Charger la config Specra
+│       ├── +layout.svelte         # Layout racine avec composants Specra
+│       ├── +page.server.ts        # Redirection page d'accueil
+│       └── docs/
+│           └── [version]/
+│               └── [...slug]/
+│                   ├── +page.server.ts   # Charger les données du document
+│                   └── +page.svelte      # Moteur de rendu des pages de documentation
 ├── docs/
-│   └── v1.0.0/
-│       ├── about.mdx           # Exemple de page à propos
-│       ├── getting-started.mdx # Exemple de guide de démarrage
-│       └── components/         # Exemples de composants
+│   ├── v1.0.0/                    # Docs version 1 (fichiers MDX)
+│   └── v2.0.0/                    # Docs version 2 (fichiers MDX)
 ├── public/
-│   ├── icon-light-32x32.png   # Favicon (mode clair)
-│   └── icon-dark-32x32.png    # Favicon (mode sombre)
-├── specra.config.json          # Configuration Specra
-├── package.json                # Dépendances et scripts
-├── svelte.config.js             # Configuration SvelteKit
-├── tailwind.config.ts          # Config Tailwind CSS
-├── tsconfig.json               # Config TypeScript
-├── .gitignore
-└── README.md
+│   └── api-specs/                 # Fichiers de spécification API (OpenAPI, Postman)
+├── specra.config.json             # Configuration Specra
+├── package.json                   # Dépendances et scripts
+├── svelte.config.js               # Configuration SvelteKit
+├── vite.config.ts                 # Configuration Vite
+├── postcss.config.mjs             # PostCSS (pour Tailwind)
+├── tsconfig.json                  # Config TypeScript
+└── .gitignore
+```
+
+## Modèles
+
+`create-specra` propose trois modèles au choix :
+
+### Minimal (Par défaut)
+
+Point de départ propre avec structure basique :
+- Thème système (suit la préférence du système d'exploitation)
+- Barre latérale style carte avec conteneur arrondi
+- Table des matières activée
+- Docs simples : page à propos, guide de démarrage, exemples de composants
+
+```bash
+npx create-specra my-docs --template minimal
+```
+
+### Book Docs
+
+Style base de connaissances inspiré de plateformes comme GitBook :
+- Thème sombre par défaut
+- Barre latérale affleurante (attachée au bord de l'écran)
+- Barre latérale catégorisée avec en-têtes de section (Contenu, Personnalisation)
+- Bannière sur tout le site
+- Badge de version dans la barre latérale
+- Contenu d'exemple riche avec des cartes sur la page d'accueil
+
+```bash
+npx create-specra my-docs --template book-docs
+```
+
+### JBrains Docs
+
+Style de documentation de référence avec navigation par onglets :
+- Thème clair par défaut
+- Barre latérale affleurante (attachée au bord de l'écran)
+- Groupes d'onglets pour organiser le contenu (Langage, Multiplateforme)
+- Barre latérale arborescente pliable
+- Pas de table des matières (panneau droit)
+- Badge de version dans la barre latérale
+
+```bash
+npx create-specra my-docs --template jbrains-docs
 ```
 
 ## Configuration interactive
 
-Lorsque vous exécutez `create-specra`, il peut vous demander :
+Lorsque vous exécutez `create-specra` sans options, il vous demandera :
 
 **Nom du projet** (si non fourni comme argument)
 ```bash
 npx create-specra@latest
 # Invite : What is your project named?
+```
+
+**Modèle** (si non fourni via `--template`)
+```bash
+# Demandera : Which template do you want to use?
+# Options : Minimal, Book Docs, JBrains Docs
 ```
 
 **Préférence de gestionnaire de paquets** (si plusieurs sont détectés)
@@ -102,11 +158,23 @@ npx create-specra@latest my-awesome-docs
 npx create-specra@latest .
 ```
 
+**Utiliser un modèle spécifique :**
+```bash
+npx create-specra@latest my-docs --template minimal
+npx create-specra@latest my-docs --template book-docs
+npx create-specra@latest my-docs --template jbrains-docs
+```
+
 **Utiliser un gestionnaire de paquets spécifique :**
 ```bash
 npx create-specra@latest my-docs --use-npm
 npx create-specra@latest my-docs --use-yarn
 npx create-specra@latest my-docs --use-pnpm
+```
+
+**Ignorer l'installation des paquets :**
+```bash
+npx create-specra@latest my-docs --skip-install
 ```
 
 ## Étapes suivantes
@@ -118,28 +186,6 @@ Une fois l'échafaudage terminé, suivez ces étapes :
 ```bash
 cd my-docs
 ```
-  </Step>
-
-  <Step title="Installer les dépendances">
-    Le CLI n'installe pas automatiquement les dépendances. Exécutez :
-
-<Tabs defaultValue="npm">
-  <Tab label="npm">
-```bash
-npm install
-```
-  </Tab>
-  <Tab label="yarn">
-```bash
-yarn install
-```
-  </Tab>
-  <Tab label="pnpm">
-```bash
-pnpm install
-```
-  </Tab>
-</Tabs>
   </Step>
 
   <Step title="Démarrez le serveur de développement">
@@ -161,7 +207,7 @@ pnpm dev
   </Tab>
 </Tabs>
 
-    Ouvrez [http://localhost:3000](http://localhost:3000) pour voir votre site.
+    Ouvrez [http://localhost:5173](http://localhost:5173) pour voir votre site.
   </Step>
 </Steps>
 
@@ -174,7 +220,7 @@ Le fichier `specra.config.json` généré inclut des valeurs par défaut sensée
   "site": {
     "title": "My Documentation",
     "description": "Documentation site built with Specra",
-    "url": "https://example.com",
+    "url": "http://localhost:5173",
     "baseUrl": "/",
     "activeVersion": "v1.0.0"
   },
@@ -193,9 +239,6 @@ Le fichier `specra.config.json` généré inclut des valeurs par défaut sensée
     "showLastUpdated": true,
     "showReadingTime": true,
     "versioning": true
-  },
-  "deployment": {
-    "target": "vercel"
   }
 }
 ```
@@ -204,13 +247,13 @@ Vous pouvez personnaliser n'importe lequel de ces paramètres. Voir [Configurati
 
 ## Exemple de contenu
 
-Le projet échafaudé comprend une documentation d'exemple pour vous aider à démarrer :
+Chaque modèle comprend une documentation d'exemple pour vous aider à démarrer. Le contenu varie selon le modèle :
 
-**Page À propos** - Exemple d'une page d'information simple
-**Guide de démarrage** - Montre comment structurer des tutoriels avec des étapes
-**Exemples de composants** - Démontre tous les composants MDX disponibles
+**Minimal** — Page à propos, guide de démarrage et exemples de composants
+**Book Docs** — Introduction avec grille de cartes, démarrage rapide, concepts et sections catégorisées (Contenu, Personnalisation)
+**JBrains Docs** — Page d'accueil avec cartes, premiers pas et sections à onglets (Bases, Avancé, Outils)
 
-N'hésitez pas à supprimer ou modifier ces pages. Elles sont juste là pour vous montrer ce qui est possible.
+Tous les modèles incluent deux versions de documentation (`v1.0.0` et `v2.0.0`) pour démontrer le système de versionnement. N'hésitez pas à supprimer ou modifier les pages d'exemple.
 
 ## Scripts disponibles
 
@@ -219,10 +262,9 @@ Le `package.json` généré inclut ces scripts :
 | Script | Commande | Description |
 |--------|---------|-------------|
 | `dev` | `vite dev` | Démarre le serveur de développement avec rechargement à chaud |
-| `build` | `vite build` | Construit pour la production (Vercel, hébergement Node.js) |
-| `start` | `node build` | Démarre le serveur de production (après `build`) |
-| `build:export` | `vite build (with adapter-static)` | Construit un site statique (GitHub Pages, Netlify) |
-| `lint` | `npm run check` | Exécute ESLint pour vérifier la qualité du code |
+| `build` | `vite build` | Construit pour la production (utilise adapter-node par défaut) |
+| `preview` | `vite preview` | Aperçu du build de production en local |
+| `check` | `svelte-kit sync && svelte-check` | Exécute la vérification des types |
 
 ## Mise à jour de Specra
 
@@ -317,7 +359,13 @@ Maintenant que vous avez un site Specra configuré :
   <Card
     icon="rocket"
     title="Déployer en production"
-    description="Expédiez vos documents sur Vercel, GitHub Pages ou Netlify"
+    description="Expédiez vos docs sur Specra Cloud, GitHub Pages ou Netlify"
     href="/docs/v1.0.0/deployment/overview"
+  />
+  <Card
+    icon="terminal"
+    title="Référence CLI"
+    description="Connexion, déploiement, diagnostic et gestion depuis le terminal"
+    href="/docs/v1.0.0/cli/overview"
   />
 </CardGrid>

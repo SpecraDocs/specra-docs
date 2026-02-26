@@ -33,40 +33,42 @@ Specra supports two deployment modes:
 Deploy with two commands using the Specra CLI:
 
 <Steps>
-  <Step title="Install the CLI">
-    Install the Specra CLI globally:
-
-```bash
-npm install -g specra-cli
-```
-  </Step>
-
   <Step title="Authenticate">
-    Log in with your API token. Generate one from your [Specra dashboard](https://specra-docs.com/dashboard) under **Settings > API Tokens**.
+    Log in with your Specra account. This opens a browser window for authentication:
 
 ```bash
-specra login
+npx create-specra login
 ```
 
-    When prompted, paste your API token. The token is saved to `~/.specra/config.json`.
+    After signing in, the auth token is saved to your project's `.env` file as `SPECRA_TOKEN`. This keeps credentials local to each project.
 
-    You can also set it manually:
+    To store the token globally (shared across all projects) instead, use the `--global` flag:
 
-```json
-{
-  "token": "your-api-token-here"
-}
+```bash
+npx create-specra login --global
 ```
+
+    This saves the token to `~/.specra/config.json`.
+
+<Callout type="info">
+  Project-level `.env` tokens take priority over the global config. Add `.env` to your `.gitignore` to keep tokens out of version control.
+</Callout>
   </Step>
 
   <Step title="Deploy">
     From your project directory, run:
 
 ```bash
-specra deploy
+npx create-specra deploy
 ```
 
     The CLI builds your project and deploys it to Specra Cloud. You'll get a live URL like `your-project.docs.specra-docs.com`.
+
+    Use `--verbose` to see full build output:
+
+```bash
+npx create-specra deploy --verbose
+```
   </Step>
 </Steps>
 
@@ -212,7 +214,7 @@ Different platforms need different build commands:
 
 | Platform | Build Command | Output Directory |
 |----------|---------------|------------------|
-| Specra Cloud | `specra deploy` (handles build) | Managed |
+| Specra Cloud | `npx create-specra deploy` (handles build) | Managed |
 | GitHub Pages | `npm run build:export` | `out` |
 | Netlify, Cloudflare Pages | `npm run build:export` | `out` |
 | Docker, VPS | `npm run build` + `npm start` | `build` |
@@ -226,7 +228,7 @@ No config file needed. The CLI reads your `specra.config.json` automatically.
 To customize the subdomain or project settings, use the Specra dashboard or pass options to the CLI:
 
 ```bash
-specra deploy --name my-docs
+npx create-specra deploy --project my-docs
 ```
 
 ### GitHub Pages (No Custom Domain)
