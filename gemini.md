@@ -339,7 +339,7 @@ specra-docs/
     // Branding in footer
     "branding": {
       "showBranding": true,
-      "logo": "https://tokenkit.s3.amazonaws.com/logo_..."
+      "logo": ""
     }
   }
 }

@@ -102,7 +102,7 @@
     ],
     "branding": {
       "showBranding": true,
-      "logo": "https://tokenkit.s3.amazonaws.com/logo_fa8c1a32da814a209b06c742fbf2a862.png",
+      "logo": "",
       "title": "Specra",
       "url": "https://specra-docs.com"
     }
