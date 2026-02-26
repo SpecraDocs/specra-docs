@@ -76,11 +76,6 @@
         <a href="/pricing" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
           Pricing
         </a>
-        {#if config?.social?.github}
-          <a href={config.social.github} target="_blank" rel="noopener noreferrer" class="text-muted-foreground hover:text-foreground transition-colors">
-            <Github class="h-5 w-5" />
-          </a>
-        {/if}
         {#if session}
           <a href="/dashboard" class="{btnDefault} {btnSm}">Dashboard</a>
         {:else}

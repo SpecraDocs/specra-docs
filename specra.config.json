@@ -109,8 +109,8 @@
   },
   "banner": {
     "enabled": true,
-    "message": "🎉 This is a development version. Some features may not work as expected. Please open issues on Github.",
-    "type": "error",
+    "message": "🎉 Specra is now stable! Welcome aboard — start building beautiful docs today.",
+    "type": "info",
     "dismissible": true
   },
   "features": {
