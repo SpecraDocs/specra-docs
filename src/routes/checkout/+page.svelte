@@ -41,11 +41,7 @@
     { code: 'JP', name: 'Japan' },
   ];
 
-  const planPrices: Record<string, { usd: number; usdAnnual: number; kes: number; kesAnnual: number; name: string }> = {
-    starter: { usd: 1900, usdAnnual: 1500, kes: 2450, kesAnnual: 2450, name: 'Starter' },
-    pro: { usd: 4900, usdAnnual: 3900, kes: 6300, kesAnnual: 6300, name: 'Pro' },
-    enterprise: { usd: 14900, usdAnnual: 12900, kes: 19200, kesAnnual: 19200, name: 'Enterprise' },
-  };
+  const planPrices: Record<string, { usd: number; usdAnnual: number; kes: number; kesAnnual: number; name: string }> = $derived($page.data.planPrices ?? {});
 
   const planSlug = $derived($page.url.searchParams.get('plan') || '');
   const intervalParam = $derived($page.url.searchParams.get('interval') || 'monthly');

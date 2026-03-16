@@ -6,6 +6,7 @@ import { validateCoupon, applyCoupon } from '$lib/server/coupons.js';
 import { calculateOrderTotal } from '$lib/server/tax.js';
 
 const PESAPAL_IPN_ID = process.env.PESAPAL_IPN_ID || '';
+const PESAPAL_CALLBACK_URL = process.env.PESAPAL_CALLBACK_URL || '';
 const PUBLIC_APP_URL = process.env.PUBLIC_APP_URL || '';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -151,7 +152,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			amount: pesapalAmount,
 			currency: currency as 'USD' | 'KES',
 			description: `Specra ${plan.name} ${interval} subscription`,
-			callbackUrl: `${PUBLIC_APP_URL}/dashboard?checkout=pesapal-pending`,
+			callbackUrl: PESAPAL_CALLBACK_URL || `${PUBLIC_APP_URL}/api/pesapal/callback`,
 			ipnId: PESAPAL_IPN_ID,
 			customerEmail: session.user.email!,
 			customerFirstName: session.user.name?.split(' ')[0],

@@ -2,14 +2,22 @@
   import { page } from '$app/stores';
   import { Check, X, ArrowLeft, ArrowRight } from 'lucide-svelte';
 
-  const tiers = [
-    {
-      name: 'Free',
-      slug: 'free',
-      priceUsd: 0,
-      priceUsdAnnual: 0,
-      priceKes: 0,
-      priceKesAnnual: 0,
+  interface PlanFromDb {
+    slug: string;
+    name: string;
+    priceUsd: number;
+    priceUsdAnnual: number | null;
+    priceKes: number;
+    priceKesAnnual: number | null;
+  }
+
+  const featuresBySlug: Record<string, {
+    description: string;
+    features: Record<string, string | boolean>;
+    cta: string;
+    popular: boolean;
+  }> = {
+    free: {
       description: 'For hobbyists and open-source projects',
       features: {
         projects: '1 project',
@@ -26,22 +34,14 @@
         gitSync: false,
         contactForm: false,
         liveChatWidget: false,
-        sso: false,
         rbac: false,
         auditLogs: false,
-        sla: false,
         support: 'Community',
       },
       cta: 'Get Started',
       popular: false,
     },
-    {
-      name: 'Starter',
-      slug: 'starter',
-      priceUsd: 19,
-      priceUsdAnnual: 15,
-      priceKes: 2450,
-      priceKesAnnual: 2450,
+    starter: {
       description: 'For indie devs and small startups',
       features: {
         projects: '4 projects',
@@ -58,22 +58,14 @@
         gitSync: false,
         contactForm: true,
         liveChatWidget: false,
-        sso: false,
         rbac: false,
         auditLogs: false,
-        sla: false,
         support: 'Email',
       },
       cta: 'Start Free Trial',
       popular: false,
     },
-    {
-      name: 'Pro',
-      slug: 'pro',
-      priceUsd: 49,
-      priceUsdAnnual: 39,
-      priceKes: 6300,
-      priceKesAnnual: 6300,
+    pro: {
       description: 'For growing teams and API docs',
       features: {
         projects: '20 projects',
@@ -90,22 +82,14 @@
         gitSync: true,
         contactForm: true,
         liveChatWidget: true,
-        sso: false,
         rbac: false,
         auditLogs: false,
-        sla: false,
         support: 'Priority',
       },
       cta: 'Start Free Trial',
       popular: true,
     },
-    {
-      name: 'Enterprise',
-      slug: 'enterprise',
-      priceUsd: 0,
-      priceUsdAnnual: 0,
-      priceKes: 0,
-      priceKesAnnual: 0,
+    enterprise: {
       description: 'For orgs needing advanced controls',
       features: {
         projects: 'Unlimited',
@@ -122,16 +106,14 @@
         gitSync: true,
         contactForm: true,
         liveChatWidget: true,
-        sso: true,
         rbac: true,
         auditLogs: true,
-        sla: '99.9%',
         support: 'Dedicated',
       },
       cta: 'Contact Sales',
       popular: false,
     },
-  ];
+  };
 
   const featureLabels: Record<string, string> = {
     projects: 'Projects',
@@ -148,12 +130,27 @@
     gitSync: 'Git sync (GitHub/GitLab)',
     contactForm: 'Contact form (Web3Forms)',
     liveChatWidget: 'Live chat widget',
-    // sso: 'SSO (SAML/OIDC)',
     rbac: 'Team roles (Owner/Admin/Member)',
     auditLogs: 'Audit logs',
-    // sla: 'SLA guarantee',
     support: 'Support',
   };
+
+  const dbPlans: PlanFromDb[] = $derived($page.data.plans ?? []);
+
+  const tiers = $derived(
+    dbPlans.map((p) => {
+      const meta = featuresBySlug[p.slug] ?? featuresBySlug.free;
+      return {
+        ...p,
+        priceUsdAnnual: p.priceUsdAnnual ?? p.priceUsd,
+        priceKesAnnual: p.priceKesAnnual ?? p.priceKes,
+        description: meta.description,
+        features: meta.features,
+        cta: meta.cta,
+        popular: meta.popular,
+      };
+    })
+  );
 
   let interval = $state<'monthly' | 'annual'>('monthly');
   let currency = $state<'usd' | 'kes'>($page.data.geo?.detectedCurrency ?? 'usd');
@@ -166,10 +163,12 @@
       return `KSh ${price.toLocaleString()}`;
     }
     const price = interval === 'annual' ? tier.priceUsdAnnual : tier.priceUsd;
-    return `$${price}`;
+    // priceUsd is stored in cents
+    return `$${(price / 100).toFixed(price % 100 === 0 ? 0 : 2)}`;
   }
 
   const trialEnabled = $derived($page.data.trialEnabled ?? false);
+  const session = $derived($page.data.session);
 
   function getCta(tier: (typeof tiers)[number]) {
     if (tier.slug === 'free') return 'Get Started';
@@ -177,8 +176,6 @@
     if (trialEnabled) return 'Start Free Trial';
     return `Get ${tier.name} Plan`;
   }
-
-  const session = $derived($page.data.session);
 
   function handleSelectPlan(slug: string) {
     if (slug === 'free') return;
@@ -208,15 +205,22 @@
         <span class="font-semibold text-lg text-foreground">Specra</span>
       </a>
       <div class="flex items-center gap-4">
-        <a href="/auth/login" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
-          Sign in
-        </a>
-        <a
-          href="/auth/register"
-          class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-        >
-          Get Started
-        </a>
+        {#if session?.user}
+          <a href="/dashboard" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Dashboard
+          </a>
+          <span class="text-sm text-foreground">{session.user.name || session.user.email}</span>
+        {:else}
+          <a href="/auth/login" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Sign in
+          </a>
+          <a
+            href="/auth/register"
+            class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+          >
+            Get Started
+          </a>
+        {/if}
       </div>
     </div>
   </header>
@@ -258,7 +262,7 @@
       {/if}
     </div>
 
-    <!-- Simplified plan cards (Free, Starter, Pro only) -->
+    <!-- Plan cards (Free, Starter, Pro) -->
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto mb-20">
       {#each tiers.filter(t => t.slug !== 'enterprise') as tier (tier.slug)}
         <div
