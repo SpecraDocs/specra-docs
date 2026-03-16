@@ -5,6 +5,7 @@ import { prisma } from '$lib/server/db.js';
 import { checkPlanLimits } from '$lib/server/permissions.js';
 import { logAudit } from '$lib/server/audit.js';
 import { resolveUserId } from '$lib/server/api-auth.js';
+import { addSubdomainRoute, isCaddyAvailable } from '$lib/server/caddy.js';
 
 export const GET: RequestHandler = async ({ locals, request }) => {
   const userId = await resolveUserId(locals, request);
@@ -113,6 +114,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     target: project.id,
     metadata: { name, slug, orgId: orgId || null },
   });
+
+  // Pre-provision Caddy route so TLS cert is ready before first visit
+  try {
+    const caddyUp = await isCaddyAvailable();
+    if (caddyUp) {
+      await addSubdomainRoute(slug, userId);
+    }
+  } catch (err) {
+    // Non-blocking — route will be created on first deployment
+    console.error('Caddy pre-provision failed (non-blocking):', err);
+  }
 
   return json(project, { status: 201 });
 };

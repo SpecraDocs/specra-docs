@@ -154,7 +154,7 @@
   </form>
 
   <!-- Users Table -->
-  <div class="rounded-lg border border-border bg-card overflow-hidden">
+  <div class="rounded-lg border border-border bg-card overflow-x-auto">
     <table class="w-full text-sm">
       <thead>
         <tr class="border-b border-border bg-accent/50">
@@ -181,7 +181,7 @@
             </td>
           </tr>
         {:else}
-          {#each users as user (user.id)}
+          {#each users as user, i (user.id)}
             <tr class="hover:bg-accent/30">
               <td class="px-4 py-3">
                 <div class="flex items-center gap-2">
@@ -263,7 +263,7 @@
                       </button>
 
                       {#if openMenuId === user.id}
-                        <div class="absolute right-0 z-50 mt-1 w-48 rounded-md border border-border bg-card shadow-lg py-1">
+                        <div class="absolute right-0 z-50 w-48 rounded-md border border-border bg-card shadow-lg py-1 {i >= users.length - 2 ? 'bottom-full mb-1' : 'top-full mt-1'}">
                           <button
                             onclick={() => {
                               openMenuId = null;

@@ -18,8 +18,9 @@ You can create a new project from the dashboard or using the CLI:
   <Tab label="Dashboard">
     1. Go to your [dashboard](https://specra-docs.com/dashboard)
     2. Click **New Project**
-    3. Enter a project name and optional description
-    4. Choose your deployment method (CLI, GitHub, or manual)
+    3. Enter a project name — a subdomain is auto-generated from it
+    4. Specra provisions a route and SSL certificate for your subdomain
+    5. You're redirected to the project page, ready to deploy
   </Tab>
   <Tab label="CLI">
 ```bash
@@ -29,13 +30,19 @@ specra init my-docs
   </Tab>
 </Tabs>
 
+<Callout type="info">
+  When you create a project, Specra automatically provisions a Caddy route and SSL certificate for your subdomain. This takes a few seconds — you'll see a progress indicator while it completes.
+</Callout>
+
 ## Subdomains and Custom Domains
 
 Every project automatically gets a subdomain:
 
 ```
-your-project.specra-docs.com
+your-project.docs.specra-docs.com
 ```
+
+The subdomain is provisioned with HTTPS during project creation, so it's ready to serve content as soon as you deploy.
 
 ### Custom Domains
 
@@ -57,14 +64,27 @@ You can connect your own domain to any project. Custom domains are available on 
   SSL certificates are provisioned automatically and renewed before expiry. No manual configuration needed.
 </Callout>
 
-## GitHub Integration
+## Deploying Content
 
-Connect a GitHub repository to enable automatic deployments on every push. Available on **Pro** and **Enterprise** plans.
+After creating a project, you need to deploy content before your site goes live. Until then, visitors to your subdomain will see a blank page.
 
-1. Go to **Project Settings > GitHub**
-2. Authorize the Specra GitHub App
-3. Select your repository and branch
-4. Every push to the configured branch triggers a new deployment
+<Tabs defaultValue="CLI">
+  <Tab label="CLI">
+```bash
+cd my-docs
+specra deploy
+```
+  The CLI builds your documentation locally and uploads it to Specra.
+  </Tab>
+  <Tab label="GitHub">
+  Connect a GitHub repository to enable automatic deployments on every push. Available on **Pro** and **Enterprise** plans.
+
+  1. Go to **Project Settings > GitHub**
+  2. Authorize the Specra GitHub App
+  3. Select your repository and branch
+  4. Every push to the configured branch triggers a new deployment
+  </Tab>
+</Tabs>
 
 <Callout type="tip">
   You can configure which branch triggers deployments. Most teams use `main` for production docs.
