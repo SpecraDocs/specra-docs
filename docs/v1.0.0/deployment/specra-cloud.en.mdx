@@ -32,13 +32,13 @@ You need:
   <Step title="Install the Specra CLI">
 
 ```bash
-npm install -g specra-cli
+npm install -g create-specra@latest
 ```
 
 Or use npx without installing:
 
 ```bash
-npx specra-cli deploy
+npx create-specra@latest deploy
 ```
   </Step>
 
@@ -182,10 +182,10 @@ jobs:
         run: npm ci
 
       - name: Install Specra CLI
-        run: npm install -g specra-cli
+        run: npm install -g create-specra@latest
 
       - name: Deploy
-        run: specra deploy
+        run: create-specra deploy
         env:
           SPECRA_TOKEN: ${{ secrets.SPECRA_TOKEN }}
 ```
@@ -198,8 +198,8 @@ deploy-docs:
   stage: deploy
   script:
     - npm ci
-    - npm install -g specra-cli
-    - specra deploy
+    - npm install -g create-specra@latest
+    - create-specra deploy
   variables:
     SPECRA_TOKEN: $SPECRA_TOKEN
   only:
@@ -238,27 +238,27 @@ node --version  # Should be 18+
 
 <CardGrid cols={2}>
   <Card
-    icon="github"
-    title="GitHub Pages"
-    description="Deploy as static site to GitHub Pages"
-    href="/docs/v1.0.0/deployment/github-pages"
-  />
-  <Card
-    icon="globe"
-    title="Netlify"
-    description="Alternative static hosting platform"
-    href="/docs/v1.0.0/deployment/netlify"
-  />
-  <Card
-    icon="arrow-left"
-    title="Deployment Overview"
-    description="Back to deployment options"
-    href="/docs/v1.0.0/deployment/overview"
+    icon="terminal"
+    title="CLI Reference"
+    description="All CLI commands — deploy, login, doctor, and more"
+    href="/docs/v1.0.0/cli/overview"
   />
   <Card
     icon="zap"
     title="Performance"
     description="Optimize your documentation"
     href="/docs/v1.0.0/performance"
+  />
+  <Card
+    icon="settings"
+    title="Configuration"
+    description="Configure your site metadata and features"
+    href="/docs/v1.0.0/configuration/overview"
+  />
+  <Card
+    icon="palette"
+    title="Customization"
+    description="Theme and brand your documentation"
+    href="/docs/v1.0.0/customization"
   />
 </CardGrid>

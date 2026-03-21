@@ -1,8 +1,8 @@
 {
-  "label": "v1.0.0",
+  "label": "Version 1",
   "badge": "Stable",
   "banner": {
     "text": "You are viewing the v1.0.0 documentation.",
-    "type": "info"
+    "type": "warning"
   }
 }

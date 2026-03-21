@@ -333,46 +333,6 @@ Enable or disable various documentation features.
 - Enable internationalization
 - Support multiple languages
 
-## Social Links
-
-Add social media links to your header.
-
-```json
-{
-  "social": {
-    "github": "https://github.com/username/repo",
-    "twitter": "https://twitter.com/username",
-    "discord": "https://discord.gg/invite",
-    "linkedin": "https://linkedin.com/company/name",
-    "youtube": "https://youtube.com/@channel"
-  }
-}
-```
-
-### Custom Social Links
-
-Add links to platforms not built-in:
-
-```json
-{
-  "social": {
-    "github": "https://github.com/username",
-    "custom": [
-      {
-        "label": "Slack",
-        "url": "https://slack.com/invite",
-        "icon": "slack"
-      },
-      {
-        "label": "Website",
-        "url": "https://example.com",
-        "icon": "globe"
-      }
-    ]
-  }
-}
-```
-
 ## Environment Variables
 
 Use environment variables in your config and MDX content.
@@ -427,56 +387,6 @@ Reference in config:
 <Callout type="warning">
 Never commit sensitive keys to version control. Use environment variables and add `.env.local` to `.gitignore`.
 </Callout>
-
-### Public vs Private Variables
-
-**Private (server-only):**
-```
-MEILISEARCH_API_KEY=secret-key
-DATABASE_URL=postgres://...
-```
-
-**Public (exposed to browser):**
-```
-NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
-NEXT_PUBLIC_API_URL=https://api.example.com
-```
-
-Prefix with `NEXT_PUBLIC_` to make variables available in the browser.
-
-## Theme Configuration
-
-Customize visual appearance.
-
-```json
-{
-  "theme": {
-    "defaultMode": "system",
-    "respectPrefersColorScheme": true,
-    "primaryColor": "#3b82f6",
-    "customCss": "/custom.css"
-  }
-}
-```
-
-**defaultMode**
-- `"system"` - Match OS preference
-- `"light"` - Always light mode
-- `"dark"` - Always dark mode
-
-**respectPrefersColorScheme**
-- Honor OS color scheme preference
-- Set to `false` to ignore OS settings
-
-**primaryColor**
-- Main brand color (hex code)
-- Used for links, buttons, accents
-
-**customCss**
-- Path to custom CSS file
-- Add in `public/` folder
-
-See [Customization](/docs/v1.0.0/customization) for detailed theming guide.
 
 ## Complete Example
 
@@ -567,10 +477,10 @@ Here's a fully configured Specra setup:
     href="/docs/v1.0.0/customization"
   />
   <Card
-    icon="rocket"
-    title="Deployment"
-    description="Deploy to production"
-    href="/docs/v1.0.0/deployment/overview"
+    icon="cloud"
+    title="Deploy to Specra Cloud"
+    description="Ship your docs with one command"
+    href="/docs/v1.0.0/deployment/specra-cloud"
   />
   <Card
     icon="arrow-left"

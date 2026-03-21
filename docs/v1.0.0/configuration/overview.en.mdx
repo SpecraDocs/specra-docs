@@ -275,24 +275,6 @@ If you omit optional fields, Specra uses these defaults:
 | `features.versioning` | `true` |
 | `deployment.target` | `"vercel"` |
 
-## Multiple Environments
-
-Create environment-specific configs:
-
-```txt
-├── specra.config.json          # Base config
-├── specra.config.development.json
-├── specra.config.staging.json
-└── specra.config.production.json
-```
-
-Load the right one based on `NODE_ENV`:
-
-```javascript
-// Load config based on environment
-const config = require(`./specra.config.${process.env.NODE_ENV}.json`)
-```
-
 ## Next Steps
 
 Dive into specific configuration sections:
