@@ -2,6 +2,7 @@
   import {
     TableOfContents,
     Header,
+    TabGroups,
     DocLayout,
     CategoryIndex,
     HotReloadIndicator,
@@ -11,7 +12,6 @@
     NotFoundContent,
     SearchHighlight,
     MobileDocLayout,
-    VersionBanner,
     mdxComponents,
   } from 'specra/components';
   import DocLoginGate from '$lib/components/DocLoginGate.svelte';
@@ -42,10 +42,6 @@
   <link rel="canonical" href={data.ogUrl} />
 </svelte:head>
 
-{#if data.versionBanner}
-  <VersionBanner banner={data.versionBanner} />
-{/if}
-
 {#if !data.doc && data.isCategory}
   <!-- Category page without doc content -->
   <MobileDocLayout
@@ -55,7 +51,19 @@
     activeTabGroup={data.categoryTabGroup}
   >
     {#snippet header()}
-      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} config={data.config} />
+      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} versionBanner={data.versionBanner} config={data.config}>
+        {#snippet subheader()}
+          {#if data.config.navigation?.tabGroups && data.config.navigation.tabGroups.length > 0}
+            <TabGroups
+              tabGroups={data.config.navigation.tabGroups}
+              activeTabId={data.categoryTabGroup}
+              docs={allDocsCompat}
+              version={data.version}
+              flush={data.config.navigation?.sidebarStyle === 'flush'}
+            />
+          {/if}
+        {/snippet}
+      </Header>
     {/snippet}
     <CategoryIndex
       categoryPath={data.slug}
@@ -77,7 +85,19 @@
     config={data.config}
   >
     {#snippet header()}
-      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} config={data.config} />
+      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} versionBanner={data.versionBanner} config={data.config}>
+        {#snippet subheader()}
+          {#if data.config.navigation?.tabGroups && data.config.navigation.tabGroups.length > 0}
+            <TabGroups
+              tabGroups={data.config.navigation.tabGroups}
+              activeTabId={data.categoryTabGroup}
+              docs={allDocsCompat}
+              version={data.version}
+              flush={data.config.navigation?.sidebarStyle === 'flush'}
+            />
+          {/if}
+        {/snippet}
+      </Header>
     {/snippet}
     <DocLoginGate slug={data.slug} version={data.version} />
   </MobileDocLayout>
@@ -92,7 +112,19 @@
     config={data.config}
   >
     {#snippet header()}
-      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} config={data.config} />
+      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} versionBanner={data.versionBanner} config={data.config}>
+        {#snippet subheader()}
+          {#if data.config.navigation?.tabGroups && data.config.navigation.tabGroups.length > 0}
+            <TabGroups
+              tabGroups={data.config.navigation.tabGroups}
+              activeTabId={data.categoryTabGroup}
+              docs={allDocsCompat}
+              version={data.version}
+              flush={data.config.navigation?.sidebarStyle === 'flush'}
+            />
+          {/if}
+        {/snippet}
+      </Header>
     {/snippet}
     <NotFoundContent version={data.version} />
   </MobileDocLayout>
@@ -108,7 +140,19 @@
     activeTabGroup={data.categoryTabGroup}
   >
     {#snippet header()}
-      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} config={data.config} />
+      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} versionBanner={data.versionBanner} config={data.config}>
+        {#snippet subheader()}
+          {#if data.config.navigation?.tabGroups && data.config.navigation.tabGroups.length > 0}
+            <TabGroups
+              tabGroups={data.config.navigation.tabGroups}
+              activeTabId={data.categoryTabGroup}
+              docs={allDocsCompat}
+              version={data.version}
+              flush={data.config.navigation?.sidebarStyle === 'flush'}
+            />
+          {/if}
+        {/snippet}
+      </Header>
     {/snippet}
     {#snippet toc()}
       {#if !data.isCategory}
