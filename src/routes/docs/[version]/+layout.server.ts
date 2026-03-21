@@ -1,4 +1,4 @@
-import { getCachedVersions, getCachedAllDocs, getConfig, getI18nConfig } from 'specra';
+import { getCachedVersions, getCachedAllDocs, getEffectiveConfig, getI18nConfig, getVersionsMeta, loadVersionConfig } from 'specra';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ params }) => {
@@ -9,7 +9,15 @@ export const load: LayoutServerLoad = async ({ params }) => {
 
   const allDocs = await getCachedAllDocs(version, defaultLocale);
   const versions = getCachedVersions();
-  const config = getConfig();
+  const config = getEffectiveConfig(version);
+  const versionsMeta = getVersionsMeta(versions);
+  const currentVersionConfig = loadVersionConfig(version);
 
-  return { allDocs, versions, config };
+  return {
+    allDocs,
+    versions,
+    versionsMeta,
+    config,
+    versionBanner: currentVersionConfig?.banner,
+  };
 };

@@ -11,6 +11,7 @@
     NotFoundContent,
     SearchHighlight,
     MobileDocLayout,
+    VersionBanner,
     mdxComponents,
   } from 'specra/components';
   import DocLoginGate from '$lib/components/DocLoginGate.svelte';
@@ -41,6 +42,10 @@
   <link rel="canonical" href={data.ogUrl} />
 </svelte:head>
 
+{#if data.versionBanner}
+  <VersionBanner banner={data.versionBanner} />
+{/if}
+
 {#if !data.doc && data.isCategory}
   <!-- Category page without doc content -->
   <MobileDocLayout
@@ -50,7 +55,7 @@
     activeTabGroup={data.categoryTabGroup}
   >
     {#snippet header()}
-      <Header currentVersion={data.version} versions={data.versions} config={data.config} />
+      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} config={data.config} />
     {/snippet}
     <CategoryIndex
       categoryPath={data.slug}
@@ -72,7 +77,7 @@
     config={data.config}
   >
     {#snippet header()}
-      <Header currentVersion={data.version} versions={data.versions} config={data.config} />
+      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} config={data.config} />
     {/snippet}
     <DocLoginGate slug={data.slug} version={data.version} />
   </MobileDocLayout>
@@ -87,7 +92,7 @@
     config={data.config}
   >
     {#snippet header()}
-      <Header currentVersion={data.version} versions={data.versions} config={data.config} />
+      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} config={data.config} />
     {/snippet}
     <NotFoundContent version={data.version} />
   </MobileDocLayout>
@@ -103,7 +108,7 @@
     activeTabGroup={data.categoryTabGroup}
   >
     {#snippet header()}
-      <Header currentVersion={data.version} versions={data.versions} config={data.config} />
+      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} config={data.config} />
     {/snippet}
     {#snippet toc()}
       {#if !data.isCategory}
