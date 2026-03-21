@@ -52,7 +52,8 @@
     "custom": [
       {
         "label": "Website",
-        "url": "https://specra-docs.com"
+        "url": "https://specra-docs.com",
+        "icon": "globe"
       }
     ]
   },
@@ -108,7 +109,7 @@
     }
   },
   "banner": {
-    "enabled": true,
+    "enabled": false,
     "message": "🎉 Specra is now stable! Welcome aboard — start building beautiful docs today.",
     "type": "info",
     "dismissible": true
@@ -117,6 +118,7 @@
     "editUrl": "https://github.com/SpecraDocs/specra-docs/edit/main/docs",
     "showLastUpdated": true,
     "showReadingTime": true,
+    "showVersionBadge": false,
     "showAuthors": false,
     "showTags": true,
     "versioning": true,
