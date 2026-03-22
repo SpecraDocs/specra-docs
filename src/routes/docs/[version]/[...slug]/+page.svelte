@@ -51,7 +51,7 @@
     activeTabGroup={data.categoryTabGroup}
   >
     {#snippet header()}
-      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} versionBanner={data.versionBanner} config={data.config}>
+      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} versionBanner={data.versionBanner} config={data.config} products={data.products}>
         {#snippet subheader()}
           {#if data.config.navigation?.tabGroups && data.config.navigation.tabGroups.length > 0}
             <TabGroups
@@ -85,7 +85,7 @@
     config={data.config}
   >
     {#snippet header()}
-      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} versionBanner={data.versionBanner} config={data.config}>
+      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} versionBanner={data.versionBanner} config={data.config} products={data.products}>
         {#snippet subheader()}
           {#if data.config.navigation?.tabGroups && data.config.navigation.tabGroups.length > 0}
             <TabGroups
@@ -112,7 +112,7 @@
     config={data.config}
   >
     {#snippet header()}
-      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} versionBanner={data.versionBanner} config={data.config}>
+      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} versionBanner={data.versionBanner} config={data.config} products={data.products}>
         {#snippet subheader()}
           {#if data.config.navigation?.tabGroups && data.config.navigation.tabGroups.length > 0}
             <TabGroups
@@ -140,7 +140,7 @@
     activeTabGroup={data.categoryTabGroup}
   >
     {#snippet header()}
-      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} versionBanner={data.versionBanner} config={data.config}>
+      <Header currentVersion={data.version} versions={data.versions} versionsMeta={data.versionsMeta} versionBanner={data.versionBanner} config={data.config} products={data.products}>
         {#snippet subheader()}
           {#if data.config.navigation?.tabGroups && data.config.navigation.tabGroups.length > 0}
             <TabGroups
