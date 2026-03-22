@@ -1,4 +1,4 @@
-import { getCachedVersions, getCachedAllDocs, getEffectiveConfig, getI18nConfig, getVersionsMeta, loadVersionConfig } from 'specra';
+import { getCachedVersions, getCachedAllDocs, getEffectiveConfig, getI18nConfig, getVersionsMeta, getProducts, loadVersionConfig } from 'specra';
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
@@ -20,12 +20,14 @@ export const load: LayoutServerLoad = async ({ params }) => {
   const versions = getCachedVersions();
   const config = getEffectiveConfig(version);
   const versionsMeta = getVersionsMeta(versions);
+  const products = getProducts();
 
   return {
     allDocs,
     versions,
     versionsMeta,
     config,
+    products,
     versionBanner: currentVersionConfig?.banner,
   };
 };
