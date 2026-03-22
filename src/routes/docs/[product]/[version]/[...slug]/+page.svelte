@@ -47,6 +47,7 @@
   <MobileDocLayout
     docs={allDocsCompat}
     version={data.version}
+    product={data.product}
     config={data.config}
     activeTabGroup={data.categoryTabGroup}
   >
@@ -68,6 +69,7 @@
     <CategoryIndex
       categoryPath={data.slug}
       version={data.version}
+      product={data.product}
       allDocs={allDocsCompat}
       title={categoryTitle}
       description={categoryDescription}
@@ -82,6 +84,7 @@
   <MobileDocLayout
     docs={allDocsCompat}
     version={data.version}
+    product={data.product}
     config={data.config}
   >
     {#snippet header()}
@@ -109,6 +112,7 @@
   <MobileDocLayout
     docs={allDocsCompat}
     version={data.version}
+    product={data.product}
     config={data.config}
   >
     {#snippet header()}
@@ -136,6 +140,7 @@
   <MobileDocLayout
     docs={allDocsCompat}
     version={data.version}
+    product={data.product}
     config={data.config}
     activeTabGroup={data.categoryTabGroup}
   >
