@@ -1,0 +1,235 @@
+---
+title: Version Configuration
+description: Configure per-version settings with _version_.json
+sidebar_position: 6
+icon: git-branch
+tab_group: guides
+---
+
+# Version Configuration
+
+Each version of your documentation can have its own `_version_.json` file to customize how that version appears and behaves. All fields are optional — only add what you need.
+
+Place the file at the root of a version folder:
+
+```
+docs/
+├── v1.0.0/
+│   ├── _version_.json    ← version config
+│   └── getting-started.en.mdx
+├── v2.0.0/
+│   ├── _version_.json
+│   └── getting-started.en.mdx
+```
+
+In multi-product setups, it goes inside the product's version folder:
+
+```
+docs/
+├── api/
+│   ├── v1.0.0/
+│   │   └── _version_.json
+│   └── v2.0.0/
+│       └── _version_.json
+```
+
+## Basic Configuration
+
+A simple `_version_.json`:
+
+```json
+{
+  "label": "v1.0 (Stable)"
+}
+```
+
+This gives the version a friendly display name instead of showing the raw directory name.
+
+## Complete Example
+
+A fully configured version:
+
+```json
+{
+  "label": "v2.0 Beta",
+  "hidden": false,
+  "badge": "Beta",
+  "banner": {
+    "text": "This version is in beta. Some features may change before release.",
+    "type": "warning"
+  },
+  "tabGroups": [
+    { "id": "guides", "label": "Guides", "icon": "book-open" },
+    { "id": "reference", "label": "Reference", "icon": "code" }
+  ]
+}
+```
+
+## Configuration Reference
+
+### label
+
+**Type:** `string`
+**Default:** Directory name (e.g., `"v1.0.0"`)
+
+Display name shown in the version switcher. Useful for adding context like stability status.
+
+```json
+{
+  "label": "v1.0 (Stable)"
+}
+```
+
+Other examples: `"v2.0 Beta"`, `"v3.0 LTS"`, `"v0.9 Legacy"`.
+
+### hidden
+
+**Type:** `boolean`
+**Default:** `false`
+
+Hides this version from the version switcher dropdown. The pages still exist and are accessible by URL — they just won't appear in the dropdown.
+
+```json
+{
+  "hidden": true
+}
+```
+
+<Callout type="tip">
+Use this for unreleased versions you're working on, or old versions you want to keep accessible but not promote.
+</Callout>
+
+### badge
+
+**Type:** `string`
+
+Short text shown as a badge next to the version in the switcher. Helps users quickly identify version status.
+
+```json
+{
+  "badge": "LTS"
+}
+```
+
+Common values: `"Beta"`, `"LTS"`, `"Stable"`, `"Deprecated"`, `"Preview"`.
+
+### banner
+
+**Type:** `object`
+
+A banner shown at the top of every page in this version. Useful for warnings about deprecated or pre-release versions. Overrides any global banner set in `specra.config.json`.
+
+```json
+{
+  "banner": {
+    "text": "This version is deprecated. Please upgrade to [v2.0](/docs/v2.0.0/getting-started).",
+    "type": "warning"
+  }
+}
+```
+
+**Banner fields:**
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `text` | `string` | — | The banner message. Supports markdown links like `[text](/url)`. |
+| `type` | `string` | `"info"` | Banner style: `"info"`, `"warning"`, `"error"`, or `"success"`. |
+
+### tabGroups
+
+**Type:** `TabGroup[]`
+
+Override tab groups for this specific version. Each tab group has an `id`, `label`, and optional `icon` (Lucide icon name).
+
+```json
+{
+  "tabGroups": [
+    { "id": "guides", "label": "Guides", "icon": "book-open" },
+    { "id": "api", "label": "API Docs", "icon": "code" }
+  ]
+}
+```
+
+Setting an empty array removes tabs for this version:
+
+```json
+{
+  "tabGroups": []
+}
+```
+
+<Callout type="info">
+Version-level tab groups override both the global config and any product-level tab groups. This is the most specific level of the override chain: **global → product → version**.
+</Callout>
+
+## Common Patterns
+
+### Marking a Version as Deprecated
+
+```json
+{
+  "label": "v1.0 (Deprecated)",
+  "badge": "Deprecated",
+  "banner": {
+    "text": "This version is no longer maintained. Please migrate to [v2.0](/docs/v2.0.0/getting-started).",
+    "type": "error"
+  }
+}
+```
+
+### Beta or Preview Version
+
+```json
+{
+  "label": "v3.0 Preview",
+  "badge": "Preview",
+  "banner": {
+    "text": "This is a preview release. APIs may change before the stable release.",
+    "type": "warning"
+  }
+}
+```
+
+### Long-Term Support Version
+
+```json
+{
+  "label": "v2.0 LTS",
+  "badge": "LTS",
+  "banner": {
+    "text": "Long-term support — this version receives security patches until 2027.",
+    "type": "success"
+  }
+}
+```
+
+### Hiding an Unreleased Version
+
+```json
+{
+  "label": "v4.0 (Unreleased)",
+  "hidden": true,
+  "badge": "Dev",
+  "banner": {
+    "text": "This version is under active development and not yet released.",
+    "type": "info"
+  }
+}
+```
+
+## Next Steps
+
+<CardGrid cols={2}>
+  <Card
+    icon="box"
+    title="Product Configuration"
+    description="Configure products with _product_.json"
+    href="/docs/v1.0.0/configuration/products"
+  />
+  <Card
+    icon="globe"
+    title="Site Configuration"
+    description="Global settings in specra.config.json"
+    href="/docs/v1.0.0/configuration/site-config"
+  />
+</CardGrid>

@@ -1,0 +1,226 @@
+---
+title: Product Configuration
+description: Configure products with _product_.json for multi-product documentation sites
+sidebar_position: 5
+icon: box
+tab_group: guides
+---
+
+# Product Configuration
+
+When your documentation covers multiple products (like an API, SDK, and CLI), each product gets its own folder with a `_product_.json` file. This file controls how the product appears in the product switcher and how it behaves.
+
+Place the file at the root of a product folder:
+
+```
+docs/
+├── api/
+│   ├── _product_.json    ← product config
+│   ├── v1.0.0/
+│   └── v2.0.0/
+├── sdk/
+│   ├── _product_.json
+│   └── v1.0.0/
+```
+
+## Basic Configuration
+
+Here's a minimal `_product_.json`:
+
+```json
+{
+  "label": "REST API"
+}
+```
+
+The `label` is the only required field — it's the display name shown in the product switcher dropdown.
+
+## Complete Example
+
+A fully configured product:
+
+```json
+{
+  "label": "REST API",
+  "icon": "cloud",
+  "description": "Complete reference for the REST API endpoints",
+  "activeVersion": "v2.0.0",
+  "badge": "New",
+  "position": 1,
+  "tabGroups": [
+    { "id": "guides", "label": "Guides", "icon": "book-open" },
+    { "id": "reference", "label": "Reference", "icon": "code" }
+  ]
+}
+```
+
+## Configuration Reference
+
+### label
+
+**Type:** `string` (Required)
+
+Display name shown in the product switcher. Pick something short and recognizable.
+
+```json
+{
+  "label": "REST API"
+}
+```
+
+### icon
+
+**Type:** `string`
+
+Icon shown next to the product name in the dropdown. Uses [Lucide](https://lucide.dev) icon names.
+
+```json
+{
+  "icon": "cloud"
+}
+```
+
+Some common choices: `"box"`, `"code"`, `"terminal"`, `"server"`, `"database"`, `"smartphone"`.
+
+### description
+
+**Type:** `string`
+
+A short description of the product. Shown in the product switcher dropdown below the label.
+
+```json
+{
+  "description": "Complete reference for the REST API endpoints"
+}
+```
+
+### activeVersion
+
+**Type:** `string`
+
+The default version to show when a user navigates to this product. Overrides the global `site.activeVersion` for this product.
+
+```json
+{
+  "activeVersion": "v2.0.0"
+}
+```
+
+<Callout type="tip">
+This is useful when different products are on different release cycles — your API might be on v3 while your SDK is still on v1.
+</Callout>
+
+### badge
+
+**Type:** `string`
+
+Short text shown as a badge next to the product name. Use it to call attention to a product's status.
+
+```json
+{
+  "badge": "Beta"
+}
+```
+
+Common values: `"New"`, `"Beta"`, `"Deprecated"`, `"Enterprise"`.
+
+### position
+
+**Type:** `number`
+
+Controls the order of products in the dropdown. Lower numbers appear first.
+
+```json
+{
+  "position": 1
+}
+```
+
+<Callout type="tip">
+Always set `position` on all your products to get a consistent, predictable order. Without it, order depends on the filesystem.
+</Callout>
+
+### tabGroups
+
+**Type:** `TabGroup[]`
+
+Override the global tab groups for this product. Each tab group has an `id`, `label`, and optional `icon`.
+
+```json
+{
+  "tabGroups": [
+    { "id": "guides", "label": "Guides", "icon": "book-open" },
+    { "id": "reference", "label": "API Reference", "icon": "code" }
+  ]
+}
+```
+
+Setting an empty array removes tabs for this product:
+
+```json
+{
+  "tabGroups": []
+}
+```
+
+<Callout type="info">
+Tab groups defined here override any tab groups set in `specra.config.json`. They can in turn be overridden by a version's `_version_.json`.
+</Callout>
+
+## Examples
+
+### API Product
+
+```json
+{
+  "label": "REST API",
+  "icon": "cloud",
+  "description": "Endpoints, authentication, and rate limits",
+  "activeVersion": "v3.0.0",
+  "position": 1
+}
+```
+
+### SDK Product
+
+```json
+{
+  "label": "JavaScript SDK",
+  "icon": "code",
+  "description": "Client library for Node.js and browsers",
+  "badge": "New",
+  "position": 2,
+  "tabGroups": [
+    { "id": "quickstart", "label": "Quickstart" },
+    { "id": "reference", "label": "Reference", "icon": "book" }
+  ]
+}
+```
+
+### CLI Product
+
+```json
+{
+  "label": "CLI Tool",
+  "icon": "terminal",
+  "description": "Command-line interface for automation",
+  "position": 3
+}
+```
+
+## Next Steps
+
+<CardGrid cols={2}>
+  <Card
+    icon="git-branch"
+    title="Version Configuration"
+    description="Configure per-version settings with _version_.json"
+    href="/docs/v1.0.0/configuration/versions"
+  />
+  <Card
+    icon="globe"
+    title="Site Configuration"
+    description="Global settings in specra.config.json"
+    href="/docs/v1.0.0/configuration/site-config"
+  />
+</CardGrid>
