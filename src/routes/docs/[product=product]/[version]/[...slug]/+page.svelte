@@ -60,6 +60,7 @@
               activeTabId={data.categoryTabGroup}
               docs={allDocsCompat}
               version={data.version}
+              product={data.product}
               flush={data.config.navigation?.sidebarStyle === 'flush'}
             />
           {/if}
@@ -96,6 +97,7 @@
               activeTabId={data.categoryTabGroup}
               docs={allDocsCompat}
               version={data.version}
+              product={data.product}
               flush={data.config.navigation?.sidebarStyle === 'flush'}
             />
           {/if}
@@ -124,6 +126,7 @@
               activeTabId={data.categoryTabGroup}
               docs={allDocsCompat}
               version={data.version}
+              product={data.product}
               flush={data.config.navigation?.sidebarStyle === 'flush'}
             />
           {/if}
@@ -153,6 +156,7 @@
               activeTabId={data.categoryTabGroup}
               docs={allDocsCompat}
               version={data.version}
+              product={data.product}
               flush={data.config.navigation?.sidebarStyle === 'flush'}
             />
           {/if}
@@ -190,6 +194,7 @@
         nextDoc={nextDoc}
         version={data.version}
         slug={data.slug}
+        product={data.product}
         config={data.config}
       >
         {#if data.doc.contentNodes}

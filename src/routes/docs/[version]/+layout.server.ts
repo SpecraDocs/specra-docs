@@ -31,6 +31,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
   const config = getEffectiveConfig(version);
   const versionsMeta = getVersionsMeta(versions);
 
+
   return {
     allDocs,
     versions,

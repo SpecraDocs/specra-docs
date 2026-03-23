@@ -31,7 +31,7 @@
     "meilisearch": "^0.55.0",
     "pg": "^8.18.0",
     "resend": "^6.9.1",
-    "specra": "^0.2.5",
+    "specra": "file:/home/dalmas/E/projects/documentation-system/specra/specra-sdk/specra-0.2.42.tgz",
     "stripe": "^20.3.1",
     "svelte-sonner": "^0.3.28",
     "tar": "^7.5.7",
