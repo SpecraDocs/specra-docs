@@ -66,13 +66,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate Prisma client
+        run: npx prisma generate
+
       - name: Build SvelteKit documentation
-        run: |
-          echo "Building SvelteKit documentation..."
-          npm run build
-          echo "Build completed"
+        run: npm run build
         env:
           NODE_ENV: production
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+          AUTH_SECRET: "build-time-placeholder"
 
       - name: Add .nojekyll
         run: touch ./build/.nojekyll
