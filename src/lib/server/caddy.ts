@@ -29,6 +29,41 @@ export async function isCaddyAvailable(): Promise<boolean> {
   }
 }
 
+export function buildStaticSiteHandlers(root: string) {
+  return [
+    {
+      handler: "subroute",
+      routes: [
+        {
+          handle: [{ handler: "vars", root }],
+        },
+        {
+          handle: [
+            {
+              handler: "rewrite",
+              uri: "{http.matchers.file.relative}",
+            },
+          ],
+          match: [
+            {
+              file: {
+                try_files: [
+                  "{http.request.uri.path}",
+                  "{http.request.uri.path}/index.html",
+                  "{http.request.uri.path}.html",
+                ],
+              },
+            },
+          ],
+        },
+        {
+          handle: [{ handler: "file_server" }],
+        },
+      ],
+    },
+  ]
+}
+
 export async function addSubdomainRoute(subdomain: string, userId: string) {
   const hostname = `${subdomain}.${BASE_DOMAIN}`
   const routeId = `specra-${subdomain}`
@@ -37,12 +72,7 @@ export async function addSubdomainRoute(subdomain: string, userId: string) {
   const route = {
     "@id": routeId,
     match: [{ host: [hostname] }],
-    handle: [
-      {
-        handler: "file_server",
-        root: root,
-      },
-    ],
+    handle: buildStaticSiteHandlers(root),
     terminal: true,
   }
 
@@ -60,12 +90,7 @@ export async function addCustomDomainRoute(domain: string, subdomain: string, us
   const route = {
     "@id": routeId,
     match: [{ host: [domain] }],
-    handle: [
-      {
-        handler: "file_server",
-        root: root,
-      },
-    ],
+    handle: buildStaticSiteHandlers(root),
     terminal: true,
   }
 
