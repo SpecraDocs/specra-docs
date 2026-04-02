@@ -199,18 +199,60 @@ const config: SpecraConfig = {
 export default config
 ```
 
-## IDE Autocomplete
+## JSON Schemas & IDE Autocomplete
 
-The config file includes a `$schema` property that enables autocomplete in VS Code and other editors:
+Specra provides JSON schemas for all configuration files. Add the `$schema` property to enable autocomplete, validation, and inline documentation in VS Code and other editors.
+
+### Available Schemas
+
+| Config File | Schema URL |
+|-------------|-----------|
+| `specra.config.json` | `https://raw.githubusercontent.com/SpecraDocs/specra-sdk/main/config/specra.config.schema.json` |
+| `_version_.json` | `https://raw.githubusercontent.com/SpecraDocs/specra-sdk/main/config/version.schema.json` |
+| `_product_.json` | `https://raw.githubusercontent.com/SpecraDocs/specra-sdk/main/config/product.schema.json` |
+| `_category_.json` | `https://raw.githubusercontent.com/SpecraDocs/specra-sdk/main/config/category.schema.json` |
+
+### Usage
+
+Add the `$schema` property as the first field in any config file:
 
 ```json
 {
-  "$schema": "./node_modules/specra/config/specra.config.schema.json",
+  "$schema": "https://raw.githubusercontent.com/SpecraDocs/specra-sdk/main/config/specra.config.schema.json",
   "site": {
-    // Autocomplete works here!
+    "title": "My Docs"
   }
 }
 ```
+
+```json
+{
+  "$schema": "https://raw.githubusercontent.com/SpecraDocs/specra-sdk/main/config/version.schema.json",
+  "label": "v2.0 (Latest)",
+  "badge": "New"
+}
+```
+
+```json
+{
+  "$schema": "https://raw.githubusercontent.com/SpecraDocs/specra-sdk/main/config/product.schema.json",
+  "label": "REST API",
+  "icon": "cloud"
+}
+```
+
+```json
+{
+  "$schema": "https://raw.githubusercontent.com/SpecraDocs/specra-sdk/main/config/category.schema.json",
+  "label": "Getting Started",
+  "position": 1,
+  "icon": "rocket"
+}
+```
+
+<Callout type="tip" title="No Setup Required">
+The schemas are hosted publicly on GitHub. Your editor fetches them automatically — no local installation or configuration needed.
+</Callout>
 
 When you type, your editor will suggest available options and show descriptions.
 
