@@ -12,7 +12,7 @@
    ============================================= */
 
 /* ─── Mint Light Theme Override ─── */
-:root {
+/*:root {
   --background: oklch(0.98 0.01 160);
   --foreground: oklch(0.15 0.03 160);
   --card: oklch(1.00 0.005 160);
@@ -40,7 +40,7 @@
   --sidebar-accent-foreground: oklch(0.20 0.03 160);
   --sidebar-border: oklch(0.90 0.02 160);
   --sidebar-ring: oklch(0.45 0.18 162);
-}
+}*/
 
 /* ─── Ocean Light Theme Override ─── */
 /* :root {
@@ -172,7 +172,7 @@
    ============================================= */
 
 /* ─── Mint Dark Theme Override ─── */
-.dark {
+/*.dark {
   --background: oklch(0.08 0.02 160);
   --foreground: oklch(0.95 0.02 160);
   --card: oklch(0.11 0.02 160);
@@ -200,7 +200,7 @@
   --sidebar-accent-foreground: oklch(0.95 0.02 160);
   --sidebar-border: oklch(0.22 0.03 160);
   --sidebar-ring: oklch(0.72 0.18 162);
-}
+}*/
 
 /* ─── Ocean Dark Theme Override ─── */
 /* .dark {
