@@ -1,0 +1,41 @@
+---
+title: Changelog
+description: New features, improvements and fixes in Specra.
+sidebar_position: 90
+rss: true
+badge: new
+---
+
+# Changelog
+
+Everything that changed in Specra, newest first. Subscribe via [RSS](/docs/v1.0.0/en/changelog/rss.xml).
+
+<Changelog>
+
+<Update label="2026-07-10" description="v0.2.68" tags={["SDK", "Sidebar"]}>
+
+Sidebar badges. Mark a page in frontmatter or a folder in `_category_.json` and a colored pill renders on its sidebar row.
+
+```yaml
+badge: new
+badge: { text: Beta, color: purple }
+badge: [new, beta]
+```
+
+Seven presets ship out of the box: `new`, `updated`, `beta`, `experimental`, `pre-release`, `deprecated` and `coming-soon`.
+
+</Update>
+
+<Update label="2026-07-09" description="v0.2.67" tags={["SDK", "Fix"]}>
+
+Fixed table-of-contents links pointing at the wrong heading when a page had two headings with the same text.
+
+</Update>
+
+<Update label="2026-06-22" description="v0.2.66" tags={["SDK", "Search"]}>
+
+Meilisearch-backed search, packaged as an SDK and CLI feature.
+
+</Update>
+
+</Changelog>
