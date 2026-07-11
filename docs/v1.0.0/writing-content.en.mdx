@@ -350,6 +350,65 @@ draft: false
 - `icon`: Lucide icon name
 - `tags`: Array of tags
 - `draft`: Hide in production if true
+- `badge`: Status pill on the sidebar row — see [Sidebar badges](#sidebar-badges)
+
+### Sidebar badges
+
+Add a `badge` to a page's frontmatter to show a small status pill next to its sidebar entry — useful for marking pages `New`, `Beta`, `Deprecated`, and so on.
+
+The quickest form is a **preset** — a single word that expands to a label and color:
+
+```mdx
+---
+title: Webhooks
+badge: new
+---
+```
+
+Built-in presets:
+
+| Preset | Label | Color |
+|--------|-------|-------|
+| `new` | New | green |
+| `updated` | Updated | blue |
+| `beta` | Beta | purple |
+| `experimental` | Experimental | orange |
+| `pre-release` | Pre-release | amber |
+| `deprecated` | Deprecated | red |
+| `coming-soon` | Coming soon | gray |
+
+For anything else, pass an **object** with your own text and color:
+
+```mdx
+---
+badge: { text: "v3 only", color: cyan }
+---
+```
+
+`color` accepts: `gray`, `red`, `orange`, `amber`, `green`, `teal`, `blue`, `purple`, `pink`, `cyan`. An unknown color falls back to gray, so a typo never breaks your build. If `text` happens to match a preset name (e.g. `{ text: Beta }`), it inherits that preset's color automatically.
+
+To show **more than one** pill, pass an array — each entry can be a preset or an object:
+
+```mdx
+---
+badge: [new, beta]
+---
+```
+
+#### Badging a whole section
+
+To badge a category (folder) rather than a single page, add `badge` to its `_category_.json`. It accepts exactly the same forms — a preset, an object, or an array:
+
+```json
+{
+  "label": "Payments",
+  "badge": "beta"
+}
+```
+
+<Callout type="info">
+  Sidebar badges require **specra 0.2.68 or later**. On earlier versions the `badge` field is simply ignored.
+</Callout>
 
 ## Advanced MDX Features
 
