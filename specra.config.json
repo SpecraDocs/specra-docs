@@ -58,7 +58,7 @@
     ]
   },
   "search": {
-    "enabled": false,
+    "enabled": true,
     "placeholder": "Search documentation...",
     "provider": "meilisearch",
     "meilisearch": {

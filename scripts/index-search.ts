@@ -2,7 +2,12 @@ import { MeiliSearch } from "meilisearch"
 import fs from "fs"
 import path from "path"
 import matter from "gray-matter"
-import { extractSearchText, getConfig, initConfig } from "specra"
+// Import from specra's server-safe JS modules directly rather than the package
+// barrel ("specra"), which is a Svelte library that pulls in `$app/*` virtuals
+// and .svelte files that only resolve inside a Vite/SvelteKit build — not in a
+// standalone tsx script.
+import { getConfig, initConfig } from "../node_modules/specra/dist/config.server.js"
+import { extractSearchText } from "../node_modules/specra/dist/components/docs/componentTextProps.js"
 import specraConfig from "../specra.config.json"
 // import { extractSearchText } from "specra/components"
 // import { extractSearchText } from "@/components/docs/componentTextProps"
@@ -105,9 +110,11 @@ async function indexDocuments() {
                 // console.log("Cleaned content: ");
                 // console.log(cleanContent);
                 // console.log("------");
-                // Create a valid document ID (replace periods with underscores)
-                // const docId = `${version.replace(/\./g, "_")}-${slug.replace(/\//g, "-")}`
-                const docId = slug.replace(/\//g, "-")
+                // Create a valid Meilisearch document ID. IDs may only contain
+                // alphanumerics, hyphens and underscores, so sanitize every
+                // other character (e.g. the period in locale-suffixed slugs
+                // like "about.de" from about.de.mdx).
+                const docId = slug.replace(/\//g, "-").replace(/[^a-zA-Z0-9_-]/g, "_")
 
                 documents.push({
                     id: docId,
