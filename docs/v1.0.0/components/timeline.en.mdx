@@ -76,6 +76,24 @@ Each `TimelineItem` accepts full MDX — bold text, links, inline code, and othe
   </TimelineItem>
 </Timeline>
 
+### Roadmap (status & icons)
+
+Use `status` — `done`, `current`, or `upcoming` — to show progress, and `icon` to replace the step number with a [Lucide](https://lucide.dev) icon. The `current` item pulses, and `upcoming` segments use a dashed connector.
+
+<Timeline>
+  <TimelineItem title="Core platform" date="Shipped" status="done" icon="check">
+    Versioning, internationalization, and MeiliSearch-powered search.
+  </TimelineItem>
+
+  <TimelineItem title="Component library" date="In progress" status="current" icon="layers">
+    Building out Timeline, Tabs, Cards, and the API reference blocks.
+  </TimelineItem>
+
+  <TimelineItem title="Hosted search" date="Planned" status="upcoming" icon="cloud">
+    Index from the CLI and serve search from a Specra subdomain.
+  </TimelineItem>
+</Timeline>
+
 ## Props
 
 ### Timeline
@@ -89,15 +107,19 @@ Each `TimelineItem` accepts full MDX — bold text, links, inline code, and othe
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `title` | `string` | required | Event title/heading |
-| `date` | `string` | — | Optional date or time label |
+| `date` | `string` | — | Optional date or time label, shown as a pill |
+| `icon` | `string` | — | [Lucide](https://lucide.dev) icon name shown in the marker instead of the number |
+| `status` | `"done" \| "current" \| "upcoming"` | `"done"` | Visual state: colors the marker and connector; `current` pulses, `upcoming` is hollow with a dashed line |
 | `children` | `Snippet` | required | Event content |
 
 ## Features
 
-- **Automatic Numbering** — Events are numbered automatically using CSS counters
-- **Visual Connector** — A vertical line connects all events in sequence
-- **Date Labels** — Optionally display dates or time periods for each event
-- **Rich Content** — Each event supports full MDX content including code blocks and components
+- **Automatic Numbering** — Events are numbered automatically, or replaced with an icon via `icon`
+- **Status States** — Mark items `done`, `current`, or `upcoming`; the current item pulses and upcoming items use a dashed connector
+- **Content Cards** — Each event sits in a subtle card that lifts on hover
+- **Date Pills** — Optionally show a date or time label as a pill next to the title
+- **Rich Content** — Each event supports full MDX content including other components
+- **Theme-aware** — Colors follow your theme tokens in both light and dark mode
 
 <Callout type="tip">
 Use Timeline for changelogs, release histories, and project roadmaps. For step-by-step instructions, use the Steps component instead.
