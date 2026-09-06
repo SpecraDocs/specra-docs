@@ -17,7 +17,7 @@ interface SearchResult {
  * specra SearchModal expects ({ slug, title, version, excerpt }), deduplicated
  * by version+slug.
  */
-async function runSearch(query: string) {
+async function runSearch(query: string, locale?: string) {
   const config: SpecraConfig = specraConfig as any;
   const searchConfig = config.search;
 
@@ -35,9 +35,14 @@ async function runSearch(query: string) {
     apiKey: meilisearchConfig.apiKey || '',
   });
 
+  // Scope results to the requested language when provided, so a French reader
+  // does not see English/German hits (and vice versa).
+  const filter = locale ? [`locale = "${locale.replace(/"/g, '')}"`] : undefined;
+
   const index = client.index(meilisearchConfig.indexName);
   const searchResults = await index.search(query, {
     limit: 50, // Get more results before deduplication
+    filter,
     attributesToCrop: ['content'],
     cropLength: 30,
   });
@@ -75,13 +80,14 @@ async function runSearch(query: string) {
 // GET /api/search?q=... — used by the specra SearchModal component.
 export const GET: RequestHandler = async ({ url }) => {
   const query = url.searchParams.get('q')?.trim() ?? '';
+  const locale = url.searchParams.get('locale')?.trim() || undefined;
 
   if (!query) {
     return json({ results: [], query: '' });
   }
 
   try {
-    const result = await runSearch(query);
+    const result = await runSearch(query, locale);
     if ('error' in result) {
       return json({ error: result.error }, { status: result.status });
     }
@@ -105,13 +111,13 @@ export const GET: RequestHandler = async ({ url }) => {
 // POST /api/search { query } — kept for backward compatibility.
 export const POST: RequestHandler = async ({ request }) => {
   try {
-    const { query } = await request.json();
+    const { query, locale } = await request.json();
 
     if (!query || typeof query !== 'string') {
       return json({ error: 'Invalid query' }, { status: 400 });
     }
 
-    const result = await runSearch(query);
+    const result = await runSearch(query, typeof locale === 'string' ? locale : undefined);
     if ('error' in result) {
       return json({ error: result.error }, { status: result.status });
     }
