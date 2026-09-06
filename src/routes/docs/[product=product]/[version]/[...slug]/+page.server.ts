@@ -8,6 +8,7 @@ import {
   getConfig,
   getProducts,
 } from 'specra';
+import { redirect } from '@sveltejs/kit';
 import jwt from 'jsonwebtoken';
 import { prisma } from '$lib/server/db.js';
 import type { PageServerLoad } from './$types';
@@ -65,10 +66,29 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
   }
 
   const allDocs = await getCachedAllDocs(version, locale, product);
+
+  // Bare locale landing (e.g. /docs/{product}/v1.0.0/fr) → first doc of that locale.
+  if (locale && slugParts.length === 1 && allDocs.length > 0) {
+    redirect(302, `/docs/${product}/${version}/${allDocs[0].slug}`);
+  }
+
   const config = getConfig();
   const isCategory = isCategoryPage(slug, allDocs);
   const doc = await getCachedDocBySlug(slug, version, product);
   const urlPrefix = `/docs/${product}/${version}`;
+
+  // Locales that have a real translation of this page (for the header
+  // LanguageSwitcher's fall-back-to-home behavior).
+  const logicalSlug = locale ? slugParts.slice(1).join('/') : slug;
+  let availableLocales: string[] = [];
+  if (i18nConfig) {
+    for (const loc of i18nConfig.locales) {
+      const usePrefix = i18nConfig.prefixDefault || loc !== i18nConfig.defaultLocale;
+      const canonical = usePrefix ? `${loc}/${logicalSlug}` : logicalSlug;
+      const docsForLoc = await getCachedAllDocs(version, loc, product);
+      if (docsForLoc.some((d) => d.slug === canonical)) availableLocales.push(loc);
+    }
+  }
 
   let title = 'Page Not Found';
   let description = 'The requested documentation page could not be found.';
@@ -105,6 +125,7 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
       title,
       description,
       ogUrl,
+      availableLocales,
     };
   }
 
@@ -126,6 +147,7 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
       title,
       description,
       ogUrl,
+      availableLocales,
     };
   }
 
@@ -151,6 +173,7 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
         title,
         description,
         ogUrl,
+        availableLocales,
       };
     }
 
@@ -194,5 +217,6 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
     title,
     description,
     ogUrl,
+    availableLocales,
   };
 };
