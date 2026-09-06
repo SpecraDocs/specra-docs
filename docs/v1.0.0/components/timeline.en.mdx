@@ -58,6 +58,24 @@ The Timeline component displays a series of events or milestones in a vertical l
   </TimelineItem>
 </Timeline>
 
+### Timeline with Rich Content
+
+Each `TimelineItem` accepts full MDX — bold text, links, inline code, and other components like `Badge`.
+
+<Timeline>
+  <TimelineItem title="Stable Release" date="April 2026">
+    **v2.0.0** shipped. Adds the API playground and plugin system. <Badge>stable</Badge>
+  </TimelineItem>
+
+  <TimelineItem title="Search & Timeline" date="March 2026">
+    Added the `Timeline` component and language-aware search. Re-run `npm run index:search` to pick up new content.
+  </TimelineItem>
+
+  <TimelineItem title="First Release" date="January 2026">
+    First stable release with versioning, i18n, and MeiliSearch integration. See the [changelog](/docs/v1.0.0/changelog).
+  </TimelineItem>
+</Timeline>
+
 ## Props
 
 ### Timeline
