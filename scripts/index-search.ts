@@ -2,7 +2,12 @@ import { MeiliSearch } from "meilisearch"
 import fs from "fs"
 import path from "path"
 import matter from "gray-matter"
-import { extractSearchText, getConfig, initConfig } from "specra"
+// Import from specra's server-safe JS modules directly rather than the package
+// barrel ("specra"), which is a Svelte library that pulls in `$app/*` virtuals
+// and .svelte files that only resolve inside a Vite/SvelteKit build — not in a
+// standalone tsx script.
+import { getConfig, initConfig } from "../node_modules/specra/dist/config.server.js"
+import { extractSearchText } from "../node_modules/specra/dist/components/docs/componentTextProps.js"
 import specraConfig from "../specra.config.json"
 // import { extractSearchText } from "specra/components"
 // import { extractSearchText } from "@/components/docs/componentTextProps"
@@ -13,6 +18,7 @@ interface SearchDocument {
     content: string
     slug: string
     version: string
+    locale: string
     category?: string
     tags?: string[]
     tab_group?: string
@@ -45,6 +51,14 @@ async function indexDocuments() {
 
     const index = client.index(meilisearchConfig.indexName)
 
+    // i18n config drives how locale is derived from filenames and how the
+    // canonical (locale-prefixed) slug is built — must match specra's mdx loader.
+    const i18nRaw = config.features?.i18n as any
+    const i18nConfig = i18nRaw && typeof i18nRaw === "object" ? i18nRaw : null
+    const locales: string[] = i18nConfig?.locales ?? []
+    const defaultLocale: string = i18nConfig?.defaultLocale ?? "en"
+    const prefixDefault: boolean = i18nConfig?.prefixDefault ?? false
+
     // Get all MDX files
     const docsDir = path.join(process.cwd(), "docs")
     const documents: SearchDocument[] = []
@@ -62,14 +76,32 @@ async function indexDocuments() {
                 const content = fs.readFileSync(filePath, "utf-8")
                 const { data, content: mdxContent } = matter(content)
 
-                // Generate slug from file path
+                // Build the logical path from the file (no extension).
                 const relativePath = path.relative(path.join(docsDir, version), filePath)
-                const slug = relativePath
+                const rawPath = relativePath
                     .replace(/\.(mdx|md)$/, "")
                     .replace(/\\/g, "/")
 
-                // Extract category from path
-                const pathParts = slug.split("/")
+                // Detect a locale suffix on the filename (e.g. about.de,
+                // configuration/advanced.fr). Mirrors specra's getAllDocs.
+                let logicalSlug = rawPath
+                let locale = defaultLocale
+                if (i18nConfig) {
+                    const parts = rawPath.split(".")
+                    const lastPart = parts[parts.length - 1]
+                    if (locales.includes(lastPart)) {
+                        locale = lastPart
+                        logicalSlug = parts.slice(0, -1).join(".")
+                    }
+                }
+
+                // Canonical slug matches how the app routes docs: locale is a
+                // path PREFIX, added when prefixDefault or for non-default locales.
+                const usePrefix = i18nConfig && (prefixDefault || locale !== defaultLocale)
+                const slug = usePrefix ? `${locale}/${logicalSlug}` : logicalSlug
+
+                // Extract category from the logical path (not the locale prefix).
+                const pathParts = logicalSlug.split("/")
                 const category = pathParts.length > 1 ? pathParts[0] : undefined
 
                 // Get tab_group from frontmatter or from parent _category_.json
@@ -105,16 +137,19 @@ async function indexDocuments() {
                 // console.log("Cleaned content: ");
                 // console.log(cleanContent);
                 // console.log("------");
-                // Create a valid document ID (replace periods with underscores)
-                // const docId = `${version.replace(/\./g, "_")}-${slug.replace(/\//g, "-")}`
-                const docId = slug.replace(/\//g, "-")
+                // Create a valid Meilisearch document ID. IDs may only contain
+                // alphanumerics, hyphens and underscores, so sanitize every
+                // other character (e.g. the period in locale-suffixed slugs
+                // like "about.de" from about.de.mdx).
+                const docId = slug.replace(/\//g, "-").replace(/[^a-zA-Z0-9_-]/g, "_")
 
                 documents.push({
                     id: docId,
-                    title: data.title || slug,
+                    title: data.title || logicalSlug,
                     content: cleanContent,
                     slug: slug,
                     version: version,
+                    locale: locale,
                     category: category,
                     tags: data.tags || [],
                     tab_group: tabGroup,
@@ -142,7 +177,7 @@ async function indexDocuments() {
         // Configure searchable attributes first
         console.log("Configuring search settings...")
         await index.updateSearchableAttributes(["title", "content", "tags"])
-        await index.updateFilterableAttributes(["version", "category", "tags"])
+        await index.updateFilterableAttributes(["version", "locale", "category", "tags"])
         await index.updateSortableAttributes(["title"])
         await index.updateDistinctAttribute("id")
         await index.updateSettings({
