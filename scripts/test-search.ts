@@ -1,7 +1,12 @@
 import { MeiliSearch } from "meilisearch"
-import { getConfig } from "specra"
+// Import from specra's server-safe module directly rather than the package
+// barrel ("specra"), which is a Svelte library that pulls in `$app/*` virtuals
+// that only resolve inside a Vite/SvelteKit build — not in a standalone tsx script.
+import { getConfig, initConfig } from "../node_modules/specra/dist/config.server.js"
+import specraConfig from "../specra.config.json"
 
 async function testSearch() {
+    initConfig(specraConfig as any)
     const config = getConfig()
     const searchConfig = config.search
 
