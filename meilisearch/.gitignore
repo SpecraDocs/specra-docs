@@ -1,0 +1,6 @@
+# Ignore everything in this folder (the MeiliSearch binary, its index data,
+# and download logs are large and machine-specific)…
+*
+# …except these tracked files.
+!.gitignore
+!README.md
