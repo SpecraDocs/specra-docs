@@ -94,16 +94,16 @@ Point Specra at your server. The `apiKey` here is used both to index and to quer
 
 ### 3. Index your content
 
-Specra ships an indexer. From your project root:
+Index your docs into MeiliSearch with the Specra CLI, from your project root:
 
 ```bash
-npm run index:search
+npx specra search index
 ```
 
 It reads `specra.config.json`, walks every version and locale under `docs/`, extracts the searchable text, and pushes the documents to your MeiliSearch server. Re-run it whenever your docs change.
 
 <Callout type="info">
-  Indexing is asynchronous on MeiliSearch's side. Wait a couple of seconds, then verify with `npm run test:search`.
+  Indexing is asynchronous on MeiliSearch's side. Wait a couple of seconds, then verify with `npx specra search test`.
 </Callout>
 
 ### 4. Try it
@@ -166,7 +166,7 @@ Use the returned key as `meilisearch.apiKey` in your production `specra.config.j
 
 ### Index on deploy (CI/CD)
 
-The indexer reads its host and key from `specra.config.json`. To index with your **master key** in CI without committing it, generate the config (or overwrite the key) at build time from a secret. A minimal GitHub Actions job:
+Run `specra search index` in CI, passing your **master key** via `--api-key` from a secret so it's never committed. `--host` and `--index-name` can be overridden the same way. A minimal GitHub Actions job:
 
 ```yaml
 name: Index docs
@@ -183,36 +183,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm ci
-      # Inject the master key into the config just for indexing
-      - run: |
-          node -e "const f='specra.config.json',c=require('./'+f);
-            c.search.meilisearch.host=process.env.MEILI_HOST;
-            c.search.meilisearch.apiKey=process.env.MEILI_MASTER_KEY;
-            require('fs').writeFileSync(f, JSON.stringify(c,null,2));"
+      - run: npx specra search index --host "$MEILI_HOST" --api-key "$MEILI_MASTER_KEY"
         env:
           MEILI_HOST: ${{ secrets.MEILI_HOST }}
           MEILI_MASTER_KEY: ${{ secrets.MEILI_MASTER_KEY }}
-      - run: npm run index:search
 ```
 
-Ship your app with the **search-only** key in `specra.config.json`, and let CI swap in the master key only for the indexing step.
+Ship your app with the **search-only** key in `specra.config.json`; the `--api-key` flag overrides it with the master key just for the indexing step.
 
 ## Customizing the index
 
-Indexing behavior lives in `scripts/index-search.ts`. It configures MeiliSearch like this today:
-
-```ts
-await index.updateSearchableAttributes(["title", "content", "tags"])
-await index.updateFilterableAttributes(["version", "locale", "category", "tags"])
-await index.updateSortableAttributes(["title"])
-await index.updateDistinctAttribute("id")
-await index.updateSettings({
-  rankingRules: ["words", "typo", "proximity", "attribute", "sort", "exactness"],
-})
-```
-
-Edit that script to change what's searchable, add synonyms or stop words, or tune ranking — then re-run `npm run index:search`.
+`npx specra search index` configures MeiliSearch with sensible defaults — searchable `title`, `content`, and `tags`; filterable `version`, `locale`, `category`, and `tags`; and the standard ranking rules. To tune ranking, synonyms, or stop words beyond that, configure your MeiliSearch instance directly — see the [MeiliSearch documentation](https://www.meilisearch.com/docs).
 
 ## Local search (alternative)
 
@@ -251,13 +232,13 @@ curl http://localhost:7700/health   # expect {"status":"available"}
 **No results** — re-index and confirm the index exists:
 
 ```bash
-npm run index:search
+npx specra search index
 curl -H "Authorization: Bearer YOUR_KEY" http://localhost:7700/indexes
 ```
 
 **`/api/search` returns "Search is not enabled"** — the route reads `specra.config.json`; make sure `enabled` is `true` and `provider` is `"meilisearch"`, then restart the dev server so the config is re-read.
 
-**Wrong-language results** — re-run `npm run index:search` so each document gets its `locale` field.
+**Wrong-language results** — re-run `npx specra search index` so each document gets its `locale` field.
 
 ## Next steps
 

@@ -94,16 +94,16 @@ Apunta Specra a tu servidor. La `apiKey` aquí se usa tanto para indexar como pa
 
 ### 3. Indexa tu contenido
 
-Specra incluye un indexador. Desde la raíz de tu proyecto:
+Indexa tu documentación en MeiliSearch con el CLI de Specra, desde la raíz de tu proyecto:
 
 ```bash
-npm run index:search
+npx specra search index
 ```
 
 Lee `specra.config.json`, recorre cada versión y configuración regional bajo `docs/`, extrae el texto buscable y envía los documentos a tu servidor de MeiliSearch. Vuelve a ejecutarlo cada vez que cambie tu documentación.
 
 <Callout type="info">
-  La indexación es asíncrona del lado de MeiliSearch. Espera un par de segundos y luego verifica con `npm run test:search`.
+  La indexación es asíncrona del lado de MeiliSearch. Espera un par de segundos y luego verifica con `npx specra search test`.
 </Callout>
 
 ### 4. Pruébalo
@@ -166,7 +166,7 @@ Usa la clave devuelta como `meilisearch.apiKey` en tu `specra.config.json` de pr
 
 ### Indexa en el despliegue (CI/CD)
 
-El indexador lee su host y su clave desde `specra.config.json`. Para indexar con tu **clave maestra** en CI sin confirmarla en el repositorio, genera la configuración (o sobrescribe la clave) en tiempo de compilación a partir de un secreto. Un trabajo mínimo de GitHub Actions:
+Ejecuta `specra search index` en CI, pasando tu **clave maestra** mediante `--api-key` desde un secreto para que nunca se confirme en el repositorio. `--host` y `--index-name` pueden sobrescribirse de la misma forma. Un trabajo mínimo de GitHub Actions:
 
 ```yaml
 name: Index docs
@@ -183,36 +183,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm ci
-      # Inyecta la clave maestra en la configuración solo para indexar
-      - run: |
-          node -e "const f='specra.config.json',c=require('./'+f);
-            c.search.meilisearch.host=process.env.MEILI_HOST;
-            c.search.meilisearch.apiKey=process.env.MEILI_MASTER_KEY;
-            require('fs').writeFileSync(f, JSON.stringify(c,null,2));"
+      - run: npx specra search index --host "$MEILI_HOST" --api-key "$MEILI_MASTER_KEY"
         env:
           MEILI_HOST: ${{ secrets.MEILI_HOST }}
           MEILI_MASTER_KEY: ${{ secrets.MEILI_MASTER_KEY }}
-      - run: npm run index:search
 ```
 
-Publica tu app con la clave **solo de búsqueda** en `specra.config.json`, y deja que CI intercambie la clave maestra únicamente para el paso de indexación.
+Publica tu app con la clave **solo de búsqueda** en `specra.config.json`; el flag `--api-key` la sobrescribe con la clave maestra únicamente para el paso de indexación.
 
 ## Personalizar el índice
 
-El comportamiento de la indexación vive en `scripts/index-search.ts`. Hoy configura MeiliSearch así:
-
-```ts
-await index.updateSearchableAttributes(["title", "content", "tags"])
-await index.updateFilterableAttributes(["version", "locale", "category", "tags"])
-await index.updateSortableAttributes(["title"])
-await index.updateDistinctAttribute("id")
-await index.updateSettings({
-  rankingRules: ["words", "typo", "proximity", "attribute", "sort", "exactness"],
-})
-```
-
-Edita ese script para cambiar qué es buscable, añadir sinónimos o palabras vacías, o ajustar el ranking — luego vuelve a ejecutar `npm run index:search`.
+`npx specra search index` configura MeiliSearch con valores predeterminados sensatos — `title`, `content` y `tags` buscables; `version`, `locale`, `category` y `tags` filtrables; y las reglas de ranking estándar. Para ajustar el ranking, los sinónimos o las palabras vacías más allá de eso, configura tu instancia de MeiliSearch directamente — consulta la [documentación de MeiliSearch](https://www.meilisearch.com/docs).
 
 ## Búsqueda local (alternativa)
 
@@ -251,13 +232,13 @@ curl http://localhost:7700/health   # expect {"status":"available"}
 **Sin resultados** — vuelve a indexar y confirma que el índice existe:
 
 ```bash
-npm run index:search
+npx specra search index
 curl -H "Authorization: Bearer YOUR_KEY" http://localhost:7700/indexes
 ```
 
 **`/api/search` devuelve "Search is not enabled"** — la ruta lee `specra.config.json`; asegúrate de que `enabled` sea `true` y `provider` sea `"meilisearch"`, luego reinicia el servidor de desarrollo para que la configuración se vuelva a leer.
 
-**Resultados en el idioma equivocado** — vuelve a ejecutar `npm run index:search` para que cada documento obtenga su campo `locale`.
+**Resultados en el idioma equivocado** — vuelve a ejecutar `npx specra search index` para que cada documento obtenga su campo `locale`.
 
 ## Próximos pasos
 

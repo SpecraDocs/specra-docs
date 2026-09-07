@@ -277,7 +277,7 @@ jobs:
         run: npm run build:export
 
       - name: Index search
-        run: npm run index:search
+        run: npx specra search index
         env:
           MEILISEARCH_HOST: ${{ secrets.MEILISEARCH_HOST }}
           MEILISEARCH_API_KEY: ${{ secrets.MEILISEARCH_MASTER_KEY }}
